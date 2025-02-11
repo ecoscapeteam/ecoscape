@@ -28,8 +28,10 @@ public class User {
     private String password;
 
     @Column(nullable = false, name = "first_name")
+    @Pattern(regexp = "^[A-Za-z]+ [A-Za-z]+$\n", message = "Only letters are allowed.")
     private String firstName;
     @Column(nullable = false, name = "last_name")
+    @Pattern(regexp = "^[A-Za-z]+ [A-Za-z]+$\n", message = "Only letters are allowed.")
     private String lastName;
     private String bio;
     private String photoUrl;
