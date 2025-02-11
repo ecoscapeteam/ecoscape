@@ -41,17 +41,20 @@ public class User {
 
     private String bio;
 
+    @Column(name = "photo_url")
     private String photoUrl;
 
-    @Column(nullable = false)
-    private LocalDate birth_date;
+    @Column(nullable = false, name = "birth_date")
+    private LocalDate birthDate;
 
     @Pattern(regexp = "^\\+\\d{1,3}\\d{9}$", message = "That's not a valid phone number.")
-    private String contact_phone_number;
+    @Column(name = "contact_phone_number")
+    private String contactPhoneNumber;
 
     @Pattern(regexp = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$",
             message = "That's not a valid email.")
-    private String contact_email;
+    @Column(unique = true, name = "contact_email")
+    private String contactEmail;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
@@ -130,27 +133,27 @@ public class User {
         this.photoUrl = photoUrl;
     }
 
-    public LocalDate getBirth_date() {
-        return birth_date;
+    public LocalDate getBirthDate() {
+        return birthDate;
     }
 
-    public void setBirth_date(LocalDate birth_date) {
-        this.birth_date = birth_date;
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
     }
 
-    public String getContact_phone_number() {
-        return contact_phone_number;
+    public String getContactPhoneNumber() {
+        return contactPhoneNumber;
     }
 
-    public void setContact_phone_number(String contact_phone_number) {
-        this.contact_phone_number = contact_phone_number;
+    public void setContactPhoneNumber(String contactPhoneNumber) {
+        this.contactPhoneNumber = contactPhoneNumber;
     }
 
-    public String getContact_email() {
-        return contact_email;
+    public String getContactEmail() {
+        return contactEmail;
     }
 
-    public void setContact_email(String contact_email) {
-        this.contact_email = contact_email;
+    public void setContactEmail(String contactEmail) {
+        this.contactEmail = contactEmail;
     }
 }
