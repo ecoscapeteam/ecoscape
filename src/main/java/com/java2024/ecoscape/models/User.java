@@ -3,6 +3,7 @@ package com.java2024.ecoscape.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -18,6 +19,7 @@ public class User {
     @NotEmpty(message = "Email cannot be empty")
     @Pattern(regexp = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$",
     message = "That's not a valid email.")
+    @Size(max = 30, message = "Your email cannot be longer than 30 characters.")
     private String username;
 
     @Column(nullable = false)
@@ -29,15 +31,24 @@ public class User {
 
     @Column(nullable = false, name = "first_name")
     @Pattern(regexp = "^[A-Za-z]+ [A-Za-z]+$\n", message = "Only letters are allowed.")
+    @Size(max = 50, message = "Your first name cannot be longer than 50 characters.")
     private String firstName;
+
     @Column(nullable = false, name = "last_name")
     @Pattern(regexp = "^[A-Za-z]+ [A-Za-z]+$\n", message = "Only letters are allowed.")
+    @Size(max = 50, message = "Your last name cannot be longer than 50 characters.")
     private String lastName;
+
     private String bio;
+
     private String photoUrl;
+
     @Column(nullable = false)
     private LocalDate birth_date;
+
+    @Pattern(regexp = "^\\+\\d{1,3}\\d{9}$", message = "That's not a valid phone number.")
     private String contact_phone_number;
+
     @Pattern(regexp = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$",
             message = "That's not a valid email.")
     private String contact_email;
