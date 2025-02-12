@@ -3,6 +3,7 @@ package com.java2024.ecoscape.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import org.hibernate.validator.constraints.Length;
 
 @Entity
 @Table(name = "rules")
@@ -17,6 +18,7 @@ public class Rules {
     //ifall man skriver vill skriva text om regler så ska endast bokstäver, siffror, mellanslag och vissa skiljetecken som kommatecken, punkter och frågetecken tillåts
     @Pattern(regexp = "^[A-Za-z0-9\\s\\.,!?\'\"\\(\\)\\-\\&\\#\\*\\+\\=]*$",
             message = "Invalid rule description! Only letters, numbers, spaces, commas, periods, exclamation marks, question marks, and other specified characters are allowed.")
+    @Length(max = 250, message = "Rules text can not exceed 255 characters")
     private String rulesText;
 
     //Incheckning tiden ska skrivas in inom en viss format, t.ex 11:00, 12:00, 00:00
