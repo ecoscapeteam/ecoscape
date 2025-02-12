@@ -2,7 +2,10 @@ package com.java2024.ecoscape.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
@@ -12,8 +15,11 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    @NotEmpty(message = "Username cannot be empty")
+    @Column(unique = true, nullable = false, name = "email")
+    @NotEmpty(message = "Email cannot be empty")
+    @Pattern(regexp = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$",
+    message = "That's not a valid email.")
+    @Size(max = 40, message = "Your email cannot be longer than 30 characters.")
     private String username;
 
     @Column(nullable = false)
@@ -22,6 +28,34 @@ public class User {
             message = "Password must be at least 8 characters long and contain at least " +
                     "one uppercase letter, one number, and one special character")*/
     private String password;
+
+    @Column(nullable = false, name = "first_name")
+    @Pattern(regexp = "^[A-Za-z]+ [A-Za-z]+$\n", message = "Only letters are allowed.")
+    @Size(max = 50, message = "Your first name cannot be longer than 50 characters.")
+    private String firstName;
+
+    @Column(nullable = false, name = "last_name")
+    @Pattern(regexp = "^[A-Za-z]+ [A-Za-z]+$\n", message = "Only letters are allowed.")
+    @Size(max = 50, message = "Your last name cannot be longer than 50 characters.")
+    private String lastName;
+
+    @Size(max = 250)
+    private String bio;
+
+    @Column(name = "photo_url")
+    private String photoUrl;
+
+    @Column(nullable = false, name = "birth_date")
+    private LocalDate birthDate;
+
+    @Pattern(regexp = "^\\+\\d{1,3}\\d{9}$", message = "That's not a valid phone number.")
+    @Column(name = "contact_phone_number")
+    private String contactPhoneNumber;
+
+    @Pattern(regexp = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$",
+            message = "That's not a valid email.")
+    @Column(unique = true, name = "contact_email")
+    private String contactEmail;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
@@ -62,5 +96,65 @@ public class User {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public String getContactPhoneNumber() {
+        return contactPhoneNumber;
+    }
+
+    public void setContactPhoneNumber(String contactPhoneNumber) {
+        this.contactPhoneNumber = contactPhoneNumber;
+    }
+
+    public String getContactEmail() {
+        return contactEmail;
+    }
+
+    public void setContactEmail(String contactEmail) {
+        this.contactEmail = contactEmail;
     }
 }
