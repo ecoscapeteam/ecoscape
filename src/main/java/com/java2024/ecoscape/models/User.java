@@ -19,7 +19,7 @@ public class User {
     @NotEmpty(message = "Email cannot be empty")
     @Pattern(regexp = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$",
     message = "That's not a valid email.")
-    @Size(max = 30, message = "Your email cannot be longer than 30 characters.")
+    @Size(max = 40, message = "Your email cannot be longer than 30 characters.")
     private String username;
 
     @Column(nullable = false)
@@ -39,6 +39,7 @@ public class User {
     @Size(max = 50, message = "Your last name cannot be longer than 50 characters.")
     private String lastName;
 
+    @Size(max = 250)
     private String bio;
 
     @Column(name = "photo_url")
