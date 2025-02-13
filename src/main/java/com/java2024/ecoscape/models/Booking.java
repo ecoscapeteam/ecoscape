@@ -1,5 +1,6 @@
 package com.java2024.ecoscape.models;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jdk.jshell.Snippet;
 
 import com.java2024.ecoscape.models.User;
@@ -17,9 +18,11 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "booking_Id")
     private Long id;
+    @NotNull
     @ManyToOne (fetch = FetchType.LAZY) // each booking belongs to one user, but a user can have many booking
     @JoinColumn(name = "user_id")
     private User user; // foreign key to User table
+    @NotNull
     @ManyToOne (fetch = FetchType.LAZY)// each booking belongs to one listing, but a listing can have many booking
     @JoinColumn(name = "listing_id")
     private Listing listing;  // foreign key Listing table
@@ -27,7 +30,7 @@ public class Booking {
     @Column(name = ("first_name"))
     private String firstName;
 
-    @Column(name = ("lastname"))
+    @Column(name = ("last_name"))
     private String lastName;
 
     @Column(name = ("phone"))
