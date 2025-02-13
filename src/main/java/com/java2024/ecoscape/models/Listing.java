@@ -130,6 +130,7 @@ public class Listing {
     //user kan ha en eller flera sustainability, sustainability är inga entities, utan enums, därför ska inte relation definieras
     //enum kategorier sparas som stärng, det gör enum kategorierna mer läsbar
     //sustainabilities lagras i tabellen sustainabilities och listing_id kopplar varje sustanability till en specifik Listing.
+    @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     @CollectionTable(
             name = "sustainabilities",
