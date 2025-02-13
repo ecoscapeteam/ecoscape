@@ -1,6 +1,9 @@
 package com.java2024.ecoscape.models;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import jdk.jshell.Snippet;
 
 import com.java2024.ecoscape.models.User;
@@ -8,6 +11,8 @@ import com.java2024.ecoscape.models.Status;
 
 
 import javax.xml.crypto.Data;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -28,40 +33,56 @@ public class Booking {
     private Listing listing;  // foreign key Listing table
 
     @Column(name = ("first_name"))
+    @NotNull(message = "First name canot be null.")
+    @Pattern(regexp = "^[A-Za-z]+ [A-Za-z]+$\n", message = "Only letters are allowed.")
+    @Size(max = 50, message = "Your first name cannot be longer than 50 characters.")
     private String firstName;
 
     @Column(name = ("last_name"))
+    @NotNull(message = "Last name cannot be null.")
+    @Pattern(regexp = "^[A-Za-z]+ [A-Za-z]+$\n", message = "Only letters are allowed.")
+    @Size(max = 50, message = "Your last name cannot be longer than 50 characters.")
     private String lastName;
 
-    @Column(name = ("phone"))
-    private String phone;
+    @Column(name = ("phone_number"))
+    @NotNull(message = "Phone number cannot be null.")
+    @Pattern(regexp = "^\\+\\d{1,3}\\d{9}$", message = "That's not a valid phone number.")
+    private String phoneNumber;
 
     @Column(name = ("email"))
+    @Pattern(regexp = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$",
+            message = "That's not a valid email.")
+    @NotNull(message = "Email cannot be null.")
+    @Size(max = 30)
     private String email;
 
-    @Column(name = ("city"))
-    private String city;
+    @Column(name = ("location"))
+    //Add a google api?
+    private String location;
 
     @Column(name = ("start_date"))
     @Temporal(TemporalType.DATE)
-    private Date startDate;
+    private LocalDate startDate;
 
     @Column(name = ("end_date"))
     @Temporal(TemporalType.DATE)
-    private Date endDate;
+    private LocalDate endDate;
 
     @Column(name = ("status"))
     @Enumerated(EnumType.STRING)
+    @NotNull(message = "Status cannot be null.")
     private Status status; // enum class
 
     @Column(name = ("guests"))
+    @NotNull(message = "Guests cannot be null.")
+    @Size(min = 1, max = 10)
     private int guests;
 
     @Column(name = ("websites_fee"))
-    private double websitesFee;
+    private BigDecimal websitesFee;
 
     @Column(name = ("total_price"))
-    private double totalPrice;
+    private BigDecimal totalPrice;
 
     public Booking() {
     }
@@ -106,22 +127,6 @@ public class Booking {
         this.lastName = lastName;
     }
 
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -130,19 +135,19 @@ public class Booking {
         this.email = email;
     }
 
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 
@@ -162,20 +167,35 @@ public class Booking {
         this.guests = guests;
     }
 
-    public double getWebsitesFee() {
+    public BigDecimal getWebsitesFee() {
         return websitesFee;
     }
 
-    public void setWebsitesFee(double websitesFee) {
+    public void setWebsitesFee(BigDecimal websitesFee) {
         this.websitesFee = websitesFee;
     }
 
-    public double getTotalPrice() {
+    public BigDecimal getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(double totalPrice) {
+    public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
     }
 
+    public @NotNull(message = "Phone number cannot be null.") @Pattern(regexp = "^\\+\\d{1,3}\\d{9}$", message = "That's not a valid phone number.") String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(@NotNull(message = "Phone number cannot be null.") @Pattern(regexp = "^\\+\\d{1,3}\\d{9}$", message = "That's not a valid phone number.") String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
 }
