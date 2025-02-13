@@ -18,9 +18,9 @@ public class Listing {
     private Long id;
 
     @NotNull(message = "Listing owner can not be null")
-    //@ManyToOne
-    //@JoinColumn(name = "user_id")
-   // private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @NotNull(message = "Listing name can not be null")
     @NotEmpty(message = "Listing name can not be empty")
@@ -91,13 +91,13 @@ public class Listing {
         this.id = id;
     }
 
-   /* public User getUser() {
+   public User getUser() {
         return user;
     }
 
     public void setUser() {
         this.user = user;
-    }*/
+    }
 
     public String getName() {
         return name;
