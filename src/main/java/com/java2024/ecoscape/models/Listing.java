@@ -19,8 +19,8 @@ public class Listing {
 
     // user_id FOREIGN KEY här, refererar till kolumnen user_id i listing tabellen
     @NotNull(message = "Listing owner can not be null")
-    // listing many to one gentemot user, user kan ha flera listings, en listing kan tillhöra bara en user, "laddar" hela usern bara ifall vi ska behöva det
     @ManyToOne(fetch = FetchType.LAZY)
+    // listing many to one gentemot user, user kan ha flera listings, en listing kan tillhöra bara en user, "laddar" hela usern bara ifall vi ska behöva det
     // user_id FOREIGN KEY här, refererar till kolumnen user_id i listing tabellen
     @JoinColumn(name = "user_id")
     private User user;
