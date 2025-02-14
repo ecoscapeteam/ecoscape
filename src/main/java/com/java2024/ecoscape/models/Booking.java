@@ -1,19 +1,12 @@
 package com.java2024.ecoscape.models;
+
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import jdk.jshell.Snippet;
 
-import com.java2024.ecoscape.models.User;
-import com.java2024.ecoscape.models.Status;
-
-
-import javax.xml.crypto.Data;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Date;
 
 @Entity
 @Table(name = "bookings")
@@ -183,11 +176,11 @@ public class Booking {
         this.totalPrice = totalPrice;
     }
 
-    public @NotNull(message = "Phone number cannot be null.") @Pattern(regexp = "^\\+\\d{1,3}\\d{9}$", message = "That's not a valid phone number.") String getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(@NotNull(message = "Phone number cannot be null.") @Pattern(regexp = "^\\+\\d{1,3}\\d{9}$", message = "That's not a valid phone number.") String phoneNumber) {
+    public void setPhoneNumber() {
         this.phoneNumber = phoneNumber;
     }
 
