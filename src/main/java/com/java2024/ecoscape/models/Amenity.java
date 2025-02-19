@@ -18,5 +18,4 @@ public enum Amenity {
     HAS_ACCESSIBILITY,
     HAS_ELECTRICITY_VEHICLE_CHARGE,
     IS_PET_FRIENDLY
-
     }
