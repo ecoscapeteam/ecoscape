@@ -24,4 +24,11 @@ public class ListingController {
                 createListingRequest.getRules());
         return ResponseEntity.status(HttpStatus.CREATED).body(savedListing);
     }
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Listing> getListingById(@PathVariable Long id) {
+        Listing listing = listingService.findListingById(id);
+        return ResponseEntity.ok(listing);
+    }
 }

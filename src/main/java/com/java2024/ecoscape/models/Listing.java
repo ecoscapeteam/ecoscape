@@ -18,8 +18,8 @@ public class Listing {
 
 
     // user_id FOREIGN KEY här, refererar till kolumnen user_id i listing tabellen
-    @ManyToOne(fetch = FetchType.LAZY)
-    // listing many to one gentemot user, user kan ha flera listings, en listing kan tillhöra bara en user, "laddar" hela usern bara ifall vi ska behöva det
+    @ManyToOne(fetch = FetchType.EAGER)
+    // listing many to one gentemot user, user kan ha flera listings, en listing kan tillhöra bara en user, "laddar" hela usern direkt
     // user_id FOREIGN KEY här, refererar till kolumnen user_id i listing tabellen
     @JoinColumn(name = "user_id")
     private User user;

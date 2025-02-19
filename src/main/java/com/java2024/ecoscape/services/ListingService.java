@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.NoSuchElementException;
 
 @Service
 public class ListingService {
@@ -29,7 +30,7 @@ public class ListingService {
     }
 
     //metod för att spara Listing till Listing repositoriet
-    public Listing saveListing (Listing listing) {
+    public Listing saveListing(Listing listing) {
         return listingRepository.save(listing);
     }
 
@@ -120,6 +121,11 @@ public class ListingService {
         Listing savedListing = saveListing(listingDetails);
         return savedListing;
 
+    }
+
+    //metod för att hämta en listing efter listing id
+    public Listing findListingById(Long listingId) {
+        return listingRepository.findById(listingId).orElseThrow(() -> new NoSuchElementException("Listing not found"));
     }
 }
 
