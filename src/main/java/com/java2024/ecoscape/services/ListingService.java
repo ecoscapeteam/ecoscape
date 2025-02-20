@@ -127,5 +127,47 @@ public class ListingService {
     public Listing findListingById(Long listingId) {
         return listingRepository.findById(listingId).orElseThrow(() -> new NoSuchElementException("Listing not found"));
     }
+
+    //metod för att uppdatera en listing
+    public Listing partialUpdateListingById(Long listingId, Listing newListingDetails){
+        Listing exisitngListing = findListingById(listingId);
+        if (newListingDetails.getName() != null){
+            exisitngListing.setName(newListingDetails.getName());
+        }
+        if (newListingDetails.getDescription() != null){
+            exisitngListing.setDescription(newListingDetails.getDescription());
+        }
+        if (newListingDetails.getLocation() != null){
+            exisitngListing.setLocation(newListingDetails.getLocation());
+        }
+        if (newListingDetails.getLatitude() != null){
+            exisitngListing.setLatitude(newListingDetails.getLatitude());
+        }
+        if (newListingDetails.getLongitude() != null){
+            exisitngListing.setLongitude(newListingDetails.getLongitude());
+        }
+        if (newListingDetails.getCapacity() != null){
+            exisitngListing.setCapacity(newListingDetails.getCapacity());
+        }
+        if (newListingDetails.getCleaningFee() != null){
+            exisitngListing.setCleaningFee(newListingDetails.getCleaningFee());
+        }
+        if (newListingDetails.getPricePerNight() != null){
+            exisitngListing.setPricePerNight(newListingDetails.getPricePerNight());
+        }
+        if (newListingDetails.getRules() != null){
+            exisitngListing.setRules(newListingDetails.getRules());
+        }
+        if (newListingDetails.getCategories() != null){
+            exisitngListing.setCategories(newListingDetails.getCategories());
+        }
+        if (newListingDetails.getAmenities() != null){
+            exisitngListing.setAmenities(newListingDetails.getAmenities());
+        }
+        if (newListingDetails.getSustainabilities() != null){
+            exisitngListing.setSustainabilities(newListingDetails.getSustainabilities());
+        }
+        return saveListing(exisitngListing);
+    }
 }
 

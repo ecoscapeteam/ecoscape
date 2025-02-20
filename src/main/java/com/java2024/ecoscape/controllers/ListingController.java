@@ -31,4 +31,12 @@ public class ListingController {
         Listing listing = listingService.findListingById(id);
         return ResponseEntity.ok(listing);
     }
+
+    @PatchMapping("/{listingId}")
+    public ResponseEntity<Listing> partialUpdateListing(@PathVariable Long listingId, @RequestBody Listing newListingDetails){
+        Listing updatedListing = listingService.partialUpdateListingById(listingId, newListingDetails);
+        return ResponseEntity.ok(updatedListing);
+    }
+
+
 }
