@@ -2,10 +2,10 @@ package com.java2024.ecoscape.controllers;
 
 import com.java2024.ecoscape.dto.UserRequest;
 import com.java2024.ecoscape.dto.UserResponse;
+import com.java2024.ecoscape.dto.UserUpdateDTO;
 import com.java2024.ecoscape.models.User;
 import com.java2024.ecoscape.services.UserService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,24 +23,38 @@ public class UserController {
     @GetMapping
     //@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     //change to only admin once we publish
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.findAllUsers();
-        return new ResponseEntity<>(users, HttpStatus.OK);
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+        List<UserResponse> users = userService.findAllUsers();
+
+        return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{id}")
     //@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     //change to only admin once we publish
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
         User user = userService.findUserById(id);
-        return ResponseEntity.ok(user);
+
+        UserResponse userResponse = new UserResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getBio(),
+                user.getPhotoUrl(),
+                user.getBirthDate(),
+                user.getContactPhoneNumber(),
+                user.getContactEmail()
+        );
+
+        return ResponseEntity.ok(userResponse);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @Valid @RequestBody UserRequest userRequest) {
+    public ResponseEntity<UserUpdateDTO> updateUser(@PathVariable Long id, @Valid @RequestBody UserRequest userRequest) {
         User updatedUser = userService.updateUser(id, userRequest);
 
-        UserResponse userUpdateResponse = new UserResponse(
+        UserUpdateDTO userUpdateResponse = new UserUpdateDTO(
                 updatedUser.getFirstName(),
                 updatedUser.getLastName(),
                 updatedUser.getBio(),

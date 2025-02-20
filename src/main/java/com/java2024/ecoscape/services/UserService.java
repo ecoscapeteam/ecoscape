@@ -1,6 +1,7 @@
 package com.java2024.ecoscape.services;
 
 import com.java2024.ecoscape.dto.UserRequest;
+import com.java2024.ecoscape.dto.UserResponse;
 import com.java2024.ecoscape.models.Role;
 import com.java2024.ecoscape.models.User;
 import com.java2024.ecoscape.repository.UserRepository;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class UserService {
@@ -41,8 +43,21 @@ public class UserService {
         return userRepository.findByUsername(username).isPresent();
     }
 
-    public List<User> findAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponse> findAllUsers() {
+        List<User> users = userRepository.findAll();
+
+        return users.stream()
+                .map(user -> new UserResponse(
+                        user.getId(),
+                        user.getUsername(),
+                        user.getFirstName(),
+                        user.getLastName(),
+                        user.getBio(),
+                        user.getPhotoUrl(),
+                        user.getBirthDate(),
+                        user.getContactPhoneNumber(),
+                        user.getContactEmail()))
+                .collect(Collectors.toList());
     }
 
     public User findUserById(Long id) {
