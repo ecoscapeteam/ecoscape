@@ -2,9 +2,7 @@ package com.java2024.ecoscape.dto;
 
 import java.time.LocalDate;
 
-public class UserResponse {
-    private long id;
-    private String username;
+public class UserUpdateDTO {
     private String firstName;
     private String lastName;
     private String bio;
@@ -13,9 +11,7 @@ public class UserResponse {
     private String contactPhoneNumber;
     private String contactEmail;
 
-    public UserResponse(long id, String username, String firstName, String lastName, String bio, String photoUrl, LocalDate birthDate, String contactPhoneNumber, String contactEmail) {
-        this.id = id;
-        this.username = username;
+    public UserUpdateDTO(String firstName, String lastName, String bio, String photoUrl, LocalDate birthDate, String contactPhoneNumber, String contactEmail) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.bio = bio;
@@ -24,7 +20,6 @@ public class UserResponse {
         this.contactPhoneNumber = contactPhoneNumber;
         this.contactEmail = contactEmail;
     }
-
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
@@ -80,21 +75,5 @@ public class UserResponse {
 
     public String getContactEmail() {
         return contactEmail;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 }
