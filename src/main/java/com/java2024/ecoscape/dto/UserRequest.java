@@ -1,5 +1,7 @@
 package com.java2024.ecoscape.dto;
 
+import jakarta.persistence.Column;
+
 import java.time.LocalDate;
 
 public class UserRequest {
@@ -8,7 +10,9 @@ public class UserRequest {
     private String bio;
     private String photoUrl;
     private LocalDate birthDate;
+    @Column(unique = true)
     private String contactPhoneNumber;
+    @Column(unique = true)
     private String contactEmail;
 
     public UserRequest(String firstName, String lastName, String bio, String photoUrl, LocalDate birthDate, String contactPhoneNumber, String contactEmail) {
@@ -48,5 +52,33 @@ public class UserRequest {
 
     public String getPhotoUrl() {
         return photoUrl;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public void setContactPhoneNumber(String contactPhoneNumber) {
+        this.contactPhoneNumber = contactPhoneNumber;
+    }
+
+    public void setContactEmail(String contactEmail) {
+        this.contactEmail = contactEmail;
     }
 }
