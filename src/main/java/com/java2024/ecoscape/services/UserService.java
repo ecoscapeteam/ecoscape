@@ -3,7 +3,6 @@ package com.java2024.ecoscape.services;
 import com.java2024.ecoscape.models.Role;
 import com.java2024.ecoscape.models.User;
 import com.java2024.ecoscape.repository.UserRepository;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -34,7 +33,7 @@ public class UserService {
 
     public User findUserByUsername(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
     }
 
     public boolean existsByUsername(String username) {
@@ -46,6 +45,21 @@ public class UserService {
     }
 
     public User findUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("User not found"));
+        return userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+    }
+
+    public User updateUser(Long id, User user) {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+
+        existingUser.setFirstName(user.getFirstName());
+        existingUser.setLastName(user.getLastName());
+        existingUser.setBio(user.getBio());
+        existingUser.setPhotoUrl(user.getPhotoUrl());
+        existingUser.setBirthDate(user.getBirthDate());
+        existingUser.setContactEmail(user.getContactEmail());
+
+        return userRepository.save(existingUser);
     }
 }
