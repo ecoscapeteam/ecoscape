@@ -48,4 +48,32 @@ public class UserResponse {
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
     }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public String getContactPhoneNumber() {
+        return contactPhoneNumber;
+    }
+
+    public String getContactEmail() {
+        return contactEmail;
+    }
 }

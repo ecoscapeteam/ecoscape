@@ -1,7 +1,10 @@
 package com.java2024.ecoscape.controllers;
 
+import com.java2024.ecoscape.dto.UserRequest;
+import com.java2024.ecoscape.dto.UserResponse;
 import com.java2024.ecoscape.models.User;
 import com.java2024.ecoscape.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,9 +37,19 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
-        User updatedUser = userService.updateUser(id, user);
+    public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @Valid @RequestBody UserRequest userRequest) {
+        User updatedUser = userService.updateUser(id, userRequest);
 
-        return ResponseEntity.ok(updatedUser);
+        UserResponse userUpdateResponse = new UserResponse(
+                updatedUser.getFirstName(),
+                updatedUser.getLastName(),
+                updatedUser.getBio(),
+                updatedUser.getPhotoUrl(),
+                updatedUser.getBirthDate(),
+                updatedUser.getContactPhoneNumber(),
+                updatedUser.getContactEmail()
+        );
+
+        return ResponseEntity.ok(userUpdateResponse);
     }
 }

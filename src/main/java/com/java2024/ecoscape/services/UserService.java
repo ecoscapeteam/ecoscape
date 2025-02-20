@@ -1,5 +1,6 @@
 package com.java2024.ecoscape.services;
 
+import com.java2024.ecoscape.dto.UserRequest;
 import com.java2024.ecoscape.models.Role;
 import com.java2024.ecoscape.models.User;
 import com.java2024.ecoscape.repository.UserRepository;
@@ -24,7 +25,7 @@ public class UserService {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
 
-        if(user.getRoles() == null || user.getRoles().isEmpty()) {
+        if (user.getRoles() == null || user.getRoles().isEmpty()) {
             user.setRoles(Set.of(Role.USER));
         }
 
@@ -49,16 +50,24 @@ public class UserService {
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
     }
 
-    public User updateUser(Long id, User user) {
+    public User updateUser(Long id, UserRequest userRequest) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
 
-        existingUser.setFirstName(user.getFirstName());
-        existingUser.setLastName(user.getLastName());
-        existingUser.setBio(user.getBio());
-        existingUser.setPhotoUrl(user.getPhotoUrl());
-        existingUser.setBirthDate(user.getBirthDate());
-        existingUser.setContactEmail(user.getContactEmail());
+        if (userRepository.existsByContactEmailAndIdNot(userRequest.getContactEmail(), id)) {
+            throw new IllegalArgumentException("That contact email already exists.");
+        }
+
+        if (userRepository.existsByContactPhoneNumberAndIdNot(userRequest.getContactPhoneNumber(), id)) {
+            throw new IllegalArgumentException("That contact phone number already exists.");
+        }
+
+        existingUser.setFirstName(userRequest.getFirstName());
+        existingUser.setLastName(userRequest.getLastName());
+        existingUser.setBio(userRequest.getBio());
+        existingUser.setPhotoUrl(userRequest.getPhotoUrl());
+        existingUser.setBirthDate(userRequest.getBirthDate());
+        existingUser.setContactEmail(userRequest.getContactEmail());
 
         return userRepository.save(existingUser);
     }
