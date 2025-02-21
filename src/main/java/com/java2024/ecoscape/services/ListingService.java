@@ -3,9 +3,7 @@ package com.java2024.ecoscape.services;
 import com.java2024.ecoscape.models.Listing;
 import com.java2024.ecoscape.models.Rules;
 import com.java2024.ecoscape.models.User;
-import com.java2024.ecoscape.repository.ListingRepository;
-import com.java2024.ecoscape.repository.RulesRepository;
-import com.java2024.ecoscape.repository.UserRepository;
+import com.java2024.ecoscape.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +18,10 @@ public class ListingService {
     private final RulesRepository rulesRepository;
     private final RulesService rulesService;
     private final UserService userService;
+    //private final CategoryRepository categoryRepository;
+    //private final SustainabilityRepository sustainabilityRepository;
+
+
 
     public ListingService(ListingRepository listingRepository, UserRepository userRepository, RulesRepository rulesRepository, RulesService rulesService, UserService userService) {
         this.listingRepository = listingRepository;
@@ -27,6 +29,8 @@ public class ListingService {
         this.rulesRepository = rulesRepository;
         this.rulesService = rulesService;
         this.userService = userService;
+        //this.categoryRepository = categoryRepository;
+        //this.sustainabilityRepository = sustainabilityRepository;
     }
 
     //metod för att spara Listing till Listing repositoriet
@@ -168,6 +172,11 @@ public class ListingService {
             exisitngListing.setSustainabilities(newListingDetails.getSustainabilities());
         }
         return saveListing(exisitngListing);
+    }
+
+    public void deleteListingById(Long listingId){
+        Listing listing = findListingById(listingId);
+        listingRepository.delete(listing);
     }
 }
 

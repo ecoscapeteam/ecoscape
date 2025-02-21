@@ -7,7 +7,7 @@ import com.java2024.ecoscape.models.Sustainability;
 
 import java.util.Set;
 
-public class CreateListingRequest {
+public class ListingDTO {
     Listing listing;
     Rules rules;
     Set<Amenity> amenities;

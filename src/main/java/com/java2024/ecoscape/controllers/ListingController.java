@@ -1,6 +1,6 @@
 package com.java2024.ecoscape.controllers;
 
-import com.java2024.ecoscape.dto.CreateListingRequest;
+import com.java2024.ecoscape.dto.ListingDTO;
 import com.java2024.ecoscape.models.Listing;
 import com.java2024.ecoscape.services.ListingService;
 import jakarta.validation.Valid;
@@ -19,9 +19,9 @@ public class ListingController {
     }
 
     @PostMapping("/{userId}")
-    public ResponseEntity<Listing> createPlant (@Valid @RequestBody CreateListingRequest createListingRequest, @PathVariable Long userId) {
-        Listing savedListing = listingService.createListing(userId, createListingRequest.getListing(),
-                createListingRequest.getRules());
+    public ResponseEntity<Listing> createPlant (@Valid @RequestBody ListingDTO listingDTO, @PathVariable Long userId) {
+        Listing savedListing = listingService.createListing(userId, listingDTO.getListing(),
+                listingDTO.getRules());
         return ResponseEntity.status(HttpStatus.CREATED).body(savedListing);
     }
 
@@ -37,6 +37,14 @@ public class ListingController {
         Listing updatedListing = listingService.partialUpdateListingById(listingId, newListingDetails);
         return ResponseEntity.ok(updatedListing);
     }
+
+    @DeleteMapping("/{listingId}")
+    public ResponseEntity<Listing> deleteListingById(@PathVariable Long listingId) {
+        listingService.deleteListingById(listingId);
+        return ResponseEntity.noContent().build();
+    }
+
+
 
 
 }
