@@ -1,9 +1,10 @@
 package com.java2024.ecoscape.services;
 
+import com.java2024.ecoscape.dto.ListingResponse;
 import com.java2024.ecoscape.models.Listing;
 import com.java2024.ecoscape.models.Rules;
 import com.java2024.ecoscape.models.User;
-import com.java2024.ecoscape.repository.*;
+import com.java2024.ecoscape.repository.ListingRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,23 +15,15 @@ import java.util.NoSuchElementException;
 public class ListingService {
 
     private final ListingRepository listingRepository;
-    private final UserRepository userRepository;
-    private final RulesRepository rulesRepository;
     private final RulesService rulesService;
     private final UserService userService;
-    //private final CategoryRepository categoryRepository;
-    //private final SustainabilityRepository sustainabilityRepository;
 
 
 
-    public ListingService(ListingRepository listingRepository, UserRepository userRepository, RulesRepository rulesRepository, RulesService rulesService, UserService userService) {
+    public ListingService(ListingRepository listingRepository, RulesService rulesService, UserService userService) {
         this.listingRepository = listingRepository;
-        this.userRepository = userRepository;
-        this.rulesRepository = rulesRepository;
         this.rulesService = rulesService;
         this.userService = userService;
-        //this.categoryRepository = categoryRepository;
-        //this.sustainabilityRepository = sustainabilityRepository;
     }
 
     //metod för att spara Listing till Listing repositoriet
@@ -112,7 +105,7 @@ public class ListingService {
 
     //metod för att skaffa listing
     @Transactional
-    public Listing createListing(Long userId, Listing listingDetails, Rules rulesDetails) {
+    public ListingResponse createListing(Long userId, Listing listingDetails, Rules rulesDetails) {
         User user = userService.findUserById(userId);
 
         rulesService.validateRules(rulesDetails);
@@ -123,7 +116,20 @@ public class ListingService {
         listingDetails.setRules(savedRules);
 
         Listing savedListing = saveListing(listingDetails);
-        return savedListing;
+        ListingResponse listingResponse = new ListingResponse();
+        listingResponse.setId(savedListing.getId());
+        listingResponse.setName(savedListing.getName());
+        listingResponse.setDescription(savedListing.getDescription());
+        listingResponse.setLocation(savedListing.getLocation());
+        listingResponse.setLatitude(savedListing.getLatitude());
+        listingResponse.setLongitude(savedListing.getLongitude());
+        listingResponse.setCapacity(savedListing.getCapacity());
+        listingResponse.setPricePerNight(savedListing.getPricePerNight());
+        listingResponse.setRules(savedListing.getRules());
+        listingResponse.setCategories(savedListing.getCategories());
+        listingResponse.setSustainability(savedListing.getSustainabilities());
+        listingResponse.setAmenities(savedListing.getAmenities());
+        return listingResponse;
 
     }
 
