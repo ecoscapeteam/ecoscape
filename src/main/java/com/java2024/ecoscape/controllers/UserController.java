@@ -31,7 +31,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    //@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     //change to only admin once we publish
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
         User user = userService.findUserById(id);

@@ -82,6 +82,7 @@ public class UserService {
         existingUser.setBio(userRequest.getBio());
         existingUser.setPhotoUrl(userRequest.getPhotoUrl());
         existingUser.setBirthDate(userRequest.getBirthDate());
+        existingUser.setContactPhoneNumber(userRequest.getContactPhoneNumber());
         existingUser.setContactEmail(userRequest.getContactEmail());
 
         return userRepository.save(existingUser);

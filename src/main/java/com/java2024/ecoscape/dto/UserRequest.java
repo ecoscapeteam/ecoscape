@@ -1,7 +1,5 @@
 package com.java2024.ecoscape.dto;
 
-import jakarta.persistence.Column;
-
 import java.time.LocalDate;
 
 public class UserRequest {
@@ -10,9 +8,7 @@ public class UserRequest {
     private String bio;
     private String photoUrl;
     private LocalDate birthDate;
-    @Column(unique = true)
     private String contactPhoneNumber;
-    @Column(unique = true)
     private String contactEmail;
 
     public UserRequest(String firstName, String lastName, String bio, String photoUrl, LocalDate birthDate, String contactPhoneNumber, String contactEmail) {
