@@ -39,6 +39,14 @@ public class UserService {
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
     }
 
+    public boolean existsByContactEmail(String contactEmail) {
+        return userRepository.findByContactEmail(contactEmail).isPresent();
+    }
+
+    public boolean existsByContactPhoneNumber(String contactPhoneNumber) {
+        return userRepository.findByContactPhoneNumber(contactPhoneNumber).isPresent();
+    }
+
     public boolean existsByUsername(String username) {
         return userRepository.findByUsername(username).isPresent();
     }
@@ -68,14 +76,6 @@ public class UserService {
     public User updateUser(Long id, UserRequest userRequest) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
-
-        if (userRepository.existsByContactEmailAndIdNot(userRequest.getContactEmail(), id)) {
-            throw new IllegalArgumentException("That contact email already exists.");
-        }
-
-        if (userRepository.existsByContactPhoneNumberAndIdNot(userRequest.getContactPhoneNumber(), id)) {
-            throw new IllegalArgumentException("That contact phone number already exists.");
-        }
 
         existingUser.setFirstName(userRequest.getFirstName());
         existingUser.setLastName(userRequest.getLastName());

@@ -6,6 +6,7 @@ import com.java2024.ecoscape.dto.UserUpdateDTO;
 import com.java2024.ecoscape.models.User;
 import com.java2024.ecoscape.services.UserService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,7 +52,19 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserUpdateDTO> updateUser(@PathVariable Long id, @Valid @RequestBody UserRequest userRequest) {
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @Valid @RequestBody UserRequest userRequest) {
+        if(userService.existsByContactEmail(userRequest.getContactEmail())) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("That contact email already exists");
+        }
+
+        if(userService.existsByContactPhoneNumber(userRequest.getContactPhoneNumber())) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("That contact phone number already exists");
+        }
+
         User updatedUser = userService.updateUser(id, userRequest);
 
         UserUpdateDTO userUpdateResponse = new UserUpdateDTO(
