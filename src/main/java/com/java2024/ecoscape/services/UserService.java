@@ -86,4 +86,11 @@ public class UserService {
 
         return userRepository.save(existingUser);
     }
+
+    public void deleteUser(Long id) {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+
+        userRepository.deleteById(id);
+    }
 }
