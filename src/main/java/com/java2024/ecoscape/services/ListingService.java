@@ -134,12 +134,27 @@ public class ListingService {
     }
 
     //metod för att hämta en listing efter listing id
-    public Listing findListingById(Long listingId) {
-        return listingRepository.findById(listingId).orElseThrow(() -> new NoSuchElementException("Listing not found"));
+    public ListingResponse findListingById(Long listingId) {
+        Listing listingDetails = listingRepository.findById(listingId).orElseThrow(() -> new NoSuchElementException("Listing not found"));
+        ListingResponse listingResponse = new ListingResponse();
+        listingResponse.setId(listingDetails.getId());
+        listingResponse.setName(listingDetails.getName());
+        listingResponse.setDescription(listingDetails.getDescription());
+        listingResponse.setLocation(listingDetails.getLocation());
+        listingResponse.setLatitude(listingDetails.getLatitude());
+        listingResponse.setLongitude(listingDetails.getLongitude());
+        listingResponse.setCapacity(listingDetails.getCapacity());
+        listingResponse.setPricePerNight(listingDetails.getPricePerNight());
+        listingResponse.setRules(listingDetails.getRules());
+        listingResponse.setCategories(listingDetails.getCategories());
+        listingResponse.setSustainability(listingDetails.getSustainabilities());
+        listingResponse.setAmenities(listingDetails.getAmenities());
+        return listingResponse;
+
     }
 
     //metod för att uppdatera en listing
-    public Listing partialUpdateListingById(Long listingId, Listing newListingDetails){
+    /*public Listing partialUpdateListingById(Long listingId, Listing newListingDetails){
         Listing exisitngListing = findListingById(listingId);
         if (newListingDetails.getName() != null){
             exisitngListing.setName(newListingDetails.getName());
@@ -184,5 +199,7 @@ public class ListingService {
         Listing listing = findListingById(listingId);
         listingRepository.delete(listing);
     }
+
+     */
 }
 
