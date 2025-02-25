@@ -1,4 +1,4 @@
-import com.java2024.ecoscape.models.Listing;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 
@@ -17,6 +17,7 @@ public class ListingImages {
     @Column(name = "image_url", nullable = false)
     @Pattern(regexp = ".*\\.(jpg|jpeg|png)$", message = "Only jpg, jpeg and png images are allowed to be uploaded.")
     private String imageUrl;
+
 
     public Long getId() {
         return id;
@@ -43,4 +44,3 @@ public class ListingImages {
     }
 
 }
-

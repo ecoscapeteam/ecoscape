@@ -29,10 +29,10 @@ public class ListingRequest {
     @NotNull(message = "Capacity cannot be null")
     private Integer capacity;
 
-    private Integer cleaningFee;
+    private BigDecimal cleaningFee;
 
     @NotNull(message = "Price per night cannot be null")
-    private Integer pricePerNight;
+    private BigDecimal pricePerNight;
 
     @NotNull(message = "Categories cannot be null")
     private Set<Category> categories;
@@ -94,19 +94,20 @@ public class ListingRequest {
         this.capacity = capacity;
     }
 
-    public Integer getCleaningFee() {
+
+    public BigDecimal getCleaningFee() {
         return cleaningFee;
     }
 
-    public void setCleaningFee(Integer cleaningFee) {
+    public void setCleaningFee(BigDecimal cleaningFee) {
         this.cleaningFee = cleaningFee;
     }
 
-    public @NotNull(message = "Price per night cannot be null") Integer getPricePerNight() {
+    public @NotNull(message = "Price per night cannot be null") BigDecimal getPricePerNight() {
         return pricePerNight;
     }
 
-    public void setPricePerNight(@NotNull(message = "Price per night cannot be null") Integer pricePerNight) {
+    public void setPricePerNight(@NotNull(message = "Price per night cannot be null") BigDecimal pricePerNight) {
         this.pricePerNight = pricePerNight;
     }
 
