@@ -20,6 +20,7 @@ public class UserService {
     }
 
     public void registerUser(User user) {
+
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
 
@@ -38,4 +39,11 @@ public class UserService {
     public boolean existsByUsername(String username) {
         return userRepository.findByUsername(username).isPresent();
     }
+
+    public User findById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
+    }
+
+
 }

@@ -142,6 +142,8 @@ public class Listing {
     public Listing() {
     }
 
+    public Long getId() {return  id;
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -250,4 +252,6 @@ public class Listing {
     public void setSustainabilities(Set<Sustainability> sustainabilities) {
         this.sustainabilities = sustainabilities;
     }
+
+
 }
