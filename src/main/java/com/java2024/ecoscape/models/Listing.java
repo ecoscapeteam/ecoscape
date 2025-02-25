@@ -9,7 +9,7 @@ import java.util.Set;
 
 
 @Entity
-@Table(name = "listing")
+@Table(name = "listings")
 public class Listing {
 
     @Id
@@ -18,7 +18,6 @@ public class Listing {
 
 
     // user_id FOREIGN KEY här, refererar till kolumnen user_id i listing tabellen
-    @NotNull(message = "Listing owner can not be null")
     @ManyToOne(fetch = FetchType.LAZY)
     // listing many to one gentemot user, user kan ha flera listings, en listing kan tillhöra bara en user, "laddar" hela usern bara ifall vi ska behöva det
     // user_id FOREIGN KEY här, refererar till kolumnen user_id i listing tabellen
@@ -93,8 +92,6 @@ public class Listing {
     @OneToOne(fetch = FetchType.EAGER)
     //rules_id FOREIGN KEY här, refererar till kolumnen rules_id i listing tabellen
     @JoinColumn(name = "rules_id", referencedColumnName = "id", nullable = false)
-    //Rules kan inte vara null, så använder ska inte kunna skaffa listing helt utan regler
-    @NotNull(message = "Rules cannot be null")
     private Rules rules;
 
     //storleken på set ska vara minst 1, dvs att listingen ska matcha minst en kategori
@@ -221,11 +218,15 @@ public class Listing {
         this.pricePerNight = pricePerNight;
     }
 
-    public Rules getRulePolicy() {
+    public void setUser (User user) {
+        this.user = user;
+    }
+
+    public Rules getRules() {
         return rules;
     }
 
-    public void setRulePolicy() {
+    public void setRules(@NotNull(message = "Rules cannot be null") Rules rules) {
         this.rules = rules;
     }
 

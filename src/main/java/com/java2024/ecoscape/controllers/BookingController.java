@@ -22,7 +22,7 @@ public class BookingController {
     private final BookingService bookingService;
 private final UserService userService;
 private final ListingRepository listingRepository;
-    @Autowired // Spring injects BookingRepository automatically
+
     public BookingController(BookingService bookingService, UserService userService, ListingRepository listingRepository) {
         this.bookingService = bookingService;
 this.userService =userService;
@@ -36,7 +36,7 @@ this.listingRepository = listingRepository;
     /* Fetch user and listing objects based on IDs
     (Need to implement these methods in service/repository)*/
 
-    User user = userService.findById(userId);// Call your UserService or UserRepository to fetch user by userId
+    User user = userService.findUserById(userId);// Call your UserService or UserRepository to fetch user by userId
 
             Optional<Listing> listing = listingRepository.findById(listingId);// Call your ListingService or ListingRepository to fetch listing by listingId
     if (user == null || listing.isEmpty()) {

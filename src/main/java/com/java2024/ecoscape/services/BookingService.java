@@ -56,7 +56,7 @@ public Booking convertTOMODEL(BookingDTO dto, User user, Listing listing) {
     booking.setFirstName(dto.getFirstName()); // Set the first name from DTO to model
     booking.setLastName(dto.getLastName());
     booking.setEmail(dto.getEmail());
-    booking.setPhoneNumber(dto.getPhoneNumber());
+    booking.setPhoneNumber();
     booking.setStartDate(dto.getStartDate());
     booking.setEndDate(dto.getEndDate());
     booking.setStatus(dto.getStatus());

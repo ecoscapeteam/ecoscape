@@ -1,13 +1,17 @@
 package com.java2024.ecoscape.services;
 
+import com.java2024.ecoscape.dto.UserRequest;
+import com.java2024.ecoscape.dto.UserResponse;
 import com.java2024.ecoscape.models.Role;
 import com.java2024.ecoscape.models.User;
 import com.java2024.ecoscape.repository.UserRepository;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class UserService {
@@ -20,11 +24,10 @@ public class UserService {
     }
 
     public void registerUser(User user) {
-
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
 
-        if(user.getRoles() == null || user.getRoles().isEmpty()) {
+        if (user.getRoles() == null || user.getRoles().isEmpty()) {
             user.setRoles(Set.of(Role.USER));
         }
 
@@ -33,17 +36,64 @@ public class UserService {
 
     public User findUserByUsername(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+    }
+
+    public boolean existsByContactEmail(String contactEmail) {
+        return userRepository.findByContactEmail(contactEmail).isPresent();
+    }
+
+    public boolean existsByContactPhoneNumber(String contactPhoneNumber) {
+        return userRepository.findByContactPhoneNumber(contactPhoneNumber).isPresent();
     }
 
     public boolean existsByUsername(String username) {
         return userRepository.findByUsername(username).isPresent();
     }
 
-    public User findById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
+    public List<UserResponse> findAllUsers() {
+        List<User> users = userRepository.findAll();
+
+        return users.stream()
+                .map(user -> new UserResponse(
+                        user.getId(),
+                        user.getUsername(),
+                        user.getFirstName(),
+                        user.getLastName(),
+                        user.getBio(),
+                        user.getPhotoUrl(),
+                        user.getBirthDate(),
+                        user.getContactPhoneNumber(),
+                        user.getContactEmail()))
+                .collect(Collectors.toList());
     }
 
+    public User findUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+    }
 
+    public User updateUser(Long id, UserRequest userRequest) {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+
+        existingUser.setFirstName(userRequest.getFirstName());
+        existingUser.setLastName(userRequest.getLastName());
+        existingUser.setBio(userRequest.getBio());
+        existingUser.setPhotoUrl(userRequest.getPhotoUrl());
+        existingUser.setBirthDate(userRequest.getBirthDate());
+        existingUser.setContactPhoneNumber(userRequest.getContactPhoneNumber());
+        existingUser.setContactEmail(userRequest.getContactEmail());
+
+        return userRepository.save(existingUser);
+    }
+
+    public void deleteUser(Long id) {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+
+        userRepository.deleteById(id);
+    }
+
+    
 }
