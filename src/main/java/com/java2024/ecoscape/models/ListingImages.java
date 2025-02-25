@@ -1,3 +1,4 @@
+package com.java2024.ecoscape.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
