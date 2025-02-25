@@ -1,13 +1,12 @@
-package com.java2024.ecoscape.controllers;
+/*package com.java2024.ecoscape.controllers;
 
-import com.java2024.ecoscape.dto.BookingDTO;
+import com.java2024.ecoscape.dto.BookingRequest;
 import com.java2024.ecoscape.models.Listing;
 import com.java2024.ecoscape.models.User;
 import com.java2024.ecoscape.repository.ListingRepository;
 import com.java2024.ecoscape.services.BookingService;
 import com.java2024.ecoscape.services.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,11 +29,11 @@ this.listingRepository = listingRepository;
     }
 
 @PostMapping
-    public ResponseEntity<BookingDTO>createBooking(@RequestBody @Valid BookingDTO bookingDTO,
-                                                    @RequestParam Long userId,
-                                                    @RequestParam Long listingId) {
-    /* Fetch user and listing objects based on IDs
-    (Need to implement these methods in service/repository)*/
+    public ResponseEntity<BookingRequest>createBooking(@RequestBody @Valid BookingRequest bookingRequest,
+                                                       @RequestParam Long userId,
+                                                       @RequestParam Long listingId) {
+    Fetch user and listing objects based on IDs
+    (Need to implement these methods in service/repository)
 
     User user = userService.findUserById(userId);// Call your UserService or UserRepository to fetch user by userId
 
@@ -43,18 +42,18 @@ this.listingRepository = listingRepository;
         return new ResponseEntity<>(HttpStatus.NOT_FOUND); // if do not found return 404
     }
             // create the booking using the booking service
-            BookingDTO createdBooking = bookingService.createBooking(bookingDTO, user , listing.orElse(null));
+            BookingRequest createdBooking = bookingService.createBooking(bookingRequest, user , listing.orElse(null));
 
     return new ResponseEntity<>(createdBooking, HttpStatus.CREATED);
 }
 
 @GetMapping
-    public ResponseEntity<List<BookingDTO>>getAllBooking(){
-        List<BookingDTO>bookings = bookingService.getAllbookings(); // call booking service method
+    public ResponseEntity<List<BookingRequest>>getAllBooking(){
+        List<BookingRequest>bookings = bookingService.getAllbookings(); // call booking service method
         return new ResponseEntity<>(bookings, HttpStatus.OK); // return bookingDTO list with ok
 }
 
 
 
 }
-
+*/

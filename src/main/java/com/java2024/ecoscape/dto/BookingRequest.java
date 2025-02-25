@@ -6,74 +6,35 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class BookingRequest {
-    private BookingDTO bookingDto;
-    private Long userId;
-    private Long listingId;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String phoneNumber;
+
+    private String usersContactPhoneNumber;
+    private String usersContactEmail;
     private LocalDate startDate;
     private LocalDate endDate;
-    private Status status;
     private int guests;
-    private BigDecimal totalPrice;
-    private BigDecimal websitesFee;
 
-    public BookingDTO getBookingDto() {
-        return bookingDto;
+    public BookingRequest(String usersContactPhoneNumber, String usersContactEmail, LocalDate startDate, LocalDate endDate, int guests) {
+        this.usersContactPhoneNumber = usersContactPhoneNumber;
+        this.usersContactEmail = usersContactEmail;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.guests = guests;
     }
 
-    public void setBookingDto(BookingDTO bookingDto) {
-        this.bookingDto = bookingDto;
+    public String getUsersContactPhoneNumber() {
+        return usersContactPhoneNumber;
     }
 
-    public Long getUserId() {
-        return userId;
+    public void setUsersContactPhoneNumber(String usersContactPhoneNumber) {
+        this.usersContactPhoneNumber = usersContactPhoneNumber;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public String getUsersContactEmail() {
+        return usersContactEmail;
     }
 
-    public Long getListingId() {
-        return listingId;
-    }
-
-    public void setListingId(Long listingId) {
-        this.listingId = listingId;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setUsersContactEmail(String usersContactEmail) {
+        this.usersContactEmail = usersContactEmail;
     }
 
     public LocalDate getStartDate() {
@@ -92,22 +53,6 @@ public class BookingRequest {
         this.endDate = endDate;
     }
 
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public BigDecimal getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(BigDecimal totalPrice) {
-        this.totalPrice = totalPrice;
-    }
-
     public int getGuests() {
         return guests;
     }
@@ -116,11 +61,9 @@ public class BookingRequest {
         this.guests = guests;
     }
 
-    public BigDecimal getWebsitesFee() {
-        return websitesFee;
-    }
 
-    public void setWebsitesFee(BigDecimal websitesFee) {
-        this.websitesFee = websitesFee;
-    }
+
 }
+
+
+

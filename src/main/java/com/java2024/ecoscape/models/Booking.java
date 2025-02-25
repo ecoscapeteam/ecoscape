@@ -17,11 +17,11 @@ public class Booking {
     @Column(name = "booking_Id")
     private Long id;
     @NotNull
-    @ManyToOne (fetch = FetchType.LAZY) // each booking belongs to one user, but a user can have many booking
+    @ManyToOne(fetch = FetchType.LAZY) // each booking belongs to one user, but a user can have many booking
     @JoinColumn(name = "user_id")
     private User user; // foreign key to User table
     @NotNull
-    @ManyToOne (fetch = FetchType.LAZY)// each booking belongs to one listing, but a listing can have many booking
+    @ManyToOne(fetch = FetchType.LAZY)// each booking belongs to one listing, but a listing can have many booking
     @JoinColumn(name = "listing_id")
     private Listing listing;  // foreign key Listing table
 
@@ -40,18 +40,15 @@ public class Booking {
     @Column(name = ("phone_number"))
     @NotNull(message = "Phone number cannot be null.")
     @Pattern(regexp = "^\\+\\d{1,3}\\d{9}$", message = "That's not a valid phone number.")
-    private String phoneNumber;
+    private String usersContactPhoneNumber;
 
     @Column(name = ("email"))
     @Pattern(regexp = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$",
             message = "That's not a valid email.")
     @NotNull(message = "Email cannot be null.")
     @Size(max = 30)
-    private String email;
+    private String usersContactEmail;
 
-    @Column(name = ("location"))
-    //Add a google api?
-    private String location;
 
     @Column(name = ("start_date"))
     @Temporal(TemporalType.DATE)
@@ -72,6 +69,7 @@ public class Booking {
     private int guests;
 
     @Column(name = ("websites_fee"))
+    @Transient
     private BigDecimal websitesFee;
 
     @Column(name = ("total_price"))
@@ -120,12 +118,12 @@ public class Booking {
         this.lastName = lastName;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUsersContactEmail() {
+        return usersContactEmail;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUsersContactEmail(String email) {
+        this.usersContactEmail = email;
     }
 
     public LocalDate getStartDate() {
@@ -176,19 +174,21 @@ public class Booking {
         this.totalPrice = totalPrice;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public String getUsersContactPhoneNumber(String usersContactPhoneNumber) {
+        return this.usersContactPhoneNumber;
     }
 
-    public void setPhoneNumber() {
-        this.phoneNumber = phoneNumber;
+    public void setUsersContactPhoneNumber(String usersContactPhoneNumber) {
+        this.usersContactPhoneNumber = usersContactPhoneNumber;
     }
 
-    public String getLocation() {
-        return location;
+    public BigDecimal getWebsite_Fee() {
+        return website_Fee;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setWebsite_Fee(BigDecimal websiteFee) {
+        this.website_Fee = websiteFee;
     }
 }
+
+

@@ -6,26 +6,29 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class BookingResponse {
-private BookingDTO bookingDTO; // returning BookingDTO
 
+    private Long bookingId;
     private Long userId;
     private Long listingId;
     private String firstName;
     private String lastName;
-    private String email;
-    private String phoneNumber;
+    private String usersContactPhoneNumber;
+    private String usersContactEmail;
     private LocalDate startDate;
     private LocalDate endDate;
     private Status status;
     private int guests;
+    private BigDecimal website_Fee;
+    private BigDecimal cleaningFee;
     private BigDecimal totalPrice;
 
-    public BookingDTO getBookingDTO() {
-        return bookingDTO;
+
+    public Long getBookingId() {
+        return bookingId;
     }
 
-    public void setBookingDTO(BookingDTO bookingDTO) {
-        this.bookingDTO = bookingDTO;
+    public void setBookingId(Long bookingId) {
+        this.bookingId = bookingId;
     }
 
     public Long getUserId() {
@@ -60,20 +63,20 @@ private BookingDTO bookingDTO; // returning BookingDTO
         this.lastName = lastName;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUsersContactPhoneNumber() {
+        return usersContactPhoneNumber;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUsersContactPhoneNumber(String usersContactPhoneNumber) {
+        this.usersContactPhoneNumber = usersContactPhoneNumber;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public String getUsersContactEmail() {
+        return usersContactEmail;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setUsersContactEmail(String usersContactEmail) {
+        this.usersContactEmail = usersContactEmail;
     }
 
     public LocalDate getStartDate() {
@@ -106,6 +109,22 @@ private BookingDTO bookingDTO; // returning BookingDTO
 
     public void setGuests(int guests) {
         this.guests = guests;
+    }
+
+    public BigDecimal getWebsite_Fee() {
+        return website_Fee;
+    }
+
+    public void setWebsite_Fee(BigDecimal website_Fee) {
+        this.website_Fee = website_Fee;
+    }
+
+    public BigDecimal getCleaningFee() {
+        return cleaningFee;
+    }
+
+    public void setCleaningFee(BigDecimal cleaningFee) {
+        this.cleaningFee = cleaningFee;
     }
 
     public BigDecimal getTotalPrice() {
