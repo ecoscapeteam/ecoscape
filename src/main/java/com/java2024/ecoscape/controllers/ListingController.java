@@ -1,6 +1,7 @@
 package com.java2024.ecoscape.controllers;
 
-import com.java2024.ecoscape.dto.CreateListingRequest;
+import com.java2024.ecoscape.dto.ListingRequest;
+import com.java2024.ecoscape.dto.ListingResponse;
 import com.java2024.ecoscape.models.Listing;
 import com.java2024.ecoscape.services.ListingService;
 import jakarta.validation.Valid;
@@ -19,16 +20,28 @@ public class ListingController {
     }
 
     @PostMapping("/{userId}")
-    public ResponseEntity<Listing> createPlant (@Valid @RequestBody CreateListingRequest createListingRequest, @PathVariable Long userId) {
-        Listing savedListing = listingService.createListing(userId, createListingRequest.getListing(),
-                createListingRequest.getRules());
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedListing);
+    public ResponseEntity<ListingResponse> createListing(@Valid @RequestBody ListingRequest listingRequest, @PathVariable Long userId) {
+        ListingResponse listingResponse = listingService.createListing(userId, listingRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(listingResponse);
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<Listing> getListingById(@PathVariable Long id) {
-        Listing listing = listingService.findListingById(id);
-        return ResponseEntity.ok(listing);
+    public ResponseEntity<ListingResponse> getListingById(@PathVariable Long id) {
+        ListingResponse listingResponse = listingService.getListingById(id);
+        return ResponseEntity.ok(listingResponse);
+    }
+
+    @PatchMapping("/{listingId}")
+    public ResponseEntity<ListingResponse> partialUpdateListing(@PathVariable Long listingId, @RequestBody ListingRequest listingRequest) {
+        ListingResponse listingResponse = listingService.partialUpdateListingById(listingId, listingRequest);
+        return ResponseEntity.ok(listingResponse);
+    }
+
+    @DeleteMapping("/{listingId}")
+    public ResponseEntity<Listing> deleteListingById(@PathVariable Long listingId) {
+        listingService.deleteListingById(listingId);
+        return ResponseEntity.noContent().build();
+
     }
 }
