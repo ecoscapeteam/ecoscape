@@ -1,5 +1,4 @@
-package com.java2024.ecoscape.models;
-
+/*import com.java2024.ecoscape.models.Listing;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
@@ -21,4 +20,4 @@ public class ListingImages {
     @Pattern(regexp = "\\.(jpg|jpeg|png)$", message = "Only jpg, jpeg and png images are allowed to be uploaded.")
     @NotEmpty(message = "Image url cannot be empty.")
     private String imageUrl;
-}
+} */
