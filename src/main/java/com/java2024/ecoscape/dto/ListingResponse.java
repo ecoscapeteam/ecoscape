@@ -1,56 +1,51 @@
 package com.java2024.ecoscape.dto;
 
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.java2024.ecoscape.models.Amenity;
 import com.java2024.ecoscape.models.Category;
-import com.java2024.ecoscape.models.Rules;
 import com.java2024.ecoscape.models.Sustainability;
-import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.util.Set;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ListingResponse {
 
     private Long id;
 
-    @NotNull(message = "Listing name details can not be null")
     private String name;
 
-    @NotNull(message = "Listing description can not be null")
     private String description;
 
-    @NotNull(message = "Listing location can not be null")
     private String location;
 
-    @NotNull(message = "Listing latitude can not be null")
     private BigDecimal latitude;
 
-    @NotNull(message = "Listing longitude can not be null")
     private BigDecimal longitude;
 
-    @NotNull(message = "Listing capacity can not be null")
     private Integer capacity;
 
-    @NotNull(message = "Price per night can not be null")
     private Integer pricePerNight;
 
-    @NotNull(message = "Rule details can not be null")
-    private Rules rules;
+    private Integer cleaningFee;
 
-    @NotNull(message = "Amenity details can not be null")
+    private ListingRulesDTO rules;
+
     private Set<Amenity> amenities;
 
-    @NotNull(message = "Sustainability details can not be null")
     private Set<Sustainability> sustainability;
 
-    @NotNull(message = "Category details can not be null")
     private Set<Category> categories;
 
-    // Default constructor
-    public ListingResponse() {
+
+    public Long getId() {
+        return id;
     }
 
-    // Getters and Setters
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -108,11 +103,11 @@ public class ListingResponse {
         this.pricePerNight = pricePerNight;
     }
 
-    public Rules getRules() {
+    public ListingRulesDTO getRules() {
         return rules;
     }
 
-    public void setRules(Rules rules) {
+    public void setRules(ListingRulesDTO rules) {
         this.rules = rules;
     }
 
@@ -140,12 +135,11 @@ public class ListingResponse {
         this.categories = categories;
     }
 
-    public Long getId() {
-        return id;
+    public Integer getCleaningFee() {
+        return cleaningFee;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setCleaningFee(Integer cleaningFee) {
+        this.cleaningFee = cleaningFee;
     }
 }
-
