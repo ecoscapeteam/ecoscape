@@ -1,5 +1,4 @@
-package com.java2024.ecoscape.models;
-
+import com.java2024.ecoscape.models.Listing;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 
@@ -42,5 +41,6 @@ public class ListingImages {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
 }
 
