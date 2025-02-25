@@ -174,4 +174,12 @@ public class Rules {
     public void setIdRequiredUponCheckin(Boolean idRequiredUponCheckin) {
         isIdRequiredUponCheckin = idRequiredUponCheckin;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

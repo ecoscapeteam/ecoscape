@@ -18,10 +18,12 @@ public class Listing {
 
 
     // user_id FOREIGN KEY här, refererar till kolumnen user_id i listing tabellen
-    @ManyToOne(fetch = FetchType.LAZY)
-    // listing many to one gentemot user, user kan ha flera listings, en listing kan tillhöra bara en user, "laddar" hela usern bara ifall vi ska behöva det
+    @ManyToOne(fetch = FetchType.EAGER)
+    // listing many to one gentemot user, user kan ha flera listings, en listing kan tillhöra bara en user, "laddar" hela usern direkt
     // user_id FOREIGN KEY här, refererar till kolumnen user_id i listing tabellen
     @JoinColumn(name = "user_id")
+    //kan inte vara null, eftersom varje listing måste vara bunden till user
+    @NotNull(message = "Listing owner can not be null")
     private User user;
 
     //kan inte vara null, eftersom varje listing måste ha namn
@@ -34,7 +36,7 @@ public class Listing {
     @Pattern(regexp = "^[A-Za-z0-9\\s\\-\\&]+$", message = "Invalid name! Only letters, numbers, spaces, hyphens, and ampersands are allowed.")
     private String name;
 
-    //Beskrivning kan ej vata null
+    //Beskrivning kan ej vara null
     @NotNull(message = "Listing description can not be null")
     //Kan ej vara tömm sträng
     @NotEmpty(message = "Listing description can not be empty")
@@ -92,6 +94,7 @@ public class Listing {
     @OneToOne(fetch = FetchType.EAGER)
     //rules_id FOREIGN KEY här, refererar till kolumnen rules_id i listing tabellen
     @JoinColumn(name = "rules_id", referencedColumnName = "id", nullable = false)
+    @NotNull(message = "Rules can not be null")
     private Rules rules;
 
     //storleken på set ska vara minst 1, dvs att listingen ska matcha minst en kategori
@@ -139,6 +142,9 @@ public class Listing {
     public Listing() {
     }
 
+    public Long getId() {
+        return id;
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -244,11 +250,13 @@ public class Listing {
         this.amenities = amenities;
     }
 
-    public Set<Sustainability> getSustainabilities() {
+    public @Size(min = 1) Set<Sustainability> getSustainabilities() {
         return sustainabilities;
     }
 
-    public void setSustainabilities(Set<Sustainability> sustainabilities) {
+    public void setSustainabilities(@Size(min = 1) Set<Sustainability> sustainabilities) {
         this.sustainabilities = sustainabilities;
     }
+
+
 }
