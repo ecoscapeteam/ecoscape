@@ -82,12 +82,12 @@ public class Listing {
     //städavgiften är optional, dvs kan vara null, men skall vara positivt tal
     @Positive(message = "Cleaning fee must be a positive value")
     @Column(nullable = true)
-    private Integer cleaningFee;
+    private BigDecimal cleaningFee;
 
     //Pris ska inte vara null, måste vara positiv tal
     @Positive(message = "Price per night must be a positive value")
     @NotNull(message = "Price per night can not be null")
-    private Integer pricePerNight;
+    private BigDecimal pricePerNight;
 
     // rules är one to one gentemot listing, listing har unik rules "samling", den unika "samlingen" av rules gäller bara för den listingen,
     // "laddar" hela allt data från rules table
@@ -206,19 +206,19 @@ public class Listing {
         this.capacity = capacity;
     }
 
-    public Integer getCleaningFee() {
+    public @Positive(message = "Cleaning fee must be a positive value") BigDecimal getCleaningFee() {
         return cleaningFee;
     }
 
-    public void setCleaningFee(Integer cleaningFee) {
+    public void setCleaningFee(@Positive(message = "Cleaning fee must be a positive value") BigDecimal cleaningFee) {
         this.cleaningFee = cleaningFee;
     }
 
-    public Integer getPricePerNight() {
+    public BigDecimal getPricePerNight() {
         return pricePerNight;
     }
 
-    public void setPricePerNight(Integer pricePerNight) {
+    public void setPricePerNight(BigDecimal pricePerNight) {
         this.pricePerNight = pricePerNight;
     }
 

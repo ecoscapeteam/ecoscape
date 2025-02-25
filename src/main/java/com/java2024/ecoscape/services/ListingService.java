@@ -80,12 +80,12 @@ public class ListingService {
         }
 
         // Validera städavgift om det är satt
-        if (listingRequest.getCleaningFee() != null && listingRequest.getCleaningFee() <= 0) {
+        if  (listingRequest.getCleaningFee() != null && listingRequest.getCleaningFee().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Cleaning fee must be a positive value");
         }
 
         // Validera pris per natt
-        if (listingRequest.getPricePerNight() == null || listingRequest.getPricePerNight() <= 0) {
+        if (listingRequest.getPricePerNight() == null || listingRequest.getPricePerNight().compareTo(BigDecimal.ZERO) <= 0)  {
             throw new IllegalArgumentException("Price per night must be a positive value");
         }
 
@@ -190,6 +190,7 @@ public class ListingService {
         if (listingRequest.getPricePerNight() != null){
             exisitngListing.setPricePerNight(listingRequest.getPricePerNight());
         }
+
         if (listingRequest.getCategories() != null){
             exisitngListing.setCategories(listingRequest.getCategories());
         }

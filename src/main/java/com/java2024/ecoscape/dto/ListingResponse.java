@@ -26,9 +26,9 @@ public class ListingResponse {
 
     private Integer capacity;
 
-    private Integer pricePerNight;
+    private BigDecimal pricePerNight;
 
-    private Integer cleaningFee;
+    private BigDecimal cleaningFee;
 
     private ListingRulesDTO rules;
 
@@ -95,11 +95,11 @@ public class ListingResponse {
         this.capacity = capacity;
     }
 
-    public Integer getPricePerNight() {
+    public BigDecimal getPricePerNight() {
         return pricePerNight;
     }
 
-    public void setPricePerNight(Integer pricePerNight) {
+    public void setPricePerNight(BigDecimal pricePerNight) {
         this.pricePerNight = pricePerNight;
     }
 
@@ -135,11 +135,11 @@ public class ListingResponse {
         this.categories = categories;
     }
 
-    public Integer getCleaningFee() {
+    public BigDecimal getCleaningFee() {
         return cleaningFee;
     }
 
-    public void setCleaningFee(Integer cleaningFee) {
+    public void setCleaningFee(BigDecimal cleaningFee) {
         this.cleaningFee = cleaningFee;
     }
 }
