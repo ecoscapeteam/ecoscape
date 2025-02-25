@@ -1,0 +1,81 @@
+2025-02-25T00:17:35.768+01:00 ERROR 2244 --- [ecoscape] [restartedMain] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Failed to bind properties under 'logging.level.com.java2024.ecoscape' to org.springframework.boot.logging.LogLevel:
+
+    Property: logging.level.com.java2024.ecoscape
+    Value: "DEBUG # Set specific package level"
+    Origin: class path resource [application.properties] - 14:37
+    Reason: failed to convert java.lang.String to org.springframework.boot.logging.LogLevel (caused by java.lang.IllegalArgumentException: No enum constant org.springframework.boot.logging.LogLevel.DEBUG # Set specific package level)
+
+Action:
+
+Update your application's configuration. The following values are valid:
+
+    DEBUG
+    ERROR
+    FATAL
+    INFO
+    OFF
+    TRACE
+    WARN
+
+2025-02-25T00:17:38.417+01:00 ERROR 2244 --- [ecoscape] [restartedMain] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Failed to bind properties under 'logging.level.com.java2024.ecoscape' to org.springframework.boot.logging.LogLevel:
+
+    Property: logging.level.com.java2024.ecoscape
+    Value: "DEBUG # Set specific package level"
+    Origin: class path resource [application.properties] - 14:37
+    Reason: failed to convert java.lang.String to org.springframework.boot.logging.LogLevel (caused by java.lang.IllegalArgumentException: No enum constant org.springframework.boot.logging.LogLevel.DEBUG # Set specific package level)
+
+Action:
+
+Update your application's configuration. The following values are valid:
+
+    DEBUG
+    ERROR
+    FATAL
+    INFO
+    OFF
+    TRACE
+    WARN
+
+2025-02-25T00:17:40.861+01:00 ERROR 19520 --- [ecoscape] [restartedMain] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Failed to bind properties under 'logging.level.com.java2024.ecoscape' to org.springframework.boot.logging.LogLevel:
+
+    Property: logging.level.com.java2024.ecoscape
+    Value: "DEBUG # Set specific package level"
+    Origin: class path resource [application.properties] - 14:37
+    Reason: failed to convert java.lang.String to org.springframework.boot.logging.LogLevel (caused by java.lang.IllegalArgumentException: No enum constant org.springframework.boot.logging.LogLevel.DEBUG # Set specific package level)
+
+Action:
+
+Update your application's configuration. The following values are valid:
+
+    DEBUG
+    ERROR
+    FATAL
+    INFO
+    OFF
+    TRACE
+    WARN
+
