@@ -24,8 +24,8 @@ public class ListingImagesService {
         return listingImagesRepository.findByImageUrl(imageUrl).isPresent();
     }
 
-    public ListingImages createListingImages(Long listingId, ListingImagesRequest listingImagesRequest) {
-        Listing listing = listingRepository.findById(listingId)
+    public ListingImages createListingImages(ListingImagesRequest listingImagesRequest) {
+        Listing listing = listingRepository.findById(listingImagesRequest.getListing().getId())
                 .orElseThrow(() -> new NoSuchElementException("Listing was not found."));
 
         ListingImages listingImages = new ListingImages();

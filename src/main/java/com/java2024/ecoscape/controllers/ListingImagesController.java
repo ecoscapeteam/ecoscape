@@ -17,15 +17,15 @@ public class ListingImagesController {
         this.listingImagesService = listingImagesService;
     }
 
-    @PostMapping("/{listingId}")
-    public ResponseEntity<?> createListingImage(@PathVariable Long listingId, @RequestBody ListingImagesRequest request) {
+    @PostMapping
+    public ResponseEntity<?> createListingImage(@RequestBody ListingImagesRequest request) {
         if (listingImagesService.existsByImageUrl(request.getImageUrl())) {
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
                     .body("That image is already uploaded.");
         }
 
-        ListingImages listingImages = listingImagesService.createListingImages(listingId, request);
+        ListingImages listingImages = listingImagesService.createListingImages(request);
 
         ListingImagesResponse listingImagesResponse = new ListingImagesResponse(
                 listingImages.getImageUrl(),
