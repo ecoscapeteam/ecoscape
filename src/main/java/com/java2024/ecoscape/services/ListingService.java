@@ -275,6 +275,7 @@ public class ListingService {
     //metod for att ta bort en listing
     public void deleteListingById(Long id){
         Listing listing = listingRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Lisitng not found"));
+        listingRepository.delete(listing);
     }
 
 
