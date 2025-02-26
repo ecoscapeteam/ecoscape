@@ -19,6 +19,7 @@ public class ListingImages {
     @Pattern(regexp = ".*\\.(jpg|jpeg|png)$", message = "Only jpg, jpeg and png images are allowed to be uploaded.")
     private String imageUrl;
 
+
     public Long getId() {
         return id;
     }
@@ -42,5 +43,5 @@ public class ListingImages {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
-}
 
+}
