@@ -21,11 +21,13 @@ public class ListingService {
     private final ListingRepository listingRepository;
     private final RulesRepository rulesRepository;
     private final UserRepository userRepository;
+    private final RulesService rulesService;
 
-    public ListingService(ListingRepository listingRepository, UserRepository userRepository, RulesRepository rulesRepository) {
+    public ListingService(ListingRepository listingRepository, UserRepository userRepository, RulesRepository rulesRepository, RulesService rulesService) {
         this.listingRepository = listingRepository;
         this.rulesRepository = rulesRepository;
         this.userRepository = userRepository;
+        this.rulesService = rulesService;
     }
 
     //metod för att spara Listing till Listing repositoriet
@@ -104,26 +106,23 @@ public class ListingService {
             throw new IllegalArgumentException("Listing must have at least one sustainability");
         }
 
-        /* Validate Rules */
-        // Validate that rulesText is not null or empty, and follows the pattern
-        if (listingRequest.getRules().getRulesText() != null && listingRequest.getRules().getRulesText().length() > 250) {
-            throw new IllegalArgumentException("Rules text cannot exceed 250 characters");
-        }
-        if (listingRequest.getRules().getRulesText() != null && !listingRequest.getRules().getRulesText().matches("^[A-Za-z0-9\\s\\.,!?\'\"\\(\\)\\-\\&\\#\\*\\+\\=]*$")) {
-            throw new IllegalArgumentException("Invalid rule description! Only letters, numbers, spaces, commas, periods, exclamation marks, question marks, and other specified characters are allowed.");
+        if (listingRequest.getRules().getRulesText() != null) {
+            if (listingRequest.getRules().getRulesText().length() > 250) {
+                throw new IllegalArgumentException("Rules text cannot exceed 250 characters.");
+            }
+            if (!listingRequest.getRules().getRulesText().matches("^[A-Za-z0-9\\s\\.,!?\'\"\\(\\)\\-\\&\\#\\*\\+\\=]*$")) {
+                throw new IllegalArgumentException("Invalid rule description! Only letters, numbers, spaces, commas, periods, exclamation marks, question marks, and other specified characters are allowed.");
+            }
         }
 
-        // Validate check-in time format (HH:00)
         if (listingRequest.getRules().getCheckInTime() == null || !listingRequest.getRules().getCheckInTime().matches("^(0[0-9]|1[0-9]|2[0-3]):00$")) {
             throw new IllegalArgumentException("Invalid check-in time format! The time must be in the format HH:00, where HH is between 00 and 23.");
         }
 
-        // Validate check-out time format (HH:00)
         if (listingRequest.getRules().getCheckOutTime() == null || !listingRequest.getRules().getCheckOutTime().matches("^(0[0-9]|1[0-9]|2[0-3]):00$")) {
             throw new IllegalArgumentException("Invalid check-out time format! The time must be in the format HH:00, where HH is between 00 and 23.");
         }
 
-        // Validate quiet hours if provided
         if (listingRequest.getRules().getQuiteHoursStart() != null && !listingRequest.getRules().getQuiteHoursStart().matches("^(0[0-9]|1[0-9]|2[0-3]):00$")) {
             throw new IllegalArgumentException("Invalid quiet hours start time format! The time must be in the format HH:00, where HH is between 00 and 23.");
         }
@@ -131,28 +130,52 @@ public class ListingService {
         if (listingRequest.getRules().getQuiteQuiteHoursStop() != null && !listingRequest.getRules().getQuiteQuiteHoursStop().matches("^(0[0-9]|1[0-9]|2[0-3]):00$")) {
             throw new IllegalArgumentException("Invalid quiet hours stop time format! The time must be in the format HH:00, where HH is between 00 and 23.");
         }
+
+        if (listingRequest.getRules().getSmokingAllowed() != null && !(listingRequest.getRules().getSmokingAllowed() instanceof Boolean)) {
+            throw new IllegalArgumentException("Smoking allowed must be a boolean value (true/false).");
+        }
+
+        if (listingRequest.getRules().getPartyingAllowed() != null && !(listingRequest.getRules().getPartyingAllowed() instanceof Boolean)) {
+            throw new IllegalArgumentException("Partying allowed must be a boolean value (true/false).");
+        }
+
+        if (listingRequest.getRules().getLoudMusicAllowed() != null && !(listingRequest.getRules().getLoudMusicAllowed() instanceof Boolean)) {
+            throw new IllegalArgumentException("Loud music allowed must be a boolean value (true/false).");
+        }
+
+        if (listingRequest.getRules().getArePetsAllowed() != null && !(listingRequest.getRules().getArePetsAllowed() instanceof Boolean)) {
+            throw new IllegalArgumentException("Pets allowed must be a boolean value (true/false).");
+        }
+
+        if (listingRequest.getRules().getSelfCheckingPossible() != null && !(listingRequest.getRules().getSelfCheckingPossible() instanceof Boolean)) {
+            throw new IllegalArgumentException("Self-checking possible must be a boolean value (true/false).");
+        }
+
+        if (listingRequest.getRules().getIdRequiredUponCheckIn() != null && !(listingRequest.getRules().getIdRequiredUponCheckIn() instanceof Boolean)) {
+            throw new IllegalArgumentException("ID required upon check-in must be a boolean value (true/false).");
+        }
     }
 
     //metod för att skaffa listing
     @Transactional
     public ListingResponse createListing(Long userId, ListingRequest listingRequest) {
-
+//hittar userb
         User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("User not found"));
-
+//validerar requesten för att skaffa en listing
         validateListing(listingRequest);
-
-        Rules rules = convertListingRulesDTOToRulesEntity(listingRequest.getRules());
+//tar rules från listing från listing request och konvertar det till rules entity och sparar till rulesrepo
+        Rules rules = rulesService.convertListingRulesDTOToRulesEntity(listingRequest.getRules());
         rulesRepository.save(rules);
-
+//konvertar hela listing requesten och konverterar det till listing entity
         Listing listing = convertListingRequestToListingEntity(listingRequest);
-
+        //ger listingen en user attribut
         listing.setUser(user);
+        //get listingen rules atribut
         listing.setRules(rules);
-
+//sprar listingen till repo
         Listing savedListing = saveListing(listing);
-
+//konverterar listing entitetet till listing response dto
         return convertListingEntityToListingResponse(savedListing);
-
     }
 
 
@@ -165,47 +188,59 @@ public class ListingService {
 
   //metod för att uppdatera en listing
     public ListingResponse partialUpdateListingById(Long listingId, ListingRequest listingRequest){
-        Listing exisitngListing = listingRepository.findById(listingId).orElseThrow(() -> new NoSuchElementException("Listing not found"));
+        //hittar listingen
+        Listing existingListing = listingRepository.findById(listingId).orElseThrow(() -> new NoSuchElementException("Listing not found"));
+        //om det finns ett namn i requesten  get listing entitetet nya namnet
         if (listingRequest.getName() != null){
-            exisitngListing.setName(listingRequest.getName());
+            existingListing.setName(listingRequest.getName());
         }
+        //om det finns ett beskrivning i requesten  get listing entitetet nya beskrivning
         if (listingRequest.getDescription() != null){
-            exisitngListing.setDescription(listingRequest.getDescription());
+            existingListing.setDescription(listingRequest.getDescription());
         }
+        //om det finns ett location i requesten  get listing entitetet nya location
         if (listingRequest.getLocation() != null){
-            exisitngListing.setLocation(listingRequest.getLocation());
+            existingListing.setLocation(listingRequest.getLocation());
         }
+        //om det finns ett latitude i requesten  get listing entitetet nya latituden
         if (listingRequest.getLatitude() != null){
-            exisitngListing.setLatitude(listingRequest.getLatitude());
+            existingListing.setLatitude(listingRequest.getLatitude());
         }
+        //om det finns ett longtitude i requesten  get listing entitetet nya latituden
         if (listingRequest.getLongitude() != null){
-            exisitngListing.setLongitude(listingRequest.getLongitude());
+            existingListing.setLongitude(listingRequest.getLongitude());
         }
+        //om det finns ett kapacitet i requesten  get listing entitetet nya kapaciteten
         if (listingRequest.getCapacity() != null){
-            exisitngListing.setCapacity(listingRequest.getCapacity());
+            existingListing.setCapacity(listingRequest.getCapacity());
         }
+        //om det finns ett cleaningfee i requesten  get listing entitetet nya cleaningfee
         if (listingRequest.getCleaningFee() != null){
-            exisitngListing.setCleaningFee(listingRequest.getCleaningFee());
+            existingListing.setCleaningFee(listingRequest.getCleaningFee());
         }
+        //om det finns ett pris pet natt i requesten  get listing entitetet nya pris per natt
         if (listingRequest.getPricePerNight() != null){
-            exisitngListing.setPricePerNight(listingRequest.getPricePerNight());
+            existingListing.setPricePerNight(listingRequest.getPricePerNight());
+        }
+        //om det finns kategorier i requesten  get listing entitetet nya kategorier
+        if (listingRequest.getCategories() != null){
+            existingListing.setCategories(listingRequest.getCategories());
+        }
+        //om det finns ammenities  i requesten  get listing entitetet nya amenities
+        if (listingRequest.getAmenities() != null){
+            existingListing.setAmenities(listingRequest.getAmenities());
+        }
+        //om det finns sustainabilities i requesten  get listing entitetet nya sustainabilities
+        if (listingRequest.getSustainabilities() != null){
+            existingListing.setSustainabilities(listingRequest.getSustainabilities());
         }
 
-        if (listingRequest.getCategories() != null){
-            exisitngListing.setCategories(listingRequest.getCategories());
-        }
-        if (listingRequest.getAmenities() != null){
-            exisitngListing.setAmenities(listingRequest.getAmenities());
-        }
-        if (listingRequest.getSustainabilities() != null){
-            exisitngListing.setSustainabilities(listingRequest.getSustainabilities());
-        }
-        Listing updatedListing = listingRepository.save(exisitngListing);
+        Listing updatedListing = listingRepository.save(existingListing);
         return convertListingEntityToListingResponse(updatedListing);
     }
 
-    //ta bort en listing
 
+    //ta bort en listing
 
     public ListingResponse convertListingEntityToListingResponse(Listing listing) {
         ListingResponse listingResponse = new ListingResponse();
@@ -221,7 +256,7 @@ public class ListingService {
         listingResponse.setName(listing.getName());
         listingResponse.setCapacity(listing.getCapacity());
         listingResponse.setLocation(listing.getLocation());
-        ListingRulesDTO listingRulesDTO = convertRulesEntityToListingRulesDTO(listing.getRules());
+        ListingRulesDTO listingRulesDTO = rulesService.convertRulesEntityToListingRulesDTO(listing.getRules());
         listingResponse.setRules(listingRulesDTO);
         return listingResponse;
     }
@@ -242,35 +277,6 @@ public class ListingService {
         return listing;
     }
 
-    private Rules convertListingRulesDTOToRulesEntity(ListingRulesDTO listingRulesDTO) {
-        Rules rules = new Rules();
-        rules.setArePetsAllowed(listingRulesDTO.getArePetsAllowed());
-        rules.setCheckInTime(listingRulesDTO.getCheckInTime());
-        rules.setCheckOutTime(listingRulesDTO.getCheckOutTime());
-        rules.setIdRequiredUponCheckin(listingRulesDTO.getIdRequiredUponCheckin());
-        rules.setLoudMusicAllowed(listingRulesDTO.getLoudMusicAllowed());
-        rules.setPartyingAllowed(listingRulesDTO.getPartyingAllowed());
-        rules.setQuiteHoursStart(listingRulesDTO.getQuiteHoursStart());
-        rules.setRulesText(listingRulesDTO.getRulesText());
-        rules.setSelfCheckingPossible(listingRulesDTO.getSelfCheckingPossible());
-        rules.setSmokingAllowed(listingRulesDTO.getSmokingAllowed());
-        return rules;
-    }
-
-    private ListingRulesDTO convertRulesEntityToListingRulesDTO(Rules rules) {
-        ListingRulesDTO listingRulesDTO = new ListingRulesDTO();
-        listingRulesDTO.setArePetsAllowed(rules.getArePetsAllowed());
-        listingRulesDTO.setCheckInTime(rules.getCheckInTime());
-        listingRulesDTO.setCheckOutTime(rules.getCheckOutTime());
-        listingRulesDTO.setIdRequiredUponCheckin(rules.getIdRequiredUponCheckin());
-        listingRulesDTO.setLoudMusicAllowed(rules.getLoudMusicAllowed());
-        listingRulesDTO.setPartyingAllowed(rules.getPartyingAllowed());
-        listingRulesDTO.setQuiteHoursStart(rules.getQuiteHoursStart());
-        listingRulesDTO.setRulesText(rules.getRulesText());
-        listingRulesDTO.setSelfCheckingPossible(rules.getSelfCheckingPossible());
-        listingRulesDTO.setSmokingAllowed(rules.getSmokingAllowed());
-        return listingRulesDTO;
-    }
 
     //metod for att ta bort en listing
     public void deleteListingById(Long id){
