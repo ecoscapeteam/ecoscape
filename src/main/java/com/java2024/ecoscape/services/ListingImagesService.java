@@ -69,4 +69,11 @@ public class ListingImagesService {
 
         listingImagesRepository.deleteById(id);
     }
+
+    public void deleteAllListingImages(Long listingId) {
+        List<ListingImages> existingImages = listingImagesRepository.findByListingId(listingId);
+
+        listingImagesRepository.deleteAll(existingImages);
+
+    }
 }

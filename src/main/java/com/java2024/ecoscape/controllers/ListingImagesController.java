@@ -4,6 +4,7 @@ import com.java2024.ecoscape.dto.ListingImagesGetResponse;
 import com.java2024.ecoscape.dto.ListingImagesRequest;
 import com.java2024.ecoscape.dto.ListingImagesUploadResponse;
 import com.java2024.ecoscape.models.ListingImages;
+import com.java2024.ecoscape.repository.ListingImagesRepository;
 import com.java2024.ecoscape.services.ListingImagesService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -16,9 +17,11 @@ import java.util.List;
 @RequestMapping("/api/images")
 public class ListingImagesController {
     private final ListingImagesService listingImagesService;
+    private final ListingImagesRepository listingImagesRepository;
 
-    public ListingImagesController(ListingImagesService listingImagesService) {
+    public ListingImagesController(ListingImagesService listingImagesService, ListingImagesRepository listingImagesRepository) {
         this.listingImagesService = listingImagesService;
+        this.listingImagesRepository = listingImagesRepository;
     }
 
     @PostMapping
@@ -27,6 +30,12 @@ public class ListingImagesController {
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
                     .body("That image is already uploaded.");
+        }
+
+        long listingImagesCounter = listingImagesRepository.countByListing(request.getListing());
+
+        if (listingImagesCounter >= 5) {
+            throw new IllegalArgumentException("Listings can only have 5 images");
         }
 
         ListingImages listingImages = listingImagesService.createListingImages(request);
@@ -81,5 +90,12 @@ public class ListingImagesController {
         listingImagesService.deleteListingImage(id);
 
         return ResponseEntity.ok("Listing image successfully deleted!");
+    }
+
+    @DeleteMapping("/listing/{listingId}")
+    public ResponseEntity<String> deleteAllListingImagesById(@PathVariable Long listingId) {
+        listingImagesService.deleteAllListingImages(listingId);
+
+        return ResponseEntity.ok("All listing images belonging to " + listingId + " have been successfully deleted!");
     }
 }
