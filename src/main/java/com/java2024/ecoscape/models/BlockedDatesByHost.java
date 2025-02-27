@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
-@Table(name = "dated_blocked_by_host")
+@Table(name = "dates_blocked_by_host")
 public class BlockedDatesByHost {
 
     @Id
