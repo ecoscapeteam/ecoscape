@@ -28,10 +28,22 @@ public class ListingImagesController {
         ListingImages listingImages = listingImagesService.createListingImages(request);
 
         ListingImagesResponse listingImagesResponse = new ListingImagesResponse(
-                listingImages.getImageUrl(),
-                "Image got uploaded successfully!"
+                "Image got uploaded successfully!",
+                listingImages.getImageUrl()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(listingImagesResponse);
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<ListingImagesResponse> getImageById(@PathVariable Long id) {
+        ListingImages listingImages = listingImagesService.findImageById(id);
+
+        ListingImagesResponse listingImagesResponse = new ListingImagesResponse(
+                listingImages.getImageUrl(),
+                ""
+        );
+
+        return ResponseEntity.ok(listingImagesResponse);
     }
 }

@@ -34,4 +34,9 @@ public class ListingImagesService {
 
         return listingImagesRepository.save(listingImages);
     }
+
+    public ListingImages findImageById(Long id) {
+        return listingImagesRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Listing image not found"));
+    }
 }
