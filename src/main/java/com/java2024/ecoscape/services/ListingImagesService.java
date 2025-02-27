@@ -53,4 +53,11 @@ public class ListingImagesService {
                 ))
                 .collect(Collectors.toList());
     }
+
+    public void deleteListingImage(Long id) {
+        ListingImages existingImage = listingImagesRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Listing image not found"));
+
+        listingImagesRepository.deleteById(id);
+    }
 }

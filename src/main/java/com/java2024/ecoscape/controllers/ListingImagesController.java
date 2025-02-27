@@ -56,4 +56,11 @@ public class ListingImagesController {
 
         return ResponseEntity.ok(listingImagesGetResponse);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteListingImage(@PathVariable Long id) {
+        listingImagesService.deleteListingImage(id);
+
+        return ResponseEntity.ok("Listing image successfully deleted!");
+    }
 }
