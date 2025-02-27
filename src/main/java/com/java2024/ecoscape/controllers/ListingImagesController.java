@@ -1,12 +1,15 @@
 package com.java2024.ecoscape.controllers;
 
+import com.java2024.ecoscape.dto.ListingImagesGetResponse;
 import com.java2024.ecoscape.dto.ListingImagesRequest;
-import com.java2024.ecoscape.dto.ListingImagesResponse;
+import com.java2024.ecoscape.dto.ListingImagesUploadResponse;
 import com.java2024.ecoscape.models.ListingImages;
 import com.java2024.ecoscape.services.ListingImagesService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/images")
@@ -27,23 +30,30 @@ public class ListingImagesController {
 
         ListingImages listingImages = listingImagesService.createListingImages(request);
 
-        ListingImagesResponse listingImagesResponse = new ListingImagesResponse(
+        ListingImagesUploadResponse listingImagesUploadResponse = new ListingImagesUploadResponse(
                 "Image got uploaded successfully!",
                 listingImages.getImageUrl()
         );
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(listingImagesResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(listingImagesUploadResponse);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ListingImagesGetResponse>> getAllListingImages() {
+        List<ListingImagesGetResponse> images = listingImagesService.findAllListingImages();
+
+        return ResponseEntity.ok(images);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<ListingImagesResponse> getImageById(@PathVariable Long id) {
+    public ResponseEntity<ListingImagesGetResponse> getImageById(@PathVariable Long id) {
         ListingImages listingImages = listingImagesService.findImageById(id);
 
-        ListingImagesResponse listingImagesResponse = new ListingImagesResponse(
-                listingImages.getImageUrl(),
-                ""
+        ListingImagesGetResponse listingImagesGetResponse = new ListingImagesGetResponse(
+                listingImages.getListing().getId(),
+                listingImages.getImageUrl()
         );
 
-        return ResponseEntity.ok(listingImagesResponse);
+        return ResponseEntity.ok(listingImagesGetResponse);
     }
 }
