@@ -9,6 +9,7 @@ import com.java2024.ecoscape.models.User;
 import com.java2024.ecoscape.services.UserService;
 import com.java2024.ecoscape.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -107,5 +108,23 @@ public class AuthController {
                     .status(HttpStatus.UNAUTHORIZED)
                     .body("Incorrect username or password");
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+
+        ResponseCookie jwtCookie = ResponseCookie.from("jwt", "")
+                .httpOnly(true)
+                .secure(false) //CHANGE TO TRUE WHEN PUSHING TO PRODUCTION
+                .path("/")
+                .maxAge(0)
+                .sameSite("Strict")
+                .build();
+
+        SecurityContextHolder.clearContext();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                .body("You've logged out.");
     }
 }
