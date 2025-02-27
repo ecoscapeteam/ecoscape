@@ -5,6 +5,7 @@ import com.java2024.ecoscape.dto.ListingImagesRequest;
 import com.java2024.ecoscape.dto.ListingImagesUploadResponse;
 import com.java2024.ecoscape.models.ListingImages;
 import com.java2024.ecoscape.services.ListingImagesService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -55,6 +56,24 @@ public class ListingImagesController {
         );
 
         return ResponseEntity.ok(listingImagesGetResponse);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateListingImage(@PathVariable Long id, @Valid @RequestBody ListingImagesRequest listingImagesRequest) {
+        if (listingImagesService.existsByImageUrl(listingImagesRequest.getImageUrl())) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("That image is already uploaded.");
+        }
+
+        ListingImages updatedListingImage = listingImagesService.updateListingImage(id, listingImagesRequest);
+
+        ListingImagesUploadResponse listingImagesUploadResponse = new ListingImagesUploadResponse(
+                updatedListingImage.getImageUrl(),
+                "Image got updated successfully!"
+        );
+
+        return ResponseEntity.ok(listingImagesUploadResponse);
     }
 
     @DeleteMapping("/{id}")
