@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
-@Table(name = "dates_blocked_by_host")
+@Table(name = "blocked_dates_by_host")
 public class BlockedDatesByHost {
 
     @Id
@@ -21,8 +21,10 @@ public class BlockedDatesByHost {
     @NotNull(message = "Listing can not be null")
     private Listing listing;
 
+    @NotNull(message = "Start date can not be null")
     private Date startDate;
 
+    @NotNull(message = "End date can not be null")
     private Date endDate;
 
     //default konstruktor som JPA kräver
