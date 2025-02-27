@@ -25,7 +25,7 @@ public class ListingImagesController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createListingImage(@RequestBody ListingImagesRequest request) {
+    public ResponseEntity<?> createListingImage(@Valid @RequestBody ListingImagesRequest request) {
         if (listingImagesService.existsByImageUrl(request.getImageUrl())) {
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
