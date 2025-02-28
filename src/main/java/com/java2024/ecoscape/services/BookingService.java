@@ -11,10 +11,14 @@ import com.java2024.ecoscape.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -237,6 +241,18 @@ public class BookingService {
 
 
     }
+
+
+    public ResponseEntity<String> deleteBookingById(Long bookingId) {
+        return bookingRepository.findById(bookingId)
+                .map(booking -> {
+                    bookingRepository.delete(booking);
+                    return ResponseEntity.ok("Booking deleted successfully"); // Return success message with HTTP 200 status
+                })
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Booking not found")); // Return error message with HTTP 404 status
+    }
+
+
 
 
     // netstat -ano | findstr :8080
