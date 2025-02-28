@@ -14,11 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.NoSuchElementException;
+import java.util.Optional;
+
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 
 @Service
 public class ListingService {
 
-    private final ListingRepository listingRepository;
+    private final ListingRepository listingRepository ;
     private final RulesRepository rulesRepository;
     private final UserRepository userRepository;
 
@@ -80,12 +84,12 @@ public class ListingService {
         }
 
         // Validera städavgift om det är satt
-        if (listingRequest.getCleaningFee() != null && listingRequest.getCleaningFee() <= 0) {
+        if  (listingRequest.getCleaningFee() != null && listingRequest.getCleaningFee().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Cleaning fee must be a positive value");
         }
 
         // Validera pris per natt
-        if (listingRequest.getPricePerNight() == null || listingRequest.getPricePerNight() <= 0) {
+        if (listingRequest.getPricePerNight() == null || listingRequest.getPricePerNight().compareTo(BigDecimal.ZERO) <= 0)  {
             throw new IllegalArgumentException("Price per night must be a positive value");
         }
 
@@ -190,6 +194,7 @@ public class ListingService {
         if (listingRequest.getPricePerNight() != null){
             exisitngListing.setPricePerNight(listingRequest.getPricePerNight());
         }
+
         if (listingRequest.getCategories() != null){
             exisitngListing.setCategories(listingRequest.getCategories());
         }
@@ -273,8 +278,12 @@ public class ListingService {
 
     //metod for att ta bort en listing
     public void deleteListingById(Long id){
-        Listing listing = listingRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Lisitng not found"));
+        Listing listing = listingRepository.findById(id).
+                orElseThrow(() -> new NoSuchElementException("Lisitng not found"));
+        listingRepository.delete(listing);// delete from reprository
     }
+
+
 
 
 }

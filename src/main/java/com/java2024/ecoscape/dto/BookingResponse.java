@@ -18,10 +18,18 @@ public class BookingResponse {
     private LocalDate endDate;
     private Status status;
     private int guests;
+    private BigDecimal pricePerNight;
     private BigDecimal website_Fee;
     private BigDecimal cleaningFee;
     private BigDecimal totalPrice;
 
+    public BigDecimal getPricePerNight() {
+        return pricePerNight;
+    }
+
+    public void setPricePerNight(BigDecimal pricePerNight) {
+        this.pricePerNight = pricePerNight;
+    }
 
     public Long getBookingId() {
         return bookingId;

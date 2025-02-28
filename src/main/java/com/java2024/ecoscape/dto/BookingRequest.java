@@ -2,23 +2,41 @@ package com.java2024.ecoscape.dto;
 
 import com.java2024.ecoscape.models.Status;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class BookingRequest {
+    private Long userId;
+    private Long listingId;
+    private String firstName;
+    private String lastName;
 
     private String usersContactPhoneNumber;
     private String usersContactEmail;
     private LocalDate startDate;
     private LocalDate endDate;
-    private int guests;
+    private Integer guests;
+    private Status status;
 
-    public BookingRequest(String usersContactPhoneNumber, String usersContactEmail, LocalDate startDate, LocalDate endDate, int guests) {
-        this.usersContactPhoneNumber = usersContactPhoneNumber;
-        this.usersContactEmail = usersContactEmail;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.guests = guests;
+
+
+    public BookingRequest() {
+
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Long getListingId() {
+        return listingId;
+    }
+
+    public void setListingId(Long listingId) {
+        this.listingId = listingId;
     }
 
     public String getUsersContactPhoneNumber() {
@@ -27,6 +45,14 @@ public class BookingRequest {
 
     public void setUsersContactPhoneNumber(String usersContactPhoneNumber) {
         this.usersContactPhoneNumber = usersContactPhoneNumber;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public String getUsersContactEmail() {
@@ -53,7 +79,7 @@ public class BookingRequest {
         this.endDate = endDate;
     }
 
-    public int getGuests() {
+    public Integer getGuests() {
         return guests;
     }
 
@@ -61,8 +87,21 @@ public class BookingRequest {
         this.guests = guests;
     }
 
+    public String getLastName() {
+        return lastName;
+    }
 
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 }
 
 

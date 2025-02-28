@@ -1,9 +1,8 @@
 package com.java2024.ecoscape.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,22 +17,24 @@ public class Booking {
     private Long id;
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY) // each booking belongs to one user, but a user can have many booking
+    @JsonIgnore
     @JoinColumn(name = "user_id")
     private User user; // foreign key to User table
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)// each booking belongs to one listing, but a listing can have many booking
+    @JsonIgnore
     @JoinColumn(name = "listing_id")
     private Listing listing;  // foreign key Listing table
 
     @Column(name = ("first_name"))
-    @NotNull(message = "First name canot be null.")
-    @Pattern(regexp = "^[A-Za-z]+ [A-Za-z]+$\n", message = "Only letters are allowed.")
+    //@NotBlank(message = "First name canot be null.")
+    @Pattern(regexp = "^[a-zA-Z ]+$", message = "Only letters and spaces are allowed.")
     @Size(max = 50, message = "Your first name cannot be longer than 50 characters.")
     private String firstName;
 
     @Column(name = ("last_name"))
-    @NotNull(message = "Last name cannot be null.")
-    @Pattern(regexp = "^[A-Za-z]+ [A-Za-z]+$\n", message = "Only letters are allowed.")
+   // @NotBlank(message = "Last name cannot be null.")
+    @Pattern(regexp = "^[a-zA-Z ]+$", message = "Only letters and spaces are allowed.")
     @Size(max = 50, message = "Your last name cannot be longer than 50 characters.")
     private String lastName;
 
@@ -65,7 +66,8 @@ public class Booking {
 
     @Column(name = ("guests"))
     @NotNull(message = "Guests cannot be null.")
-    @Size(min = 1, max = 10)
+    @Min(1)  // Minimum 1 guest
+    @Max(10)
     private int guests;
 
     @Column(name = ("websites_fee"))
@@ -182,13 +184,7 @@ public class Booking {
         this.usersContactPhoneNumber = usersContactPhoneNumber;
     }
 
-    public BigDecimal getWebsite_Fee() {
-        return website_Fee;
-    }
 
-    public void setWebsite_Fee(BigDecimal websiteFee) {
-        this.website_Fee = websiteFee;
-    }
 }
 
 
