@@ -7,6 +7,7 @@ import com.java2024.ecoscape.models.Listing;
 import com.java2024.ecoscape.repository.BlockedDatesByHostRepository;
 import com.java2024.ecoscape.repository.ListingRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 
@@ -32,6 +33,21 @@ public class BlockedDatesByHostService {
         BlockedDatesByHost blockedDatesByHost = blockedDatesByHostRepository.findById(blockDatesByHostId).orElseThrow(() -> new NoSuchElementException("No such blocked dates "));
         blockedDatesByHostRepository.delete(blockedDatesByHost);
     }
+
+    //behöver Transactional annotation för metoden ska funka, funkade inte utan den
+    @Transactional
+    public String deleteAllBlockedDatesByHostOfAListing(Long listingId) {
+        listingRepository.findById(listingId)
+                .orElseThrow(() -> new NoSuchElementException("Listing not found"));
+
+        if (blockedDatesByHostRepository.existsByListingId(listingId)) {
+            blockedDatesByHostRepository.deleteAllByListingId(listingId);
+            return "All blocked dates for listing with ID " + listingId + " have been successfully removed.";
+        } else {
+            return "No blocked dates found for listing ID " + listingId;
+        }
+    }
+
 
     public BlockedDatesByHostResponse convertBlockedDatesByHostEntityToBlockedDatesByHostDTO (BlockedDatesByHost blockedDatesByHost){
         BlockedDatesByHostResponse blockedDatesByHostResponse = new BlockedDatesByHostResponse();

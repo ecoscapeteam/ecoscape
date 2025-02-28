@@ -30,10 +30,16 @@ public class BlockedDatesByHostController {
         return ResponseEntity.status(HttpStatus.CREATED).body(blockedDatesByHostResponse);
     }
 
-    @DeleteMapping("/{blockedDatesByHostId}")
+    @DeleteMapping("/{blockedDatesByHostId}/deleteSingle")
     public ResponseEntity<String> deleteSingleBlockDatesByHost(@PathVariable Long blockedDatesByHostId) {
         BlockedDatesByHost blockedDatesByHost = blockedDatesByHostRepository.findById(blockedDatesByHostId).orElseThrow(() -> new NoSuchElementException("Blocked dates by host not found"));
         blockedDatesByHostService.deleteSingleBlockDatesByHost(blockedDatesByHostId);
         return ResponseEntity.ok("The dates from " + blockedDatesByHost.getStartDate() + " to " + blockedDatesByHost.getEndDate() + " are successfully unblocked!");
+    }
+
+    @DeleteMapping("/{listingId}/deleteAll")
+    public ResponseEntity<String> deleteAllBlockedDatesByHostOfAListing (@PathVariable Long listingId){
+        String resultMessage = blockedDatesByHostService.deleteAllBlockedDatesByHostOfAListing(listingId);
+        return ResponseEntity.ok(resultMessage);
     }
 }
