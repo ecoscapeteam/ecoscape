@@ -26,13 +26,16 @@ public class BlockedDatesByHostService {
         blockedDatesByHost.setListing(listing);
         BlockedDatesByHost savedBlockedDatesByHost = blockedDatesByHostRepository.save(blockedDatesByHost);
         return convertBlockedDatesByHostEntityToBlockedDatesByHostDTO(savedBlockedDatesByHost);
+    }
 
-
+    public void deleteSingleBlockDatesByHost(Long blockDatesByHostId){
+        BlockedDatesByHost blockedDatesByHost = blockedDatesByHostRepository.findById(blockDatesByHostId).orElseThrow(() -> new NoSuchElementException("No such blocked dates "));
+        blockedDatesByHostRepository.delete(blockedDatesByHost);
     }
 
     public BlockedDatesByHostResponse convertBlockedDatesByHostEntityToBlockedDatesByHostDTO (BlockedDatesByHost blockedDatesByHost){
         BlockedDatesByHostResponse blockedDatesByHostResponse = new BlockedDatesByHostResponse();
-        blockedDatesByHostResponse.setId(blockedDatesByHost.getId());  // Set the ID
+        blockedDatesByHostResponse.setId(blockedDatesByHost.getId());
         blockedDatesByHostResponse.setListingId(blockedDatesByHost.getListing().getId());
         blockedDatesByHostResponse.setStartDate(blockedDatesByHost.getStartDate());
         blockedDatesByHostResponse.setEndDate(blockedDatesByHost.getEndDate());
@@ -44,4 +47,5 @@ public class BlockedDatesByHostService {
         blockedDatesByHost.setEndDate(blockedDatesByHostRequest.getEndDate());
         return blockedDatesByHost;
     }
+
 }
