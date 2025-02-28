@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -28,6 +29,18 @@ public class BlockedDatesByHostController {
     public ResponseEntity<BlockedDatesByHostResponse> createBlockedDatesByHost(@Valid @RequestBody BlockedDatesByHostRequest blockedDatesByHostRequest, @PathVariable Long listingId){
         BlockedDatesByHostResponse blockedDatesByHostResponse = blockedDatesByHostService.createBlockDatesByHost(listingId, blockedDatesByHostRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(blockedDatesByHostResponse);
+    }
+
+    @GetMapping("/{blockedDatesByHostId}/getSingle")
+    public ResponseEntity<BlockedDatesByHostResponse> getSingleBlockedDatesByHost (@PathVariable Long blockedDatesByHostId){
+        BlockedDatesByHostResponse blockedDatesByHostResponse = blockedDatesByHostService.getSingleBlockDatesByHost(blockedDatesByHostId);
+        return ResponseEntity.ok(blockedDatesByHostResponse);
+    }
+
+    @GetMapping("/{listingId}/getAll")
+    public ResponseEntity<List<BlockedDatesByHostResponse>> getAllBlockedDatesByHostOfListing (@PathVariable Long listingId){
+        List<BlockedDatesByHostResponse> listOfBlockedDatesByHostOfListing = blockedDatesByHostService.getAllBlockDatesOfAListing(listingId);
+        return ResponseEntity.ok(listOfBlockedDatesByHostOfListing);
     }
 
     @DeleteMapping("/{blockedDatesByHostId}/deleteSingle")

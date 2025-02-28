@@ -9,6 +9,8 @@ import com.java2024.ecoscape.repository.ListingRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -27,6 +29,16 @@ public class BlockedDatesByHostService {
         blockedDatesByHost.setListing(listing);
         BlockedDatesByHost savedBlockedDatesByHost = blockedDatesByHostRepository.save(blockedDatesByHost);
         return convertBlockedDatesByHostEntityToBlockedDatesByHostDTO(savedBlockedDatesByHost);
+    }
+
+    public BlockedDatesByHostResponse getSingleBlockDatesByHost(Long blockDatesByHostId){
+        BlockedDatesByHost blockedDatesByHost = blockedDatesByHostRepository.findById(blockDatesByHostId).orElseThrow(() -> new NoSuchElementException("No such blocked dates "));
+        return convertBlockedDatesByHostEntityToBlockedDatesByHostDTO(blockedDatesByHost);
+    }
+
+    public List<BlockedDatesByHostResponse> getAllBlockDatesOfAListing(Long listingId){
+        List <BlockedDatesByHost> blockedDatesByHostList = blockedDatesByHostRepository.findAllByListingId(listingId);
+        return convertBlockedDatesByHostEntityToBlockedDatesByHostDTO(blockedDatesByHostList);
     }
 
     public void deleteSingleBlockDatesByHost(Long blockDatesByHostId){
@@ -57,6 +69,16 @@ public class BlockedDatesByHostService {
         blockedDatesByHostResponse.setEndDate(blockedDatesByHost.getEndDate());
         return blockedDatesByHostResponse;
     }
+
+    //metod overloading
+    public List<BlockedDatesByHostResponse> convertBlockedDatesByHostEntityToBlockedDatesByHostDTO (List<BlockedDatesByHost> blockedDatesByHostList){
+        List<BlockedDatesByHostResponse> blockedDatesByHostResponseList = new ArrayList<>();
+        for(BlockedDatesByHost blockedDatesByHost: blockedDatesByHostList) {
+            blockedDatesByHostResponseList.add(convertBlockedDatesByHostEntityToBlockedDatesByHostDTO(blockedDatesByHost));
+        }
+        return blockedDatesByHostResponseList;
+    }
+
     public BlockedDatesByHost convertBlockedDatesByHostDTOtoBlockedDatesByHostEntity (BlockedDatesByHostRequest blockedDatesByHostRequest){
         BlockedDatesByHost blockedDatesByHost = new BlockedDatesByHost();
         blockedDatesByHost.setStartDate(blockedDatesByHostRequest.getStartDate());
