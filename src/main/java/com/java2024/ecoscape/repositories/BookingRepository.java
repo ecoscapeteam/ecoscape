@@ -10,4 +10,6 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
 
 
     Optional<Booking> findById(Long bookingId);
+
+    String id(Long id);
 }

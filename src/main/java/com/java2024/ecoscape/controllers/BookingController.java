@@ -76,7 +76,21 @@ public class BookingController {
 
     }
 
+    @DeleteMapping("/{bookingId}")
+    public ResponseEntity<String> deleteBooking(@PathVariable Long bookingId) {
+        return bookingRepository.findById(bookingId)
+                .map(booking -> {
+                    bookingRepository.delete(booking);
+                    return ResponseEntity.ok("Booking deleted successfully"); // Response with 200 OK
+                })
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Booking not found")); // Response with 404 if booking is not found
+    }
+
 }
+
+
+
+
 
 
 
