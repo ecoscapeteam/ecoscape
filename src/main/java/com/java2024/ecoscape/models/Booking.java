@@ -1,9 +1,8 @@
 package com.java2024.ecoscape.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,41 +16,40 @@ public class Booking {
     @Column(name = "booking_Id")
     private Long id;
     @NotNull
-    @ManyToOne (fetch = FetchType.LAZY) // each booking belongs to one user, but a user can have many booking
+    @ManyToOne(fetch = FetchType.LAZY) // each booking belongs to one user, but a user can have many booking
+    @JsonIgnore
     @JoinColumn(name = "user_id")
     private User user; // foreign key to User table
     @NotNull
-    @ManyToOne (fetch = FetchType.LAZY)// each booking belongs to one listing, but a listing can have many booking
+    @ManyToOne(fetch = FetchType.LAZY)// each booking belongs to one listing, but a listing can have many booking
+    @JsonIgnore
     @JoinColumn(name = "listing_id")
     private Listing listing;  // foreign key Listing table
 
     @Column(name = ("first_name"))
-    @NotNull(message = "First name canot be null.")
-    @Pattern(regexp = "^[A-Za-z]+ [A-Za-z]+$\n", message = "Only letters are allowed.")
+    //@NotBlank(message = "First name canot be null.")
+    @Pattern(regexp = "^[a-zA-Z ]+$", message = "Only letters and spaces are allowed.")
     @Size(max = 50, message = "Your first name cannot be longer than 50 characters.")
     private String firstName;
 
     @Column(name = ("last_name"))
-    @NotNull(message = "Last name cannot be null.")
-    @Pattern(regexp = "^[A-Za-z]+ [A-Za-z]+$\n", message = "Only letters are allowed.")
+    // @NotBlank(message = "Last name cannot be null.")
+    @Pattern(regexp = "^[a-zA-Z ]+$", message = "Only letters and spaces are allowed.")
     @Size(max = 50, message = "Your last name cannot be longer than 50 characters.")
     private String lastName;
 
     @Column(name = ("phone_number"))
     @NotNull(message = "Phone number cannot be null.")
     @Pattern(regexp = "^\\+\\d{1,3}\\d{9}$", message = "That's not a valid phone number.")
-    private String phoneNumber;
+    private String usersContactPhoneNumber;
 
     @Column(name = ("email"))
     @Pattern(regexp = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$",
             message = "That's not a valid email.")
     @NotNull(message = "Email cannot be null.")
     @Size(max = 30)
-    private String email;
+    private String usersContactEmail;
 
-    @Column(name = ("location"))
-    //Add a google api?
-    private String location;
 
     @Column(name = ("start_date"))
     @Temporal(TemporalType.DATE)
@@ -68,10 +66,12 @@ public class Booking {
 
     @Column(name = ("guests"))
     @NotNull(message = "Guests cannot be null.")
-    @Size(min = 1, max = 10)
+    @Min(1)  // Minimum 1 guest
+    @Max(10)
     private int guests;
 
     @Column(name = ("websites_fee"))
+    @Transient
     private BigDecimal websitesFee;
 
     @Column(name = ("total_price"))
@@ -120,12 +120,12 @@ public class Booking {
         this.lastName = lastName;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUsersContactEmail() {
+        return usersContactEmail;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUsersContactEmail(String email) {
+        this.usersContactEmail = email;
     }
 
     public LocalDate getStartDate() {
@@ -176,19 +176,14 @@ public class Booking {
         this.totalPrice = totalPrice;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public String getUsersContactPhoneNumber(String usersContactPhoneNumber) {
+        return this.usersContactPhoneNumber;
     }
 
-    public void setPhoneNumber() {
-        this.phoneNumber = phoneNumber;
+    public void setUsersContactPhoneNumber(String usersContactPhoneNumber) {
+        this.usersContactPhoneNumber = usersContactPhoneNumber;
     }
 
-    public String getLocation() {
-        return location;
-    }
 
-    public void setLocation(String location) {
-        this.location = location;
-    }
 }
+
