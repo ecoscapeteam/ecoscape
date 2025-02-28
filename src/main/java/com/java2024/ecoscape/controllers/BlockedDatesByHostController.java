@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/blocked_dates_by_host")
-public class BlockedDatesByHost {
+public class BlockedDatesByHostController {
 
     private final BlockedDatesByHostService blockedDatesByHostService;
 
-    public BlockedDatesByHost(BlockedDatesByHostService blockedDatesByHostService) {
+    public BlockedDatesByHostController(BlockedDatesByHostService blockedDatesByHostService) {
         this.blockedDatesByHostService = blockedDatesByHostService;
     }
 

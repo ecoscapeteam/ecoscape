@@ -32,6 +32,7 @@ public class BlockedDatesByHostService {
 
     public BlockedDatesByHostResponse convertBlockedDatesByHostEntityToBlockedDatesByHostDTO (BlockedDatesByHost blockedDatesByHost){
         BlockedDatesByHostResponse blockedDatesByHostResponse = new BlockedDatesByHostResponse();
+        blockedDatesByHostResponse.setId(blockedDatesByHost.getId());  // Set the ID
         blockedDatesByHostResponse.setListingId(blockedDatesByHost.getListing().getId());
         blockedDatesByHostResponse.setStartDate(blockedDatesByHost.getStartDate());
         blockedDatesByHostResponse.setEndDate(blockedDatesByHost.getEndDate());
