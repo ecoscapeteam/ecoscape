@@ -4,17 +4,17 @@ import com.java2024.ecoscape.dto.UserRequest;
 import com.java2024.ecoscape.dto.UserResponse;
 import com.java2024.ecoscape.models.Role;
 import com.java2024.ecoscape.models.User;
-import com.java2024.ecoscape.repositories.ListingRepository;
-import com.java2024.ecoscape.repositories.UserRepository;
+import com.java2024.ecoscape.repository.ListingRepository;
+import com.java2024.ecoscape.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Service
+@Component
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
