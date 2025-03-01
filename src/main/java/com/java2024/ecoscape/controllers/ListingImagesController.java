@@ -41,8 +41,8 @@ public class ListingImagesController {
         ListingImages listingImages = listingImagesService.createListingImages(request);
 
         ListingImagesUploadResponse listingImagesUploadResponse = new ListingImagesUploadResponse(
-                "Image got uploaded successfully!",
-                listingImages.getImageUrl()
+                listingImages.getImageUrl(),
+                "Image got uploaded successfully!"
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(listingImagesUploadResponse);
