@@ -9,6 +9,7 @@ import com.java2024.ecoscape.models.Sustainability;
 import java.math.BigDecimal;
 import java.util.Set;
 
+//exlkuderar att atribbuter som har värdet visas i respons
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ListingResponse {
 

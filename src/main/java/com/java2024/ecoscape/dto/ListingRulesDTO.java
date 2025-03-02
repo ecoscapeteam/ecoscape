@@ -3,7 +3,7 @@ package com.java2024.ecoscape.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
-
+//exlkuderar att atribbuter som har värdet visas i respons
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ListingRulesDTO {
 
@@ -70,7 +70,7 @@ public class ListingRulesDTO {
     public void setQuiteQuiteHoursStop(String quiteQuiteHoursStop) {
         this.quiteQuiteHoursStop = quiteQuiteHoursStop;
     }
-
+//annotations som till[ter serialisation och deserilisation och boolean
     @JsonProperty("isSmokingAllowed")
     public Boolean getSmokingAllowed() {
         return isSmokingAllowed;

@@ -3,10 +3,10 @@ package com.java2024.ecoscape.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
-@Table(name = "dates_blocked_by_host")
+@Table(name = "blocked_dates_by_host")
 public class BlockedDatesByHost {
 
     @Id
@@ -21,15 +21,17 @@ public class BlockedDatesByHost {
     @NotNull(message = "Listing can not be null")
     private Listing listing;
 
-    private Date startDate;
+    @NotNull(message = "Start date can not be null")
+    private LocalDate startDate;
 
-    private Date endDate;
+    @NotNull(message = "End date can not be null")
+    private LocalDate endDate;
 
     //default konstruktor som JPA kräver
     public BlockedDatesByHost() {
     }
 //kontruktor som behövs för att sätt start och end date
-    public BlockedDatesByHost(Date startDate, Date endDate) {
+    public BlockedDatesByHost(LocalDate startDate, LocalDate endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
     }
@@ -41,7 +43,7 @@ public class BlockedDatesByHost {
         if (startDate == null || endDate == null) {
             throw new IllegalArgumentException("Start date and end date must not be null.");
         }
-        if (endDate.before(startDate)) {
+        if (endDate.isBefore(startDate)) {
             throw new IllegalArgumentException("End date cannot be before start date.");
         }
 
@@ -63,19 +65,19 @@ public class BlockedDatesByHost {
         this.listing = listing;
     }
 
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 }
