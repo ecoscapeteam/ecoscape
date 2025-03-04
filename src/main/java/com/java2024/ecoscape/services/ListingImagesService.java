@@ -4,8 +4,8 @@ import com.java2024.ecoscape.dto.ListingImagesGetResponse;
 import com.java2024.ecoscape.dto.ListingImagesRequest;
 import com.java2024.ecoscape.models.Listing;
 import com.java2024.ecoscape.models.ListingImages;
-import com.java2024.ecoscape.repository.ListingImagesRepository;
-import com.java2024.ecoscape.repository.ListingRepository;
+import com.java2024.ecoscape.repositories.ListingImagesRepository;
+import com.java2024.ecoscape.repositories.ListingRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

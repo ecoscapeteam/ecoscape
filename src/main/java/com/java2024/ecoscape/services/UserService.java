@@ -4,7 +4,7 @@ import com.java2024.ecoscape.dto.UserRequest;
 import com.java2024.ecoscape.dto.UserResponse;
 import com.java2024.ecoscape.models.Role;
 import com.java2024.ecoscape.models.User;
-import com.java2024.ecoscape.repository.UserRepository;
+import com.java2024.ecoscape.repositories.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 

@@ -44,4 +44,21 @@ public class ListingController {
         return ResponseEntity.noContent().build();
 
     }
+/*
+    @GetMapping("/search")
+    public ResponseEntity <List<ListingResponse>> searchListings (@RequestParam(name = "name", required = false) String name,
+                                                                  @RequestParam(name = "capacity", required = false) Integer capacity,
+                                                                  @RequestParam(name = "checkInDate", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate checkInDate,
+                                                                  @RequestParam(name = "checkOutDate", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate checkOutDate
+                                                                  ){
+
+
+
+
+
+        return ResponseEntity.ok(listings);
+
+    } */
+
+
 }

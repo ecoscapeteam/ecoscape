@@ -1,7 +1,7 @@
 package com.java2024.ecoscape.services;
 
 import com.java2024.ecoscape.models.User;
-import com.java2024.ecoscape.repository.UserRepository;
+import com.java2024.ecoscape.repositories.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
