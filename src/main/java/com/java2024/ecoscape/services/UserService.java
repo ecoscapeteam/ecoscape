@@ -4,8 +4,7 @@ import com.java2024.ecoscape.dto.UserRequest;
 import com.java2024.ecoscape.dto.UserResponse;
 import com.java2024.ecoscape.models.Role;
 import com.java2024.ecoscape.models.User;
-import com.java2024.ecoscape.repository.ListingRepository;
-import com.java2024.ecoscape.repository.UserRepository;
+import com.java2024.ecoscape.repositories.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -18,14 +17,11 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ListingRepository listingRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, ListingRepository listingRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.listingRepository = listingRepository;
     }
-
 
     public void registerUser(User user) {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
@@ -95,10 +91,6 @@ public class UserService {
     public void deleteUser(Long id) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
-
-        if (listingRepository.existsByUserId(id)) {
-            throw new IllegalArgumentException("You cannot delete your account with an existing listing, delete the listing first.");
-        }
 
         userRepository.deleteById(id);
     }
