@@ -6,7 +6,6 @@ import java.time.LocalDate;
 
 public class ListingAvailableDatesResponse {
 
-    @NotNull(message = "Id of listing of available dates can not be null")
     private Long listingId;
 
     @NotNull(message = "Start date of available dates can not be null")
