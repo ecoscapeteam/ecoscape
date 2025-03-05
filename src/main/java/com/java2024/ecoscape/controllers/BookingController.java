@@ -6,7 +6,7 @@ import com.java2024.ecoscape.models.Listing;
 import com.java2024.ecoscape.models.User;
 import com.java2024.ecoscape.repositories.ListingRepository;
 import com.java2024.ecoscape.repositories.UserRepository;
-import com.java2024.ecoscape.repository.BookingRepository;
+import com.java2024.ecoscape.repositories.BookingRepository;
 import com.java2024.ecoscape.services.BookingService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
