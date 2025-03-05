@@ -13,7 +13,7 @@ import java.time.LocalDate;
 public class ListingAvailableDates {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     // blocked dates by host är many to one gentemot listing, en listing kan ha flera blocked dates by host

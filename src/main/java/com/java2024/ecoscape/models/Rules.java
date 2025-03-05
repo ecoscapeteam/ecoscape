@@ -10,7 +10,7 @@ import org.hibernate.validator.constraints.Length;
 public class Rules {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     //rulestext är optional
