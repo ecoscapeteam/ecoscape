@@ -6,6 +6,7 @@ import com.java2024.ecoscape.dto.ListingRulesDTO;
 import com.java2024.ecoscape.models.Listing;
 import com.java2024.ecoscape.models.Rules;
 import com.java2024.ecoscape.models.User;
+import com.java2024.ecoscape.repositories.ListingAvailableDatesRepository;
 import com.java2024.ecoscape.repositories.ListingRepository;
 import com.java2024.ecoscape.repositories.RulesRepository;
 import com.java2024.ecoscape.repositories.UserRepository;
@@ -25,13 +26,15 @@ public class ListingService {
     private final UserRepository userRepository;
     private final RulesService rulesService;
     private final ListingAvailableDatesService listingAvailableDatesService;
+    private final ListingAvailableDatesRepository listingAvailableDatesRepository;
 
-    public ListingService(ListingRepository listingRepository, UserRepository userRepository, RulesRepository rulesRepository, RulesService rulesService, ListingAvailableDatesService listingAvailableDatesService) {
+    public ListingService(ListingRepository listingRepository, UserRepository userRepository, RulesRepository rulesRepository, RulesService rulesService, ListingAvailableDatesService listingAvailableDatesService, ListingAvailableDatesRepository listingAvailableDatesRepository) {
         this.listingRepository = listingRepository;
         this.rulesRepository = rulesRepository;
         this.userRepository = userRepository;
         this.rulesService = rulesService;
         this.listingAvailableDatesService = listingAvailableDatesService;
+        this.listingAvailableDatesRepository = listingAvailableDatesRepository;
     }
 
     //metod för att skaffa listing
@@ -123,7 +126,11 @@ public class ListingService {
     }
     //metod for att ta bort en listing
     public void deleteListingById(Long id){
-        Listing listing = listingRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Lisitng not found"));
+        Listing listing = listingRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Listig not found"));
+        //om listingen har availabible dates, ska de tas bort innan listingen tas bort
+        if (listingAvailableDatesRepository.existsByListingId(id)) {
+            listingAvailableDatesService.deleteAllAvailableDatesByHostOfAListing(id);
+        }
         listingRepository.delete(listing);
     }
 
