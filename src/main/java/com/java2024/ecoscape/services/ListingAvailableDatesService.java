@@ -23,7 +23,7 @@ public class ListingAvailableDatesService {
         this.listingAvailableDatesRepository = listingAvailableDatesRepository;
         this.listingRepository = listingRepository;
     }
-
+    @Transactional
     public ListingAvailableDatesResponse setAvailableDates(Long listingId, ListingAvailableDatesRequest listingAvailableDatesRequest){
         Listing listing = listingRepository.findById(listingId).orElseThrow(() -> new NoSuchElementException("Listing not found"));
 
