@@ -6,8 +6,11 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "blocked_dates_by_host")
-public class BlockedDatesByHost {
+@Table(
+        name = "listing_available_dates",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"start_date", "end_date"})
+)
+public class ListingAvailableDates {
 
     @Id
     @GeneratedValue
@@ -22,16 +25,18 @@ public class BlockedDatesByHost {
     private Listing listing;
 
     @NotNull(message = "Start date can not be null")
+    @Column(name = "start_date")
     private LocalDate startDate;
 
+    @Column(name = "end_date")
     @NotNull(message = "End date can not be null")
     private LocalDate endDate;
 
     //default konstruktor som JPA kräver
-    public BlockedDatesByHost() {
+    public ListingAvailableDates() {
     }
 //kontruktor som behövs för att sätt start och end date
-    public BlockedDatesByHost(LocalDate startDate, LocalDate endDate) {
+    public ListingAvailableDates(LocalDate startDate, LocalDate endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
     }

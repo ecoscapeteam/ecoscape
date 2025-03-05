@@ -5,20 +5,13 @@ import com.java2024.ecoscape.dto.BookingResponse;
 import com.java2024.ecoscape.models.Booking;
 import com.java2024.ecoscape.models.Listing;
 import com.java2024.ecoscape.models.User;
-import com.java2024.ecoscape.repository.BookingRepository;
-import com.java2024.ecoscape.repository.ListingRepository;
-import com.java2024.ecoscape.repository.UserRepository;
-import jakarta.validation.Valid;
-import org.jetbrains.annotations.NotNull;
+import com.java2024.ecoscape.repositories.BookingRepository;
+import com.java2024.ecoscape.repositories.ListingRepository;
+import com.java2024.ecoscape.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -28,7 +21,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-import static com.java2024.ecoscape.models.Status.*;
+import static com.java2024.ecoscape.models.Status.CONFIRMED;
 
 @Service
 public class BookingService {
@@ -252,11 +245,5 @@ public class BookingService {
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Booking not found")); // Return error message with HTTP 404 status
     }
 
-
-
-
-    // netstat -ano | findstr :8080
-    //taskkill /PID 4380 /F
-    //mvn spring-boot:run       av intiliji terminal
 
 }

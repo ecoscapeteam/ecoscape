@@ -6,6 +6,8 @@ target/
 
 /src/main/resources/application.properties
 
+/Users/iasminaalkashash/Desktop/ecoscape/app.log
+
 ### STS ###
 .apt_generated
 .classpath

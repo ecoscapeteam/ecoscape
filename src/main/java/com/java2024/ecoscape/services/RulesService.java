@@ -3,8 +3,8 @@ package com.java2024.ecoscape.services;
 import com.java2024.ecoscape.dto.ListingRulesDTO;
 import com.java2024.ecoscape.models.Listing;
 import com.java2024.ecoscape.models.Rules;
-import com.java2024.ecoscape.repository.ListingRepository;
-import com.java2024.ecoscape.repository.RulesRepository;
+import com.java2024.ecoscape.repositories.ListingRepository;
+import com.java2024.ecoscape.repositories.RulesRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;

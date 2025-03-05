@@ -4,7 +4,7 @@ import com.java2024.ecoscape.dto.ListingImagesGetResponse;
 import com.java2024.ecoscape.dto.ListingImagesRequest;
 import com.java2024.ecoscape.dto.ListingImagesUploadResponse;
 import com.java2024.ecoscape.models.ListingImages;
-import com.java2024.ecoscape.repository.ListingImagesRepository;
+import com.java2024.ecoscape.repositories.ListingImagesRepository;
 import com.java2024.ecoscape.services.ListingImagesService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
