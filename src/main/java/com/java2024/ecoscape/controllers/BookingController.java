@@ -1,21 +1,21 @@
 package com.java2024.ecoscape.controllers;
+
 import com.java2024.ecoscape.dto.BookingRequest;
 import com.java2024.ecoscape.dto.BookingResponse;
-import com.java2024.ecoscape.models.Booking;
 import com.java2024.ecoscape.models.Listing;
 import com.java2024.ecoscape.models.User;
-import com.java2024.ecoscape.repository.BookingRepository;
-import com.java2024.ecoscape.repository.ListingRepository;
-import com.java2024.ecoscape.repository.UserRepository;
+import com.java2024.ecoscape.repositories.BookingRepository;
+import com.java2024.ecoscape.repositories.ListingRepository;
+import com.java2024.ecoscape.repositories.UserRepository;
 import com.java2024.ecoscape.services.BookingService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import static com.java2024.ecoscape.models.Status.CANCELLED_BY_USER;
 import static org.springframework.http.HttpStatus.CREATED;
 
 

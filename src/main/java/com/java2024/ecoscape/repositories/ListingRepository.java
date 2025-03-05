@@ -8,6 +8,9 @@ import java.time.LocalDate;
 
 public interface ListingRepository extends JpaRepository<Listing, Long>{
 
+    boolean existsByUserId(Long userId);
+
+
     @Query("SELECT l FROM Listing l " +
             "LEFT JOIN Booking b ON b.listing.id = l.id " +
             "AND ((b.startDate <= :endDate AND b.endDate >= :startDate)) " +
