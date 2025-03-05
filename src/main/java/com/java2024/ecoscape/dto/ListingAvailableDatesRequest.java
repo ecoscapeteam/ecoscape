@@ -6,11 +6,6 @@ import java.time.LocalDate;
 
 public class ListingAvailableDatesRequest {
 
-    @NotNull(message = "Id of listing available dates by host can not be null")
-    private Long id;
-
-    @NotNull(message = "Listing id can not be null")
-    private Long listingId;
 
     @NotNull(message = "Start date of available dates can not be null")
     private LocalDate startDate;
@@ -21,13 +16,6 @@ public class ListingAvailableDatesRequest {
     public ListingAvailableDatesRequest() {
     }
 
-    public @NotNull(message = "Listing id can not be null") Long getListingId() {
-        return listingId;
-    }
-
-    public void setListingId(@NotNull(message = "Listing id can not be null") Long listingId) {
-        this.listingId = listingId;
-    }
 
     public @NotNull(message = "Start date of available dates can not be null") LocalDate getStartDate() {
         return startDate;
@@ -45,11 +33,5 @@ public class ListingAvailableDatesRequest {
         this.endDate = endDate;
     }
 
-    public @NotNull(message = "Id of available dates by host can not be null") Long getId() {
-        return id;
-    }
 
-    public void setId(@NotNull(message = "Id of available dates by host can not be null") Long id) {
-        this.id = id;
-    }
 }
