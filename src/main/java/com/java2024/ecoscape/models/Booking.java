@@ -13,7 +13,6 @@ import java.time.LocalDate;
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY) // each booking belongs to one user, but a user can have many booking
