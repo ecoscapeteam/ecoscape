@@ -1,8 +1,10 @@
 package com.java2024.ecoscape.dto;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.java2024.ecoscape.models.Status;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 public class BookingResponse {
@@ -19,17 +21,13 @@ public class BookingResponse {
     private Status status;
     private int guests;
     private BigDecimal pricePerNight;
-    private BigDecimal website_Fee;
+    private BigDecimal websiteFee;
     private BigDecimal cleaningFee;
     private BigDecimal totalPrice;
-
-    public BigDecimal getPricePerNight() {
-        return pricePerNight;
-    }
-
-    public void setPricePerNight(BigDecimal pricePerNight) {
-        this.pricePerNight = pricePerNight;
-    }
+    private String pricePerNightWithCurrency;
+    private String websiteFeeWithCurrency;
+    private String cleaningFeeWithCurrency;
+    private String totalPriceWithCurrency;
 
     public Long getBookingId() {
         return bookingId;
@@ -119,12 +117,20 @@ public class BookingResponse {
         this.guests = guests;
     }
 
-    public BigDecimal getWebsite_Fee() {
-        return website_Fee;
+    public BigDecimal getPricePerNight() {
+        return pricePerNight;
     }
 
-    public void setWebsite_Fee(BigDecimal website_Fee) {
-        this.website_Fee = website_Fee;
+    public void setPricePerNight(BigDecimal pricePerNight) {
+        this.pricePerNight = pricePerNight;
+    }
+
+    public BigDecimal getWebsiteFee() {
+        return websiteFee;
+    }
+
+    public void setWebsiteFee(BigDecimal websiteFee) {
+        this.websiteFee = websiteFee;
     }
 
     public BigDecimal getCleaningFee() {
@@ -141,5 +147,48 @@ public class BookingResponse {
 
     public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    // Getters مع عملة (لا يؤثر على القيم الأصلية)
+    @JsonGetter("pricePerNightWithCurrency")
+    public String getPricePerNightWithCurrency() {
+        return formatWithCurrency(pricePerNight);
+    }
+
+    @JsonGetter("cleaningFeeWithCurrency")
+    public String getCleaningFeeWithCurrency() {
+        return formatWithCurrency(cleaningFee);
+    }
+
+    @JsonGetter("websiteFeeWithCurrency")
+    public String getWebsiteFeeWithCurrency() {
+        return formatWithCurrency(websiteFee);
+    }
+
+    @JsonGetter("totalPriceWithCurrency")
+    public String getTotalPriceWithCurrency() {
+        return formatWithCurrency(totalPrice);
+    }
+
+    // دالة مساعدة لإضافة العملة
+    private String formatWithCurrency(BigDecimal value) {
+        if (value == null) return "0.00 kr";
+        return value.setScale(2, RoundingMode.HALF_UP) + " kr";
+    }
+
+    public void setPricePerNightWithCurrency(String pricePerNightWithCurrency) {
+        this.pricePerNightWithCurrency = pricePerNightWithCurrency;
+    }
+
+    public void setCleaningFeeWithCurrency(String cleaningFeeWithCurrency) {
+        this.cleaningFeeWithCurrency = cleaningFeeWithCurrency;
+    }
+
+    public void setTotalPriceWithCurrency(String totalPriceWithCurrency) {
+        this.totalPriceWithCurrency = totalPriceWithCurrency;
+    }
+
+    public void setWebsiteFeeWithCurrency(String websiteFeeWithCurrency) {
+        this.websiteFeeWithCurrency = websiteFeeWithCurrency;
     }
 }

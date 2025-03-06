@@ -37,14 +37,17 @@ public class BookingController {
         this.listingRepository = listingRepository;
     }
 
+
     @PostMapping
     public ResponseEntity<BookingResponse> createBooking(
             @RequestBody @Valid BookingRequest bookingRequest,
             @RequestParam Long userId,
             @RequestParam Long listingId) {
         BookingResponse createdBooking = bookingService.createBooking(bookingRequest, userId, listingId);
+
         return ResponseEntity.status(CREATED).body(createdBooking);
     }
+
 
     @GetMapping
     public ResponseEntity<List<BookingRequest>> getAllBooking() {

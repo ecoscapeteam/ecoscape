@@ -58,7 +58,7 @@ public class BookingService {
         bookingResponse.setGuests(booking.getGuests());
         bookingResponse.setPricePerNight(booking.getListing().getPricePerNight());
         bookingResponse.setCleaningFee(booking.getListing().getCleaningFee());
-        bookingResponse.setWebsite_Fee(BigDecimal.valueOf(serviceFee));
+        bookingResponse.setWebsiteFee(BigDecimal.valueOf(serviceFee));
         bookingResponse.setTotalPrice(booking.getTotalPrice());
 
 
