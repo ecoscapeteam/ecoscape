@@ -45,6 +45,10 @@ public class User {
     @Column(name = "photo_url")
     private String photoUrl;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private UserStatus userStatus;
+
     @Column(nullable = false, name = "birth_date")
     private LocalDate birthDate;
 
@@ -67,6 +71,14 @@ public class User {
     private Set<Role> roles;
 
     public User() {
+    }
+
+    public UserStatus getUserStatus() {
+        return userStatus;
+    }
+
+    public void setUserStatus(UserStatus userStatus) {
+        this.userStatus = userStatus;
     }
 
     public Long getId() {
