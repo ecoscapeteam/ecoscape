@@ -5,14 +5,14 @@ import com.java2024.ecoscape.dto.ListingResponse;
 import com.java2024.ecoscape.dto.ListingRulesDTO;
 import com.java2024.ecoscape.models.Listing;
 import com.java2024.ecoscape.models.Rules;
+import com.java2024.ecoscape.models.Status;
 import com.java2024.ecoscape.models.User;
-import com.java2024.ecoscape.repositories.ListingRepository;
-import com.java2024.ecoscape.repositories.RulesRepository;
-import com.java2024.ecoscape.repositories.UserRepository;
+import com.java2024.ecoscape.repositories.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -25,13 +25,17 @@ public class ListingService {
     private final UserRepository userRepository;
     private final RulesService rulesService;
     private final ListingAvailableDatesService listingAvailableDatesService;
+    private final ListingAvailableDatesRepository listingAvailableDatesRepository;
+    private final BookingRepository bookingRepository;
 
-    public ListingService(ListingRepository listingRepository, UserRepository userRepository, RulesRepository rulesRepository, RulesService rulesService, ListingAvailableDatesService listingAvailableDatesService) {
+    public ListingService(ListingRepository listingRepository, UserRepository userRepository, RulesRepository rulesRepository, RulesService rulesService, ListingAvailableDatesService listingAvailableDatesService, ListingAvailableDatesRepository listingAvailableDatesRepository, BookingRepository bookingRepository) {
         this.listingRepository = listingRepository;
         this.rulesRepository = rulesRepository;
         this.userRepository = userRepository;
         this.rulesService = rulesService;
         this.listingAvailableDatesService = listingAvailableDatesService;
+        this.listingAvailableDatesRepository = listingAvailableDatesRepository;
+        this.bookingRepository = bookingRepository;
     }
 
     //metod för att skaffa listing
@@ -122,8 +126,17 @@ public class ListingService {
         return listingRepository.save(listing);
     }
     //metod for att ta bort en listing
+    @Transactional
     public void deleteListingById(Long id){
-        Listing listing = listingRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Lisitng not found"));
+        Listing listing = listingRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Listig not found"));
+        //kallar JPA metod, kollar att inte hosten kan ta bort listingen ifall det finns aktuella eller framtida bokningar som är inte avbokade
+        if(bookingRepository.existsByListingIdAndEndDateAfterAndStatus(id, LocalDate.now(), Status.CONFIRMED)){
+            throw new IllegalArgumentException("You cannot delete the listing with actual or future booking!");
+        }
+        //om listingen har availabible dates, ska de tas bort innan listingen tas bort
+        if (listingAvailableDatesRepository.existsByListingId(id)) {
+            listingAvailableDatesService.deleteAllAvailableDatesByHostOfAListing(id);
+        }
         listingRepository.delete(listing);
     }
 

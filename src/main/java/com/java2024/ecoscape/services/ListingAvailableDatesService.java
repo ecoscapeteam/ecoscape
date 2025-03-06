@@ -23,7 +23,7 @@ public class ListingAvailableDatesService {
         this.listingAvailableDatesRepository = listingAvailableDatesRepository;
         this.listingRepository = listingRepository;
     }
-
+    @Transactional
     public ListingAvailableDatesResponse setAvailableDates(Long listingId, ListingAvailableDatesRequest listingAvailableDatesRequest){
         Listing listing = listingRepository.findById(listingId).orElseThrow(() -> new NoSuchElementException("Listing not found"));
 
@@ -76,7 +76,12 @@ public class ListingAvailableDatesService {
         }
     }
 
-
+    public boolean checkAvailability(Long listingId, LocalDate startDate, LocalDate endDate) {
+        listingRepository.findById(listingId).orElseThrow(() -> new NoSuchElementException("Listing not found"));
+        boolean isAvailable = listingAvailableDatesRepository.existsByListingIdAndStartDateBeforeAndEndDateAfter(
+                listingId, endDate, startDate);
+        return isAvailable;
+    }
 
     //metod overloading
     public List<ListingAvailableDatesResponse> convertListingAvailableDatesEntityToListingAvailableDatesResponse(List<ListingAvailableDates> listingAvailableDatesList){

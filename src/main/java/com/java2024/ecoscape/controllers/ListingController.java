@@ -39,9 +39,9 @@ public class ListingController {
     }
 
     @DeleteMapping("/{listingId}")
-    public ResponseEntity<Listing> deleteListingById(@PathVariable Long listingId) {
+    public ResponseEntity<String> deleteListingById(@PathVariable Long listingId) {
         listingService.deleteListingById(listingId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Listing successfully deleted!");
 
     }
 /*

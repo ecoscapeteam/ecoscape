@@ -26,6 +26,8 @@ import static com.java2024.ecoscape.models.Status.CONFIRMED;
 @Service
 public class BookingService {
 
+    private final ListingService listingService;
+    private final ListingAvailableDatesService listingAvailableDatesService;
     @Value("${service.fees}")
     private Double serviceFee;
 
@@ -33,10 +35,12 @@ public class BookingService {
     private final UserRepository userRepository;
     private final ListingRepository listingRepository;
 
-    public BookingService(BookingRepository bookingRepository, UserRepository userRepository, ListingRepository listingRepository) {
+    public BookingService(BookingRepository bookingRepository, UserRepository userRepository, ListingRepository listingRepository, ListingService listingService, ListingAvailableDatesService listingAvailableDatesService) {
         this.bookingRepository = bookingRepository;
         this.userRepository = userRepository;
         this.listingRepository = listingRepository;
+        this.listingService = listingService;
+        this.listingAvailableDatesService = listingAvailableDatesService;
     }
 
     public BookingResponse convertBookingEntityToBookingResponse(Booking booking ) {
@@ -109,6 +113,12 @@ public class BookingService {
                 .orElseThrow(() -> new NoSuchElementException("Listing not found"));
         // list to collect errors so they all appear at one
         List<String>errors = new ArrayList<>();
+
+
+        //availability check
+        if (!listingAvailableDatesService.checkAvailability(listingId, bookingRequest.getStartDate(), bookingRequest.getEndDate())) {
+            errors.add("The listing is unavailable for the requested dates.");
+        }
 
         // control can not have guests more than capacity in listing
         if (bookingRequest.getGuests() > listing.getCapacity()) {
