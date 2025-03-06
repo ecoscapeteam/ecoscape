@@ -27,6 +27,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<String> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
-        return new ResponseEntity<>("Duplicate entry detected. Please ensure the data is unique and don't already existing in database", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("Data integrity violation error : " + ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
