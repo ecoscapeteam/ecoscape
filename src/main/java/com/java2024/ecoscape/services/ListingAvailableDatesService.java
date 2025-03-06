@@ -94,7 +94,7 @@ public class ListingAvailableDatesService {
 
     public ListingAvailableDatesResponse convertListingAvailableDatesEntityToListingAvailableDatesResponse(ListingAvailableDates listingAvailableDates) {
         ListingAvailableDatesResponse listingAvailableDatesResponse = new ListingAvailableDatesResponse();
-        listingAvailableDatesResponse.setListingId(listingAvailableDates.getId());
+        listingAvailableDatesResponse.setListingId(listingAvailableDates.getListing().getId());
         listingAvailableDatesResponse.setStartDate(listingAvailableDates.getStartDate());
         listingAvailableDatesResponse.setEndDate(listingAvailableDates.getEndDate());
         return listingAvailableDatesResponse;

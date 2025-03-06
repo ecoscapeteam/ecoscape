@@ -19,15 +19,11 @@ public class BookingResponse {
     private LocalDate startDate;
     private LocalDate endDate;
     private Status status;
-    private int guests;
+    private Integer guests;
     private BigDecimal pricePerNight;
     private BigDecimal websiteFee;
     private BigDecimal cleaningFee;
     private BigDecimal totalPrice;
-    private String pricePerNightWithCurrency;
-    private String websiteFeeWithCurrency;
-    private String cleaningFeeWithCurrency;
-    private String totalPriceWithCurrency;
 
     public Long getBookingId() {
         return bookingId;
@@ -147,48 +143,5 @@ public class BookingResponse {
 
     public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
-    }
-
-    // Getters مع عملة (لا يؤثر على القيم الأصلية)
-    @JsonGetter("pricePerNightWithCurrency")
-    public String getPricePerNightWithCurrency() {
-        return formatWithCurrency(pricePerNight);
-    }
-
-    @JsonGetter("cleaningFeeWithCurrency")
-    public String getCleaningFeeWithCurrency() {
-        return formatWithCurrency(cleaningFee);
-    }
-
-    @JsonGetter("websiteFeeWithCurrency")
-    public String getWebsiteFeeWithCurrency() {
-        return formatWithCurrency(websiteFee);
-    }
-
-    @JsonGetter("totalPriceWithCurrency")
-    public String getTotalPriceWithCurrency() {
-        return formatWithCurrency(totalPrice);
-    }
-
-    // دالة مساعدة لإضافة العملة
-    private String formatWithCurrency(BigDecimal value) {
-        if (value == null) return "0.00 kr";
-        return value.setScale(2, RoundingMode.HALF_UP) + " kr";
-    }
-
-    public void setPricePerNightWithCurrency(String pricePerNightWithCurrency) {
-        this.pricePerNightWithCurrency = pricePerNightWithCurrency;
-    }
-
-    public void setCleaningFeeWithCurrency(String cleaningFeeWithCurrency) {
-        this.cleaningFeeWithCurrency = cleaningFeeWithCurrency;
-    }
-
-    public void setTotalPriceWithCurrency(String totalPriceWithCurrency) {
-        this.totalPriceWithCurrency = totalPriceWithCurrency;
-    }
-
-    public void setWebsiteFeeWithCurrency(String websiteFeeWithCurrency) {
-        this.websiteFeeWithCurrency = websiteFeeWithCurrency;
     }
 }
