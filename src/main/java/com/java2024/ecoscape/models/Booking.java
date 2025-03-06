@@ -69,9 +69,9 @@ public class Booking {
     @Max(10)
     private int guests;
 
-    @Column(name = ("websites_fee"))
+    @Column(name = ("website_fee"))
     @Transient
-    private BigDecimal websitesFee;
+    private BigDecimal websiteFee;
 
     @Column(name = ("total_price"))
     private BigDecimal totalPrice;
@@ -159,12 +159,12 @@ public class Booking {
         this.guests = guests;
     }
 
-    public BigDecimal getWebsitesFee() {
-        return websitesFee;
+    public BigDecimal getWebsiteFee() {
+        return websiteFee;
     }
 
-    public void setWebsitesFee(BigDecimal websitesFee) {
-        this.websitesFee = websitesFee;
+    public void setWebsitesFee(BigDecimal websiteFee) {
+        this.websiteFee = websiteFee;
     }
 
     public BigDecimal getTotalPrice() {
@@ -175,7 +175,7 @@ public class Booking {
         this.totalPrice = totalPrice;
     }
 
-    public String getUsersContactPhoneNumber(String usersContactPhoneNumber) {
+    public String getUsersContactPhoneNumber() {
         return this.usersContactPhoneNumber;
     }
 
