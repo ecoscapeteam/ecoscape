@@ -26,14 +26,14 @@ public class Booking {
     private Listing listing;  // foreign key Listing table
 
     @Column(name = ("first_name"))
-    //@NotBlank(message = "First name canot be null.")
-    @Pattern(regexp = "^[a-zA-Z ]+$", message = "Only letters and spaces are allowed.")
+    @NotBlank(message = "First name canot be null.")
+    @Pattern(regexp = "^[a-zA-Z ]+$", message = "Your first name can be only letters and spaces are allowed.")
     @Size(max = 50, message = "Your first name cannot be longer than 50 characters.")
     private String firstName;
 
     @Column(name = ("last_name"))
-    // @NotBlank(message = "Last name cannot be null.")
-    @Pattern(regexp = "^[a-zA-Z ]+$", message = "Only letters and spaces are allowed.")
+    @NotBlank(message = "Last name cannot be null.")
+    @Pattern(regexp = "^[a-zA-Z ]+$", message = "Your last name can be only letters and spaces are allowed.")
     @Size(max = 50, message = "Your last name cannot be longer than 50 characters.")
     private String lastName;
 
@@ -43,10 +43,10 @@ public class Booking {
     private String usersContactPhoneNumber;
 
     @Column(name = ("email"))
-    @Pattern(regexp = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$",
+    @Pattern(regexp = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@[a-zA-Z0-9-]+(?:\\.[a-zA-Z]{2,})+$",
             message = "That's not a valid email.")
     @NotNull(message = "Email cannot be null.")
-    @Size(max = 30)
+    @Size(max = 30, message = "Email connot be longer than 30 characters.")
     private String usersContactEmail;
 
 
@@ -65,9 +65,9 @@ public class Booking {
 
     @Column(name = ("guests"))
     @NotNull(message = "Guests cannot be null.")
-    @Min(1)  // Minimum 1 guest
-    @Max(10)
-    private int guests;
+    @Min(value = 1, message = "Guests must be at least 1.")
+    @Max(value = 10, message = "Guests cannot be more than 10.")
+    private Integer guests;
 
     @Column(name = ("website_fee"))
     @Transient
@@ -185,4 +185,3 @@ public class Booking {
 
 
 }
-

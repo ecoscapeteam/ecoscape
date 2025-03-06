@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -27,16 +26,17 @@ import static com.java2024.ecoscape.models.Status.CONFIRMED;
 @Service
 public class BookingService {
 
-    private final ListingService listingService;
-    private final ListingAvailableDatesService listingAvailableDatesService;
-    @Value("${service.fees}")
+    @Value("${service.fee:0.1}")
     private Double serviceFee;
 
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ListingRepository listingRepository;
+    private final ListingAvailableDatesService listingAvailableDatesService;
+    private final ListingService listingService;
 
-    public BookingService(BookingRepository bookingRepository, UserRepository userRepository, ListingRepository listingRepository, ListingService listingService, ListingAvailableDatesService listingAvailableDatesService) {
+    public BookingService(BookingRepository bookingRepository, UserRepository userRepository, ListingRepository listingRepository, ListingService listingService, ListingAvailableDatesService listingAvailableDatesService
+    ) {
         this.bookingRepository = bookingRepository;
         this.userRepository = userRepository;
         this.listingRepository = listingRepository;
@@ -49,17 +49,23 @@ public class BookingService {
         bookingResponse.setBookingId(booking.getId());
         bookingResponse.setUserId(booking.getUser().getId());
         bookingResponse.setListingId(booking.getListing().getId());
-        bookingResponse.setFirstName(booking.getUser().getFirstName());
-        bookingResponse.setLastName(booking.getUser().getLastName());
-        bookingResponse.setUsersContactPhoneNumber(booking.getUser().getContactPhoneNumber());
-        bookingResponse.setUsersContactEmail(booking.getUser().getContactEmail());
+        bookingResponse.setFirstName(booking.getFirstName());
+        bookingResponse.setLastName(booking.getLastName());
+        bookingResponse.setUsersContactPhoneNumber(booking.getUsersContactPhoneNumber());
+        bookingResponse.setUsersContactEmail(booking.getUsersContactEmail());
         bookingResponse.setStartDate(booking.getStartDate());
         bookingResponse.setEndDate(booking.getEndDate());
         bookingResponse.setStatus(booking.getStatus());
         bookingResponse.setGuests(booking.getGuests());
         bookingResponse.setPricePerNight(booking.getListing().getPricePerNight());
         bookingResponse.setCleaningFee(booking.getListing().getCleaningFee());
-        bookingResponse.setWebsiteFee(BigDecimal.valueOf(serviceFee));
+        long nights = ChronoUnit.DAYS.between(booking.getStartDate(), booking.getEndDate());
+        BigDecimal serviceFeeInKr = booking.getListing().getPricePerNight()
+                .multiply(BigDecimal.valueOf(nights))  // عدد الليالي
+                .multiply(BigDecimal.valueOf(serviceFee)) // الخدمة
+                .setScale(2, RoundingMode.HALF_UP);
+        bookingResponse.setWebsiteFee(serviceFeeInKr);
+
         bookingResponse.setTotalPrice(booking.getTotalPrice());
 
 
@@ -90,13 +96,14 @@ public class BookingService {
 
         return booking;
     }
-    //Method to calculate Total price
     private BigDecimal calculateTotalPrice(Booking booking, Listing listing) {
         long nights = ChronoUnit.DAYS.between(booking.getStartDate(), booking.getEndDate());
         BigDecimal nightsBD = BigDecimal.valueOf(nights);
-        BigDecimal pricePerNight = listing.getPricePerNight();
-        BigDecimal cleaningFee = listing.getCleaningFee();
-        BigDecimal serviceFeeBD = pricePerNight.multiply(BigDecimal.valueOf(0.1)); // 10% رسوم خدمة
+
+        BigDecimal pricePerNight = listing.getPricePerNight() != null ? listing.getPricePerNight() : BigDecimal.ZERO;
+        BigDecimal cleaningFee = listing.getCleaningFee() != null ? listing.getCleaningFee() : BigDecimal.ZERO;
+
+        BigDecimal serviceFeeBD = pricePerNight.multiply(nightsBD).multiply(BigDecimal.valueOf(serviceFee));
 
         return pricePerNight.multiply(nightsBD)
                 .add(cleaningFee)
@@ -105,7 +112,6 @@ public class BookingService {
     }
 
 
-    @Transactional
     public BookingResponse createBooking(BookingRequest bookingRequest, Long userId, Long listingId) {
         // Find user and listing
         User user = userRepository.findById(userId)
@@ -114,41 +120,85 @@ public class BookingService {
                 .orElseThrow(() -> new NoSuchElementException("Listing not found"));
         // list to collect errors so they all appear at one
         List<String>errors = new ArrayList<>();
-
-
-        //availability check
+//availability check
         if (!listingAvailableDatesService.checkAvailability(listingId, bookingRequest.getStartDate(), bookingRequest.getEndDate())) {
             errors.add("The listing is unavailable for the requested dates.");
         }
+
 
         // control can not have guests more than capacity in listing
         if (bookingRequest.getGuests() > listing.getCapacity()) {
             errors.add("The number of guests exceeds the capacity for this listing.");
         }
-
         // control can not be end date before start date
         if (bookingRequest.getEndDate().isBefore(bookingRequest.getStartDate())) {
             errors.add("Check-out date cannot be before check-in date.");
         }
+        // Validate First Name
+        if (bookingRequest.getFirstName() == null || bookingRequest.getFirstName().trim().isEmpty()) {
+            errors.add("First name cannot be null or empty.");
+        } else if (!bookingRequest.getFirstName().matches("^[a-zA-Z ]+$")) {
+            errors.add("First name can only contain letters and spaces.");
+        } else if (bookingRequest.getFirstName().length() > 50) {
+            errors.add("First name cannot be longer than 50 characters.");
+        }
 
-        // if have two errors together, sen exception with what is wrong
+        // Validate Last Name
+        if (bookingRequest.getLastName() == null || bookingRequest.getLastName().trim().isEmpty()) {
+            errors.add("Last name cannot be null or empty.");
+        } else if (!bookingRequest.getLastName().matches("^[a-zA-Z ]+$")) {
+            errors.add("Last name can only contain letters and spaces.");
+        } else if (bookingRequest.getLastName().length() > 50) {
+            errors.add("Last name cannot be longer than 50 characters.");
+        }
+
+        // Validate Phone Number
+        if (bookingRequest.getUsersContactPhoneNumber() == null || bookingRequest.getUsersContactPhoneNumber().trim().isEmpty()) {
+            errors.add("Phone number cannot be null.");
+        } else if (!bookingRequest.getUsersContactPhoneNumber().matches("^\\+\\d{1,3}\\d{9}$")) {
+            errors.add("That's not a valid phone number.");
+        }
+
+        // Validate Email
+        if (bookingRequest.getUsersContactEmail() == null || bookingRequest.getUsersContactEmail().trim().isEmpty()) {
+            errors.add("Email cannot be null.");
+        } else if (!bookingRequest.getUsersContactEmail().matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@[a-zA-Z0-9-]+(?:\\.[a-zA-Z]{2,})+$")) {
+            errors.add("That's not a valid email.");
+        } else if (bookingRequest.getUsersContactEmail().length() > 30) {
+            errors.add("Email cannot be longer than 30 characters.");
+        }
+
+        // Validate Guests
+        if (bookingRequest.getGuests() == null) {
+            errors.add("Guests cannot be null.");
+        } else if (bookingRequest.getGuests() < 1) {
+            errors.add("Guests must be at least 1.");
+        } else if (bookingRequest.getGuests() > 10) {
+            errors.add("Guests cannot be more than 10.");
+        }
+
+        // If there are errors, throw an exception with all the error messages
         if (!errors.isEmpty()) {
             throw new IllegalArgumentException(String.join("\n", errors));
         }
+
+
 
         Booking booking = convertBookingRequestToBookingEntity(bookingRequest, listing);
         booking.setUser(user);
         booking.setListing(listing);
         booking.setStatus(CONFIRMED);
-        booking.setFirstName(user.getFirstName());
-        booking.setLastName(user.getLastName());
+        booking.setFirstName(bookingRequest.getFirstName());
+        booking.setLastName(bookingRequest.getLastName());
 
+        // save booking to db
         Booking savedBooking = bookingRepository.save(booking);
-       // listingAvailableDatesService.blockAvailableDatesAfterBooking(listingId, booking);
+        // return booking response
         return convertBookingEntityToBookingResponse(savedBooking);
     }
 
 
+    // method to get all booking
     public List<BookingRequest> getAllbookings() {
         List<Booking> bookings = bookingRepository.findAll(); // Fetch all bookings from the repository
         return bookings.stream()
@@ -156,14 +206,17 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
 
+
+
+
     private BookingRequest convertBookingEntityToBookingRequest(Booking booking) {
         BookingRequest bookingRequest = new BookingRequest();
 
         bookingRequest.setFirstName(booking.getUser().getFirstName());
         bookingRequest.setLastName(booking.getUser().getLastName());
 
-        bookingRequest.setUsersContactEmail(booking.getUser().getContactEmail());
-        bookingRequest.setUsersContactPhoneNumber(booking.getUser().getContactPhoneNumber());
+        bookingRequest.setUsersContactEmail(booking.getUsersContactEmail());
+        bookingRequest.setUsersContactPhoneNumber(booking.getUsersContactPhoneNumber());
         bookingRequest.setStartDate(booking.getStartDate());
         bookingRequest.setEndDate(booking.getEndDate());
         bookingRequest.setGuests(booking.getGuests());
@@ -256,8 +309,5 @@ public class BookingService {
                 })
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Booking not found")); // Return error message with HTTP 404 status
     }
-
-
-
-
 }
+

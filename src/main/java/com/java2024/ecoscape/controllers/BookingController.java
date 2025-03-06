@@ -11,10 +11,12 @@ import com.java2024.ecoscape.services.BookingService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -37,15 +39,29 @@ public class BookingController {
         this.listingRepository = listingRepository;
     }
 
-
     @PostMapping
-    public ResponseEntity<BookingResponse> createBooking(
+    public ResponseEntity<?> createBooking(
             @RequestBody @Valid BookingRequest bookingRequest,
             @RequestParam Long userId,
-            @RequestParam Long listingId) {
+            @RequestParam Long listingId,
+            BindingResult bindingResult) {
+
+        // إذا كانت هناك أخطاء في التحقق من الصحة
+        if (bindingResult.hasErrors()) {
+            // جمع الأخطاء
+            String errorMessage = bindingResult.getAllErrors().stream()
+                    .map(error -> error.getDefaultMessage())
+                    .collect(Collectors.joining(", "));
+
+            // إرجاع رسالة الأخطاء كاستجابة
+            return ResponseEntity.badRequest().body(errorMessage);
+        }
+
+        // إذا لم تكن هناك أخطاء، قم بإنشاء الحجز
         BookingResponse createdBooking = bookingService.createBooking(bookingRequest, userId, listingId);
 
-        return ResponseEntity.status(CREATED).body(createdBooking);
+        // إرجاع الحجز الذي تم إنشاؤه
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdBooking);
     }
 
 
