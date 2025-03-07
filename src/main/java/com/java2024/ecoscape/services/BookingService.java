@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -104,7 +105,7 @@ public class BookingService {
     }
 
 
-
+    @Transactional
     public BookingResponse createBooking(BookingRequest bookingRequest, Long userId, Long listingId) {
         // Find user and listing
         User user = userRepository.findById(userId)
@@ -143,6 +144,7 @@ public class BookingService {
         booking.setLastName(user.getLastName());
 
         Booking savedBooking = bookingRepository.save(booking);
+       // listingAvailableDatesService.blockAvailableDatesAfterBooking(listingId, booking);
         return convertBookingEntityToBookingResponse(savedBooking);
     }
 
@@ -254,6 +256,8 @@ public class BookingService {
                 })
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Booking not found")); // Return error message with HTTP 404 status
     }
+
+
 
 
 }

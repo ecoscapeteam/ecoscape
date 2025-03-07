@@ -13,6 +13,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     boolean existsByListingIdAndEndDateAfterAndStatus(Long listingId, LocalDate today, Status status);
 
-
+    void deleteByListingId(Long listingId);
 
 }

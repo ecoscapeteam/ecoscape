@@ -6,10 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Entity
-@Table(
-        name = "listing_available_dates",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"start_date", "end_date"})
-)
+@Table(name = "listing_available_dates",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"listing_id", "start_date", "end_date"}))
 public class ListingAvailableDates {
 
     @Id
