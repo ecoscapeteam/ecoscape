@@ -71,6 +71,18 @@ public class BookingController {
         return new ResponseEntity<>(bookings, HttpStatus.OK); // return bookingDTO list with ok
     }
 
+@PatchMapping("/{id}/cancel/user")
+public ResponseEntity<?> cancelByUser(@PathVariable Long id) {
+    BookingResponse response = bookingService.cancelBookingByUser(id);
+    return ResponseEntity.ok(response);
+
+}
+@PatchMapping("/{id}/cancel/host")
+public ResponseEntity<?> cancelByHost(@PathVariable Long id) {
+        BookingResponse response = bookingService.cancelBookingByHost(id);
+        return ResponseEntity.ok(response);
+}
+
 
     @PutMapping("/{bookingId}")
     public ResponseEntity<BookingResponse> updateBooking(@PathVariable Long bookingId,
