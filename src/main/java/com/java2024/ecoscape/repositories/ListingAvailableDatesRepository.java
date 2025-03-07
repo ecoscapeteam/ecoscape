@@ -22,11 +22,26 @@ public interface ListingAvailableDatesRepository extends JpaRepository<ListingAv
 
     public Optional<ListingAvailableDates> findByListingIdAndStartDateAndEndDate(Long listingId, LocalDate startDate, LocalDate endDate);
 
+
+    @Query("SELECT l.listing.id FROM ListingAvailableDates l WHERE l.id = :availableDatesId")
+    Long findListingIdByAvailableDatesId(@Param("availableDatesId") Long availableDatesId);
+
     @Query("SELECT COUNT(l) > 0 FROM ListingAvailableDates l WHERE l.listing.id = :listingId AND " +
             "((l.startDate <= :endDate AND l.endDate >= :startDate))")
     boolean existsByListingIdAndOverlappingDates(@Param("listingId") Long listingId,
                                                  @Param("startDate") LocalDate startDate,
                                                  @Param("endDate") LocalDate endDate);
+
+    @Query("SELECT l FROM ListingAvailableDates l " +
+            "WHERE l.listing.id = :listingId " +
+            "AND l.startDate <= :endDate " +
+            "AND l.endDate >= :startDate")
+    ListingAvailableDates findOverlappingDateRange(@Param("listingId") Long listingId,
+                                                   @Param("startDate") LocalDate startDate,
+                                                   @Param("endDate") LocalDate endDate);
+
+
+
 
 
 

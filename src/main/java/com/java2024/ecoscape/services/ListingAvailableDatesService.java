@@ -34,7 +34,7 @@ public class ListingAvailableDatesService {
         LocalDate oneYearFromNow = LocalDate.now().plusYears(1);
         ListingAvailableDates listingAvailableDates = convertListingAvailableDatesRequestToAvailableDatesEntity(listingAvailableDatesRequest);
         LocalDate endDate = listingAvailableDates.getEndDate();
-
+    //felhantering av eventuella overlap
         Optional<ListingAvailableDates> existingDateRange = listingAvailableDatesRepository
                 .findByListingIdAndStartDateAndEndDate(listingId, listingAvailableDates.getStartDate(), listingAvailableDates.getEndDate());
 
@@ -48,7 +48,7 @@ public class ListingAvailableDatesService {
         if(isOverlapping){
             throw new DataIntegrityViolationException("The available date range overlaps with an existing range.");
         }
-
+//felhantering av eventuella försök av hosten att lägga availability for mer än 1 år framåt
         if (endDate.isAfter(oneYearFromNow)) {
             throw new IllegalArgumentException("The availability cannot be more than one year ahead .");
         }
@@ -72,9 +72,35 @@ public class ListingAvailableDatesService {
     }
 
     public ListingAvailableDatesResponse updateSingleAvailableDates(Long listingAvailableDatesId, LocalDate newStartDate, LocalDate newEndDate){
-        ListingAvailableDates listingAvailableDates = listingAvailableDatesRepository.findById(listingAvailableDatesId).orElseThrow(() -> new NoSuchElementException("No such available dates "));
+        ListingAvailableDates listingAvailableDates = listingAvailableDatesRepository
+                .findById(listingAvailableDatesId).orElseThrow(() -> new NoSuchElementException("No such available dates "));
         listingAvailableDates.setStartDate(newStartDate);
         listingAvailableDates.setEndDate(newEndDate);
+        //felhantering av eventuella overlap, kallar på native JPA metoden findListing för att hitta listingId efter singleAvailableDateId
+        Long listingId = listingAvailableDatesRepository.findListingIdByAvailableDatesId(listingAvailableDatesId);
+        Optional<ListingAvailableDates> existingDateRange = listingAvailableDatesRepository
+                .findByListingIdAndStartDateAndEndDate(listingId, listingAvailableDates.getStartDate(), listingAvailableDates.getEndDate());
+
+        //kollar att inte available dates existerar, dvs behöver inte updateras om det är samma
+        if (existingDateRange.isPresent()) {
+            throw new DataIntegrityViolationException("The available date range already exists.");
+        }
+        boolean isOverlapping = listingAvailableDatesRepository.existsByListingIdAndOverlappingDates(
+                listingId, listingAvailableDates.getStartDate(), listingAvailableDates.getEndDate());
+
+//kollr att det inte finns överlapp och att inte det är samma available dates som vi vill ändra på
+        ListingAvailableDates overlappingDates = listingAvailableDatesRepository.findOverlappingDateRange(listingId, newStartDate, newEndDate);
+        if (isOverlapping && !overlappingDates.getId().equals(listingAvailableDatesId)) {
+            throw new DataIntegrityViolationException("The available date range overlaps with an existing range.");
+        }
+
+//felhantering av eventuella försök av hosten att lägga availability for mer än 1 år framåt
+        LocalDate oneYearFromNow = LocalDate.now().plusYears(1);
+        if (newEndDate.isAfter(oneYearFromNow)) {
+            throw new IllegalArgumentException("The availability cannot be more than one year ahead .");
+        }
+        Listing listing = listingRepository.findById(listingId).orElseThrow(() -> new NoSuchElementException("Listing not found"));
+        listingAvailableDates.setListing(listing);
         ListingAvailableDates updateListingAvailableDates = listingAvailableDatesRepository.save(listingAvailableDates);
         return convertListingAvailableDatesEntityToListingAvailableDatesResponse(updateListingAvailableDates);
     }
