@@ -1,26 +1,47 @@
 package com.java2024.ecoscape.dto;
 
+import com.java2024.ecoscape.models.UserStatus;
+
 import java.time.LocalDate;
 
 public class UserRequest {
+    private Long userId;
     private String firstName;
     private String lastName;
     private String bio;
     private String photoUrl;
+    private UserStatus status;
     private LocalDate birthDate;
     private String contactPhoneNumber;
     private String contactEmail;
 
-    public UserRequest(String firstName, String lastName, String bio, String photoUrl, LocalDate birthDate, String contactPhoneNumber, String contactEmail) {
+    public UserRequest(Long userId, String firstName, String lastName, String bio, String photoUrl, UserStatus status, LocalDate birthDate, String contactPhoneNumber, String contactEmail) {
+        this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.bio = bio;
         this.photoUrl = photoUrl;
+        this.status = status;
         this.birthDate = birthDate;
         this.contactPhoneNumber = contactPhoneNumber;
         this.contactEmail = contactEmail;
     }
 
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public UserStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(UserStatus status) {
+        this.status = status;
+    }
 
     public String getFirstName() {
         return firstName;

@@ -1,5 +1,7 @@
 package com.java2024.ecoscape.dto;
 
+import com.java2024.ecoscape.models.UserStatus;
+
 import java.time.LocalDate;
 
 public class UserResponse {
@@ -8,23 +10,32 @@ public class UserResponse {
     private String firstName;
     private String lastName;
     private String bio;
+    private UserStatus status;
     private String photoUrl;
     private LocalDate birthDate;
     private String contactPhoneNumber;
     private String contactEmail;
 
-    public UserResponse(long id, String username, String firstName, String lastName, String bio, String photoUrl, LocalDate birthDate, String contactPhoneNumber, String contactEmail) {
+    public UserResponse(long id, String username, String firstName, String lastName, String bio, UserStatus status, String photoUrl, LocalDate birthDate, String contactPhoneNumber, String contactEmail) {
         this.id = id;
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.bio = bio;
+        this.status = status;
         this.photoUrl = photoUrl;
         this.birthDate = birthDate;
         this.contactPhoneNumber = contactPhoneNumber;
         this.contactEmail = contactEmail;
     }
 
+    public UserStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(UserStatus status) {
+        this.status = status;
+    }
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
