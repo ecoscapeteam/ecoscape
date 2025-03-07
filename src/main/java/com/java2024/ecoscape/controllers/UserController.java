@@ -21,6 +21,13 @@ public class UserController {
         this.userService = userService;
     }
 
+    @PostMapping("/request/{id}")
+    public ResponseEntity<?> requestHost(@PathVariable Long id) {
+        userService.hostRequest(id);
+
+        return ResponseEntity.ok("Your request to become a host has been successfully applied!");
+    }
+
     @GetMapping
     //@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     //change to only admin once we publish
@@ -42,6 +49,7 @@ public class UserController {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getBio(),
+                user.getUserStatus(),
                 user.getPhotoUrl(),
                 user.getBirthDate(),
                 user.getContactPhoneNumber(),
@@ -53,13 +61,13 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @Valid @RequestBody UserRequest userRequest) {
-        if(userService.existsByContactEmail(userRequest.getContactEmail())) {
+        if(userService.existsByContactEmailAndIdNot(userRequest.getContactEmail(), id)) {
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
                     .body("That contact email already exists");
         }
 
-        if(userService.existsByContactPhoneNumber(userRequest.getContactPhoneNumber())) {
+        if(userService.existsByContactPhoneNumberAndIdNot(userRequest.getContactPhoneNumber(), id)) {
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
                     .body("That contact phone number already exists");
