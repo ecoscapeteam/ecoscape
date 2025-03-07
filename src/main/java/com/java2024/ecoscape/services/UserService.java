@@ -44,6 +44,10 @@ public class UserService {
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
     }
 
+    public List<User> findUserByStatus(UserStatus userStatus) {
+        return userRepository.findUserByUserStatus(UserStatus.PENDING);
+    }
+
     public boolean existsByContactEmailAndIdNot(String contactEmail, Long id) {
         return userRepository.findByContactEmailAndIdNot(contactEmail, id).isPresent();
     }
@@ -98,6 +102,51 @@ public class UserService {
     public User findUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
+    }
+
+    public User rejectHostRequest(Long id) {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+
+        if (existingUser.getUserStatus() == UserStatus.REJECTED) {
+            throw new IllegalArgumentException("That user has already been rejected, they'll have to do a new request.");
+        }
+
+        if (existingUser.getUserStatus() == UserStatus.APPROVED) {
+            throw new IllegalArgumentException("You can't reject an already approved user.");
+        }
+
+        if (existingUser.getUserStatus() != UserStatus.PENDING) {
+            throw new IllegalArgumentException("The user has not requested the ability to become a host.");
+        }
+
+        existingUser.setUserStatus(UserStatus.REJECTED);
+
+        return userRepository.save(existingUser);
+    }
+
+    public User approveHostRequest(Long id) {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+
+        if (existingUser.getUserStatus() == UserStatus.REJECTED) {
+            throw new IllegalArgumentException("That user has already been rejected, they'll have to do a new request.");
+        }
+
+        if (existingUser.getUserStatus() == UserStatus.APPROVED) {
+            throw new IllegalArgumentException("That user has already been approved.");
+        }
+
+        if (existingUser.getUserStatus() != UserStatus.PENDING) {
+            throw new IllegalArgumentException("The user has not requested the ability to become a host.");
+        }
+
+        existingUser.setUserStatus(UserStatus.APPROVED);
+
+        existingUser.getRoles().add(Role.HOST);
+        existingUser.getRoles().remove(Role.USER);
+
+        return userRepository.save(existingUser);
     }
 
     public User updateUser(Long id, UserRequest userRequest) {
