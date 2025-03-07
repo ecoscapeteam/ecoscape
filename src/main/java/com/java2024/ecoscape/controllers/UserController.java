@@ -1,6 +1,7 @@
 package com.java2024.ecoscape.controllers;
 
 import com.java2024.ecoscape.dto.UserRequest;
+import com.java2024.ecoscape.dto.HostRequestResponse;
 import com.java2024.ecoscape.dto.UserResponse;
 import com.java2024.ecoscape.dto.UserUpdateDTO;
 import com.java2024.ecoscape.models.User;
@@ -64,6 +65,25 @@ public class UserController {
         );
 
         return ResponseEntity.ok(userResponse);
+    }
+
+    @PutMapping("/{id}/reject")
+    public ResponseEntity<HostRequestResponse> rejectHost(@PathVariable Long id) {
+        User user = userService.rejectUserRequest(id);
+
+        HostRequestResponse hostRequestResponse = new HostRequestResponse(
+                user.getUsername(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getBio(),
+                user.getUserStatus(),
+                user.getPhotoUrl(),
+                user.getBirthDate(),
+                user.getContactPhoneNumber(),
+                user.getContactEmail()
+        );
+
+        return ResponseEntity.ok(hostRequestResponse);
     }
 
     @PutMapping("/{id}")

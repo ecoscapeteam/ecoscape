@@ -104,6 +104,19 @@ public class UserService {
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
     }
 
+    public User rejectUserRequest(Long id) {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+
+        if (existingUser.getUserStatus() != UserStatus.PENDING) {
+            throw new IllegalArgumentException("The user has not requested the ability to become a host.");
+        }
+
+        existingUser.setUserStatus(UserStatus.REJECTED);
+
+        return userRepository.save(existingUser);
+    }
+
     public User updateUser(Long id, UserRequest userRequest) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
