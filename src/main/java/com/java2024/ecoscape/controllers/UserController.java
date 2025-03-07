@@ -67,9 +67,28 @@ public class UserController {
         return ResponseEntity.ok(userResponse);
     }
 
-    @PutMapping("/{id}/reject")
+    @PutMapping("/reject/{id}")
     public ResponseEntity<HostRequestResponse> rejectHost(@PathVariable Long id) {
-        User user = userService.rejectUserRequest(id);
+        User user = userService.rejectHostRequest(id);
+
+        HostRequestResponse hostRequestResponse = new HostRequestResponse(
+                user.getUsername(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getBio(),
+                user.getUserStatus(),
+                user.getPhotoUrl(),
+                user.getBirthDate(),
+                user.getContactPhoneNumber(),
+                user.getContactEmail()
+        );
+
+        return ResponseEntity.ok(hostRequestResponse);
+    }
+
+    @PutMapping("/approve/{id}")
+    public ResponseEntity<HostRequestResponse> approveHost(@PathVariable Long id) {
+        User user = userService.approveHostRequest(id);
 
         HostRequestResponse hostRequestResponse = new HostRequestResponse(
                 user.getUsername(),

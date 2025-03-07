@@ -104,7 +104,7 @@ public class UserService {
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
     }
 
-    public User rejectUserRequest(Long id) {
+    public User rejectHostRequest(Long id) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
 
@@ -112,7 +112,31 @@ public class UserService {
             throw new IllegalArgumentException("The user has not requested the ability to become a host.");
         }
 
+        if (existingUser.getUserStatus() == UserStatus.APPROVED) {
+            throw new IllegalArgumentException("That user has already been approved.");
+        }
+
         existingUser.setUserStatus(UserStatus.REJECTED);
+
+        return userRepository.save(existingUser);
+    }
+
+    public User approveHostRequest(Long id) {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+
+        if (existingUser.getUserStatus() == UserStatus.REJECTED) {
+            throw new IllegalArgumentException("That user has already been rejected, they'll have to do a new request.");
+        }
+
+        if (existingUser.getUserStatus() != UserStatus.PENDING) {
+            throw new IllegalArgumentException("The user has not requested the ability to become a host.");
+        }
+
+        existingUser.setUserStatus(UserStatus.APPROVED);
+
+        existingUser.getRoles().add(Role.HOST);
+        existingUser.getRoles().remove(Role.USER);
 
         return userRepository.save(existingUser);
     }
