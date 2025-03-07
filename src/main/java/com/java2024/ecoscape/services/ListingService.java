@@ -133,6 +133,7 @@ public class ListingService {
         if(bookingRepository.existsByListingIdAndEndDateAfterAndStatus(id, LocalDate.now(), Status.CONFIRMED)){
             throw new IllegalArgumentException("You cannot delete the listing with actual or future booking!");
         }
+        bookingRepository.deleteByListingId(id);
         //om listingen har availabible dates, ska de tas bort innan listingen tas bort
         if (listingAvailableDatesRepository.existsByListingId(id)) {
             listingAvailableDatesService.deleteAllAvailableDatesByHostOfAListing(id);

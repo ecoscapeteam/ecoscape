@@ -2,17 +2,21 @@ package com.java2024.ecoscape.services;
 
 import com.java2024.ecoscape.dto.ListingAvailableDatesRequest;
 import com.java2024.ecoscape.dto.ListingAvailableDatesResponse;
+import com.java2024.ecoscape.models.Booking;
 import com.java2024.ecoscape.models.Listing;
 import com.java2024.ecoscape.models.ListingAvailableDates;
 import com.java2024.ecoscape.repositories.ListingAvailableDatesRepository;
 import com.java2024.ecoscape.repositories.ListingRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.management.RuntimeErrorException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class ListingAvailableDatesService {
@@ -30,10 +34,28 @@ public class ListingAvailableDatesService {
         LocalDate oneYearFromNow = LocalDate.now().plusYears(1);
         ListingAvailableDates listingAvailableDates = convertListingAvailableDatesRequestToAvailableDatesEntity(listingAvailableDatesRequest);
         LocalDate endDate = listingAvailableDates.getEndDate();
+
+        Optional<ListingAvailableDates> existingDateRange = listingAvailableDatesRepository
+                .findByListingIdAndStartDateAndEndDate(listingId, listingAvailableDates.getStartDate(), listingAvailableDates.getEndDate());
+
+
+        if (existingDateRange.isPresent()) {
+            throw new DataIntegrityViolationException("The available date range already exists.");
+        }
+        boolean isOverlapping = listingAvailableDatesRepository.existsByListingIdAndOverlappingDates(
+                listingId, listingAvailableDates.getStartDate(), listingAvailableDates.getEndDate());
+
+        if(isOverlapping){
+            throw new DataIntegrityViolationException("The available date range overlaps with an existing range.");
+        }
+
         if (endDate.isAfter(oneYearFromNow)) {
             throw new IllegalArgumentException("The availability cannot be more than one year ahead .");
         }
+
         listingAvailableDates.setListing(listing);
+
+
         ListingAvailableDates savedListingAvailableDates = listingAvailableDatesRepository.save(listingAvailableDates);
         return convertListingAvailableDatesEntityToListingAvailableDatesResponse(savedListingAvailableDates);
     }
@@ -82,6 +104,72 @@ public class ListingAvailableDatesService {
                 listingId, endDate, startDate);
         return isAvailable;
     }
+
+
+/* ytterligare tester behövs
+    @Transactional
+    public void blockAvailableDatesAfterBooking(Long listingId, Booking newBooking) {
+        Listing listing = listingRepository.findById(listingId).orElseThrow(() -> new NoSuchElementException("Listing not found"));
+        List<ListingAvailableDates> availableDatesRangesOfListing = listingAvailableDatesRepository.findAllByListingId(listingId);
+
+        if (availableDatesRangesOfListing.isEmpty()) {
+            throw new NoSuchElementException("No available dates found for the given listing.");
+        }
+
+        LocalDate bookingStartDate = newBooking.getStartDate();
+        LocalDate bookingEndDate = newBooking.getEndDate();
+
+        for (ListingAvailableDates availableDates : availableDatesRangesOfListing) {
+            if (bookingStartDate.isBefore(availableDates.getEndDate()) && bookingEndDate.isAfter(availableDates.getStartDate())) {
+
+                if (bookingStartDate.isEqual(availableDates.getStartDate()) && bookingEndDate.isEqual(availableDates.getEndDate())) {
+                    listingAvailableDatesRepository.delete(availableDates);
+                }
+
+                //om bokningen är i mitten på range, och separerar range
+                else if (bookingStartDate.isAfter(availableDates.getStartDate()) && bookingEndDate.isBefore(availableDates.getEndDate())) {
+                    ListingAvailableDates rangeBeforeNewBooking = new ListingAvailableDates();
+                    rangeBeforeNewBooking.setListing(listing);
+                    rangeBeforeNewBooking.setStartDate(availableDates.getStartDate());
+                    rangeBeforeNewBooking.setEndDate(bookingStartDate.minusDays(1));
+                    listingAvailableDatesRepository.save(rangeBeforeNewBooking);
+                    listingAvailableDatesRepository.delete(availableDates);
+
+                    ListingAvailableDates rangeAfterBooking = new ListingAvailableDates();
+                    rangeAfterBooking.setListing(listing);
+                    rangeAfterBooking.setStartDate(bookingEndDate.plusDays(1));
+                    rangeAfterBooking.setEndDate(availableDates.getEndDate());
+                    listingAvailableDatesRepository.save(rangeAfterBooking);
+                    listingAvailableDatesRepository.delete(availableDates);
+                }
+                //om bokningen är i mitten
+                else if (bookingStartDate.isBefore(availableDates.getStartDate()) && bookingEndDate.isAfter(availableDates.getEndDate())) {
+                    listingAvailableDatesRepository.delete(availableDates);
+                }
+                //om bokningen är i början på range
+                else if (bookingStartDate.isBefore(availableDates.getStartDate()) && bookingEndDate.isBefore(availableDates.getEndDate())) {
+                    ListingAvailableDates rangeRemainingAfter = new ListingAvailableDates();
+                    rangeRemainingAfter.setListing(listing);
+                    rangeRemainingAfter.setStartDate(bookingEndDate.plusDays(1));
+                    rangeRemainingAfter.setEndDate(availableDates.getEndDate());
+                    listingAvailableDatesRepository.save(rangeRemainingAfter);
+                    listingAvailableDatesRepository.delete(availableDates);
+                }
+                //om bokningen är på slutet på range
+                else if (bookingStartDate.isAfter(availableDates.getStartDate()) && bookingEndDate.isAfter(availableDates.getEndDate())) {
+                    ListingAvailableDates rangeRemainingBefore = new ListingAvailableDates();
+                    rangeRemainingBefore.setListing(listing);
+                    rangeRemainingBefore.setStartDate(availableDates.getStartDate());
+                    rangeRemainingBefore.setEndDate(bookingStartDate.minusDays(1));
+                    listingAvailableDatesRepository.save(rangeRemainingBefore);
+                    listingAvailableDatesRepository.delete(availableDates);
+
+                }
+            }
+        }
+    } */
+
+
 
     //metod overloading
     public List<ListingAvailableDatesResponse> convertListingAvailableDatesEntityToListingAvailableDatesResponse(List<ListingAvailableDates> listingAvailableDatesList){
