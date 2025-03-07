@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-import static com.java2024.ecoscape.models.Status.CONFIRMED;
+import static com.java2024.ecoscape.models.Status.*;
 
 @Service
 public class BookingService {
@@ -120,13 +120,12 @@ public class BookingService {
                 .orElseThrow(() -> new NoSuchElementException("Listing not found"));
         // list to collect errors so they all appear at one
         List<String>errors = new ArrayList<>();
-//availability check
+        //availability check
         if (!listingAvailableDatesService.checkAvailability(listingId, bookingRequest.getStartDate(), bookingRequest.getEndDate())) {
             errors.add("The listing is unavailable for the requested dates.");
         }
 
-
-        // control can not have guests more than capacity in listing
+       // control can not have guests more than capacity in listing
         if (bookingRequest.getGuests() > listing.getCapacity()) {
             errors.add("The number of guests exceeds the capacity for this listing.");
         }
@@ -205,6 +204,29 @@ public class BookingService {
                 .map(this::convertBookingEntityToBookingRequest) // Convert each Booking entity to BookingRequest DTO
                 .collect(Collectors.toList());
     }
+
+    public BookingResponse cancelBookingByUser(Long bookingId){
+
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+       booking.setStatus(CANCELLED_BY_USER);
+       bookingRepository.save(booking);
+       return convertBookingEntityToBookingResponse(booking);
+    }
+
+    public BookingResponse cancelBookingByHost(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+
+
+        booking.setStatus(CANCELLED_BY_HOST);
+        bookingRepository.save(booking);
+
+        return convertBookingEntityToBookingResponse(booking);
+    }
+
+
 
 
 
