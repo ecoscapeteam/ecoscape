@@ -4,6 +4,7 @@ import com.java2024.ecoscape.dto.UserRequest;
 import com.java2024.ecoscape.dto.UserResponse;
 import com.java2024.ecoscape.models.Role;
 import com.java2024.ecoscape.models.User;
+import com.java2024.ecoscape.models.UserStatus;
 import com.java2024.ecoscape.repositories.ListingRepository;
 import com.java2024.ecoscape.repositories.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,16 +44,37 @@ public class UserService {
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
     }
 
-    public boolean existsByContactEmail(String contactEmail) {
-        return userRepository.findByContactEmail(contactEmail).isPresent();
+    public boolean existsByContactEmailAndIdNot(String contactEmail, Long id) {
+        return userRepository.findByContactEmailAndIdNot(contactEmail, id).isPresent();
     }
 
-    public boolean existsByContactPhoneNumber(String contactPhoneNumber) {
-        return userRepository.findByContactPhoneNumber(contactPhoneNumber).isPresent();
+    public boolean existsByContactPhoneNumberAndIdNot(String contactPhoneNumber, Long id) {
+        return userRepository.findByContactPhoneNumberAndIdNot(contactPhoneNumber, id).isPresent();
     }
 
     public boolean existsByUsername(String username) {
         return userRepository.findByUsername(username).isPresent();
+    }
+
+    public void hostRequest (Long userId) {
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+
+        if (existingUser.getFirstName() == null || existingUser.getFirstName().isEmpty()
+                || existingUser.getLastName() == null || existingUser.getLastName().isEmpty()
+                || existingUser.getContactPhoneNumber() == null || existingUser.getContactPhoneNumber().isEmpty()
+                || existingUser.getPhotoUrl() == null || existingUser.getPhotoUrl().isEmpty()
+                || existingUser.getContactEmail() == null || existingUser.getContactEmail().isEmpty()) {
+            throw new IllegalArgumentException("You need to have a filled out user profile in order to put in a request for a host role.");
+        }
+
+        if (existingUser.getBirthDate() == null) {
+            throw new IllegalArgumentException("You need to have a filled out user profile in order to put in a request for a host role.");
+        }
+
+        existingUser.setUserStatus(UserStatus.PENDING);
+
+        userRepository.save(existingUser);
     }
 
     public List<UserResponse> findAllUsers() {
@@ -65,6 +87,7 @@ public class UserService {
                         user.getFirstName(),
                         user.getLastName(),
                         user.getBio(),
+                        user.getUserStatus(),
                         user.getPhotoUrl(),
                         user.getBirthDate(),
                         user.getContactPhoneNumber(),
