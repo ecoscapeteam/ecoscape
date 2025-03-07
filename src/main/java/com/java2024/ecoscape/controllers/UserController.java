@@ -4,6 +4,7 @@ import com.java2024.ecoscape.dto.UserRequest;
 import com.java2024.ecoscape.dto.UserResponse;
 import com.java2024.ecoscape.dto.UserUpdateDTO;
 import com.java2024.ecoscape.models.User;
+import com.java2024.ecoscape.models.UserStatus;
 import com.java2024.ecoscape.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,12 @@ public class UserController {
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         List<UserResponse> users = userService.findAllUsers();
 
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/pending")
+    public ResponseEntity<List<User>> getPendingUsers() {
+        List<User> users = userService.findUserByStatus(UserStatus.PENDING);
         return ResponseEntity.ok(users);
     }
 

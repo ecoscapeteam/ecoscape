@@ -44,6 +44,10 @@ public class UserService {
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
     }
 
+    public List<User> findUserByStatus(UserStatus userStatus) {
+        return userRepository.findUserByUserStatus(UserStatus.PENDING);
+    }
+
     public boolean existsByContactEmailAndIdNot(String contactEmail, Long id) {
         return userRepository.findByContactEmailAndIdNot(contactEmail, id).isPresent();
     }
