@@ -108,12 +108,16 @@ public class UserService {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
 
-        if (existingUser.getUserStatus() != UserStatus.PENDING) {
-            throw new IllegalArgumentException("The user has not requested the ability to become a host.");
+        if (existingUser.getUserStatus() == UserStatus.REJECTED) {
+            throw new IllegalArgumentException("That user has already been rejected, they'll have to do a new request.");
         }
 
         if (existingUser.getUserStatus() == UserStatus.APPROVED) {
-            throw new IllegalArgumentException("That user has already been approved.");
+            throw new IllegalArgumentException("You can't reject an already approved user.");
+        }
+
+        if (existingUser.getUserStatus() != UserStatus.PENDING) {
+            throw new IllegalArgumentException("The user has not requested the ability to become a host.");
         }
 
         existingUser.setUserStatus(UserStatus.REJECTED);
@@ -127,6 +131,10 @@ public class UserService {
 
         if (existingUser.getUserStatus() == UserStatus.REJECTED) {
             throw new IllegalArgumentException("That user has already been rejected, they'll have to do a new request.");
+        }
+
+        if (existingUser.getUserStatus() == UserStatus.APPROVED) {
+            throw new IllegalArgumentException("That user has already been approved.");
         }
 
         if (existingUser.getUserStatus() != UserStatus.PENDING) {
