@@ -138,6 +138,5 @@ public ResponseEntity<?> cancelByHost(@PathVariable Long id) {
                 })
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Booking not found")); // Response with 404 if booking is not found
     }
-//4ZFZA81Z3UBFHXD4CGEBGF2B code to verfy sendgrid
-    // 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 code to api mail
+
 }
