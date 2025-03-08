@@ -2,6 +2,7 @@ package com.java2024.ecoscape.dto;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.java2024.ecoscape.models.Booking;
 import com.java2024.ecoscape.models.Status;
 
 import java.math.BigDecimal;
@@ -30,6 +31,9 @@ public class BookingResponse {
     private BigDecimal cleaningFee;
     private BigDecimal totalPrice;
     private String message;
+
+    public BookingResponse() {
+    }
 
     public Long getBookingId() {
         return bookingId;

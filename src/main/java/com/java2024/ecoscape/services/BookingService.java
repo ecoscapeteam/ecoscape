@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -22,16 +23,16 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-
-
 import static com.java2024.ecoscape.models.Status.*;
 
 @Service
+
 public class BookingService {
 
     private final EmailService emailService;
     @Value("${service.fee:0.1}")
     private Double serviceFee;
+
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ListingRepository listingRepository;
@@ -75,7 +76,6 @@ public class BookingService {
 
         return bookingResponse;
     }
-
     public Booking convertBookingRequestToBookingEntity(BookingRequest bookingRequest, Listing listing) {
         Booking booking = new Booking();
         booking.setFirstName(bookingRequest.getFirstName());
@@ -97,9 +97,10 @@ public class BookingService {
         // calculate Total price
         booking.setTotalPrice(calculateTotalPrice(booking, listing));
 
+
+
         return booking;
     }
-
     private BigDecimal calculateTotalPrice(Booking booking, Listing listing) {
         long nights = ChronoUnit.DAYS.between(booking.getStartDate(), booking.getEndDate());
         BigDecimal nightsBD = BigDecimal.valueOf(nights);
@@ -114,8 +115,7 @@ public class BookingService {
                 .add(serviceFeeBD)
                 .setScale(2, RoundingMode.HALF_UP);
     }
-
-
+@Transactional
     public BookingResponse createBooking(BookingRequest bookingRequest, Long userId, Long listingId) {
         // Find user and listing
         User user = userRepository.findById(userId)
@@ -194,9 +194,11 @@ public class BookingService {
         booking.setFirstName(bookingRequest.getFirstName());
         booking.setLastName(bookingRequest.getLastName());
 
+        // blokera available dates i samband med booking
+        listingAvailableDatesService.blockAvailableDatesAfterBooking(listingId, booking);
         // save booking to db
         Booking savedBooking = bookingRepository.save(booking);
-        // return booking response
+
         return convertBookingEntityToBookingResponse(savedBooking);
     }
 
@@ -209,70 +211,77 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
 
-    public BookingResponse cancelBookingByUser(Long bookingId) {
+    public BookingResponse getBookingById(Long id) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Booking not found with id: " + id));
+        // تحويل Booking إلى BookingResponse
+        return convertBookingEntityToBookingResponse(booking);
+    }
+
+
+
+    public BookingResponse cancelBookingByUser(Long bookingId){
 
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
 
-       /* // تحقق مما إذا كانت مجموعة الأدوار تحتوي على USER أو ADMIN
-        if (!user.getRoles().contains(Role.USER) && !user.getRoles().contains(Role.ADMIN)) {
-            throw new UnauthorizedActionException("Only users and admins can cancel this booking.");
-        }*/
-        // Check if it's already cancelled
-        if (booking.getStatus() == Status.CANCELLED_BY_USER || booking.getStatus() == CANCELLED_BY_HOST) {
+        // التحقق مما إذا كان الحجز قد تم إلغاؤه مسبقًا
+        if (booking.getStatus() == Status.CANCELLED_BY_USER || booking.getStatus() == Status.CANCELLED_BY_HOST) {
             throw new RuntimeException("This booking has already been cancelled.");
         }
 
        booking.setStatus(CANCELLED_BY_USER);
        bookingRepository.save(booking);
+        // تحويل الكيان إلى استجابة
+        BookingResponse bookingResponse = convertBookingEntityToBookingResponse(booking);
 
-       // send cancellation confirm to user
-        sendCancellationEmail(booking);
-        BookingResponse bookingResponse = convertBookingEntityToBookingResponse(booking) ;
-        bookingResponse.setMessage("The booking number "+ booking.getId()+
-                " has been cancelled.\nA confirmation email has been sent to your email address.\n");
+        // إضافة الرسالة إلى الاستجابة
+        bookingResponse.setMessage("The booking number " + booking.getId() + " has been cancelled. A confirmation email has been sent.");
+
         return bookingResponse;
     }
-    private void sendCancellationEmail(Booking booking) {
-        String subject = "Confirm cancellation of booking ";
-        String text = "Hello!\n"+ booking.getFirstName()+ ",\n\n"+
-                "We would like to inform you that Your reservation at listing ID"+ booking.getListing().getId()
-                +"has been canceled successfully\n"+ "Your reservation number is:" + booking.getId() +
-                ".\n\n"+ "If you need any further assistance or would like to rebook," +
-                " please feel free to contact us. we are always here to help.\n\n"
-                + "Best regards,\n The EcoScape Team.";
-        emailService.sendEmail(booking.getUsersContactEmail(), subject, text);
-
-        }
 
     public BookingResponse cancelBookingByHost(Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
-        // Check if it's already cancelled
-        if (booking.getStatus() == Status.CANCELLED_BY_USER || booking.getStatus() == CANCELLED_BY_HOST) {
+        // التحقق مما إذا كان الحجز قد تم إلغاؤه مسبقًا
+        if (booking.getStatus() == Status.CANCELLED_BY_USER || booking.getStatus() == Status.CANCELLED_BY_HOST) {
             throw new RuntimeException("This booking has already been cancelled.");
         }
+
+
         booking.setStatus(CANCELLED_BY_HOST);
         bookingRepository.save(booking);
-
-// send cancellation confirm to user
+        // إرسال تأكيد الإلغاء بالبريد الإلكتروني
         sendCancellationEmail(booking);
-        BookingResponse bookingResponse = convertBookingEntityToBookingResponse(booking) ;
-        bookingResponse.setMessage("The booking number "+ booking.getId()+
-                " has been cancelled.\nA confirmation email has been sent to your email address.\n");
+
+        // تحويل الكيان إلى استجابة
+        BookingResponse bookingResponse = convertBookingEntityToBookingResponse(booking);
+
+        // إضافة الرسالة إلى الاستجابة
+       bookingResponse.setMessage("The booking number " + booking.getId() + " has been cancelled. A confirmation email has been sent.");
 
         return bookingResponse;
     }
 
+    private void sendCancellationEmail(Booking booking) {
+        String subject = "Confirm cancellation of booking";
+        String text = "Hello!\n" + booking.getFirstName() + ",\n\n" +
+                "We would like to inform you that the booking you made with us has been cancelled.\n"
+                + "We apologize for any inconvenience this may cause.\n\n"
+                + "If you need any assistance, please don't hesitate to contact us.\n\n"
+                + "Best regards,\nThe Support Team.";
 
-
+        // Sending the email using the EmailService
+        emailService.sendEmail(booking.getUsersContactEmail(), subject, text);
+    }
 
 
     private BookingRequest convertBookingEntityToBookingRequest(Booking booking) {
         BookingRequest bookingRequest = new BookingRequest();
 
-        bookingRequest.setFirstName(booking.getUser().getFirstName());
-        bookingRequest.setLastName(booking.getUser().getLastName());
+        bookingRequest.setFirstName(booking.getFirstName());
+        bookingRequest.setLastName(booking.getLastName());
 
         bookingRequest.setUsersContactEmail(booking.getUsersContactEmail());
         bookingRequest.setUsersContactPhoneNumber(booking.getUsersContactPhoneNumber());
@@ -281,14 +290,7 @@ public class BookingService {
         bookingRequest.setGuests(booking.getGuests());
         return bookingRequest;
     }
-
-    public BookingResponse getBookingById(Long id) {
-        Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
-
-        return convertBookingEntityToBookingResponse(booking);
-    }
-
+@Transactional
     public BookingResponse updateBooking(BookingRequest bookingRequest, Long bookingId, Listing listing, User user) {
         // Find Booking
         Booking existingBooking = bookingRepository.findById(bookingId)
@@ -375,6 +377,5 @@ public class BookingService {
                 })
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Booking not found")); // Return error message with HTTP 404 status
     }
-
 }
 
