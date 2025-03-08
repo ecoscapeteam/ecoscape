@@ -7,10 +7,10 @@ import java.time.LocalDate;
 public class ListingAvailableDatesRequest {
 
 
-    @NotNull(message = "Start date of available dates can not be null")
+   // @NotNull(message = "Start date of available dates can not be null")
     private LocalDate startDate;
 
-    @NotNull(message = "End date of available dates can not be null")
+   // @NotNull(message = "End date of available dates can not be null")
     private LocalDate endDate;
 
     public ListingAvailableDatesRequest() {
@@ -18,19 +18,19 @@ public class ListingAvailableDatesRequest {
 
 
 
-    public @NotNull(message = "Start date of available dates can not be null") LocalDate getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(@NotNull(message = "Start date of available dates can not be null") LocalDate startDate) {
+    public void setStartDate( LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public @NotNull(message = "End date of available dates can not be null") LocalDate getEndDate() {
+    public  LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(@NotNull(message = "End date of available dates can not be null") LocalDate endDate) {
+    public void setEndDate( LocalDate endDate) {
         this.endDate = endDate;
     }
 

@@ -5,7 +5,6 @@ import com.java2024.ecoscape.models.UserStatus;
 import java.time.LocalDate;
 
 public class UserRequest {
-    private Long userId;
     private String firstName;
     private String lastName;
     private String bio;
@@ -15,8 +14,7 @@ public class UserRequest {
     private String contactPhoneNumber;
     private String contactEmail;
 
-    public UserRequest(Long userId, String firstName, String lastName, String bio, String photoUrl, UserStatus status, LocalDate birthDate, String contactPhoneNumber, String contactEmail) {
-        this.userId = userId;
+    public UserRequest(String firstName, String lastName, String bio, String photoUrl, UserStatus status, LocalDate birthDate, String contactPhoneNumber, String contactEmail) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.bio = bio;
@@ -25,14 +23,6 @@ public class UserRequest {
         this.birthDate = birthDate;
         this.contactPhoneNumber = contactPhoneNumber;
         this.contactEmail = contactEmail;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
     }
 
     public UserStatus getStatus() {

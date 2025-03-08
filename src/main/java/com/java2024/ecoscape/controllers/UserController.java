@@ -1,9 +1,11 @@
 package com.java2024.ecoscape.controllers;
 
 import com.java2024.ecoscape.dto.UserRequest;
+import com.java2024.ecoscape.dto.HostRequestResponse;
 import com.java2024.ecoscape.dto.UserResponse;
 import com.java2024.ecoscape.dto.UserUpdateDTO;
 import com.java2024.ecoscape.models.User;
+import com.java2024.ecoscape.models.UserStatus;
 import com.java2024.ecoscape.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -37,6 +39,12 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    @GetMapping("/pending")
+    public ResponseEntity<List<User>> getPendingUsers() {
+        List<User> users = userService.findUserByStatus(UserStatus.PENDING);
+        return ResponseEntity.ok(users);
+    }
+
     @GetMapping("/{id}")
     //@PreAuthorize("hasRole('ADMIN')")
     //change to only admin once we publish
@@ -57,6 +65,44 @@ public class UserController {
         );
 
         return ResponseEntity.ok(userResponse);
+    }
+
+    @PutMapping("/reject/{id}")
+    public ResponseEntity<HostRequestResponse> rejectHost(@PathVariable Long id) {
+        User user = userService.rejectHostRequest(id);
+
+        HostRequestResponse hostRequestResponse = new HostRequestResponse(
+                user.getUsername(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getBio(),
+                user.getUserStatus(),
+                user.getPhotoUrl(),
+                user.getBirthDate(),
+                user.getContactPhoneNumber(),
+                user.getContactEmail()
+        );
+
+        return ResponseEntity.ok(hostRequestResponse);
+    }
+
+    @PutMapping("/approve/{id}")
+    public ResponseEntity<HostRequestResponse> approveHost(@PathVariable Long id) {
+        User user = userService.approveHostRequest(id);
+
+        HostRequestResponse hostRequestResponse = new HostRequestResponse(
+                user.getUsername(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getBio(),
+                user.getUserStatus(),
+                user.getPhotoUrl(),
+                user.getBirthDate(),
+                user.getContactPhoneNumber(),
+                user.getContactEmail()
+        );
+
+        return ResponseEntity.ok(hostRequestResponse);
     }
 
     @PutMapping("/{id}")

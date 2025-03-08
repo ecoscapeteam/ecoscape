@@ -29,12 +29,12 @@ public class User {
                     "one uppercase letter, one number, and one special character")
     private String password;
 
-    @Column(nullable = false, name = "first_name")
+    @Column(name = "first_name")
     @Pattern(regexp = "^[A-Za-z]+$", message = "Only letters are allowed.")
     @Size(max = 50, message = "Your first name cannot be longer than 50 characters.")
     private String firstName;
 
-    @Column(nullable = false, name = "last_name")
+    @Column(name = "last_name")
     @Pattern(regexp = "^[A-Za-z]+$", message = "Only letters are allowed.")
     @Size(max = 50, message = "Your last name cannot be longer than 50 characters.")
     private String lastName;
@@ -49,7 +49,7 @@ public class User {
     @Column(name = "status")
     private UserStatus userStatus;
 
-    @Column(nullable = false, name = "birth_date")
+    @Column(name = "birth_date")
     private LocalDate birthDate;
 
     //@Pattern(regexp = "^\\+\\d{1,3}\\d{9}$", message = "That's not a valid phone number.")
