@@ -1,11 +1,16 @@
 package com.java2024.ecoscape.dto;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.java2024.ecoscape.models.Status;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+
+@JsonPropertyOrder({ "message", "bookingId", "userId", "listingId", "firstName", "lastName",
+        "usersContactPhoneNumber", "usersContactEmail", "startDate", "endDate",
+        "status", "guests", "pricePerNight", "websiteFee", "cleaningFee", "totalPrice" })
 
 public class BookingResponse {
 
@@ -24,6 +29,7 @@ public class BookingResponse {
     private BigDecimal websiteFee;
     private BigDecimal cleaningFee;
     private BigDecimal totalPrice;
+    private String message;
 
     public Long getBookingId() {
         return bookingId;
@@ -105,11 +111,11 @@ public class BookingResponse {
         this.status = status;
     }
 
-    public int getGuests() {
+    public Integer getGuests() {
         return guests;
     }
 
-    public void setGuests(int guests) {
+    public void setGuests(Integer guests) {
         this.guests = guests;
     }
 
@@ -143,5 +149,13 @@ public class BookingResponse {
 
     public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

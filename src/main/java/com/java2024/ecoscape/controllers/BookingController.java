@@ -71,16 +71,36 @@ public class BookingController {
         return new ResponseEntity<>(bookings, HttpStatus.OK); // return bookingDTO list with ok
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<BookingResponse> getBookingById(@PathVariable Long id) {
+        BookingResponse booking = bookingService.getBookingById(id);
+        return ResponseEntity.ok(booking);
+    }
+
+
+
 @PatchMapping("/{id}/cancel/user")
 public ResponseEntity<?> cancelByUser(@PathVariable Long id) {
-    BookingResponse response = bookingService.cancelBookingByUser(id);
-    return ResponseEntity.ok(response);
-
+    try {
+        // Calling the service method to cancel the booking by the user
+        BookingResponse response = bookingService.cancelBookingByUser(id);
+        // Returning the updated booking response
+        return ResponseEntity.ok(response);
+    } catch (RuntimeException e) {
+        return ResponseEntity.status(404).body(e.getMessage()); // Returning 404 if booking not found
+    }
 }
+
 @PatchMapping("/{id}/cancel/host")
 public ResponseEntity<?> cancelByHost(@PathVariable Long id) {
+    try {
+        // Calling the service method to cancel the booking by the user
         BookingResponse response = bookingService.cancelBookingByHost(id);
+        // Returning the updated booking response
         return ResponseEntity.ok(response);
+    } catch (RuntimeException e) {
+        return ResponseEntity.status(404).body(e.getMessage()); // Returning 404 if booking not found
+    }
 }
 
 
@@ -116,5 +136,6 @@ public ResponseEntity<?> cancelByHost(@PathVariable Long id) {
                 })
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Booking not found")); // Response with 404 if booking is not found
     }
-
+//4ZFZA81Z3UBFHXD4CGEBGF2B code to verfy sendgrid
+    // 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 code to api mail
 }
