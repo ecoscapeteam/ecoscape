@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -111,7 +112,6 @@ public class BookingService {
                 .setScale(2, RoundingMode.HALF_UP);
     }
 
-
     public BookingResponse createBooking(BookingRequest bookingRequest, Long userId, Long listingId) {
         // Find user and listing
         User user = userRepository.findById(userId)
@@ -190,9 +190,11 @@ public class BookingService {
         booking.setFirstName(bookingRequest.getFirstName());
         booking.setLastName(bookingRequest.getLastName());
 
+        // blokera available dates i samband med booking
+        listingAvailableDatesService.blockAvailableDatesAfterBooking(listingId, booking);
         // save booking to db
         Booking savedBooking = bookingRepository.save(booking);
-        // return booking response
+
         return convertBookingEntityToBookingResponse(savedBooking);
     }
 
@@ -245,7 +247,7 @@ public class BookingService {
         return bookingRequest;
     }
 
-    public BookingResponse updateBooking(BookingRequest bookingRequest, Long bookingId, Listing listing, User user) {
+    /*public BookingResponse updateBooking(BookingRequest bookingRequest, Long bookingId, Listing listing, User user) {
         // Find Booking
         Booking existingBooking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NoSuchElementException("Booking not found"));
@@ -321,7 +323,7 @@ public class BookingService {
 
 
     }
-
+*/
 
     public ResponseEntity<String> deleteBookingById(Long bookingId) {
         return bookingRepository.findById(bookingId)
