@@ -200,6 +200,71 @@ public class ListingAvailableDatesService {
         }
     }
 
+    @Transactional
+    public void unblockAvailableDatesAfterCancellation(Long listingId, Booking canceledBooking) {
+        Listing listing = listingRepository.findById(listingId).orElseThrow(() -> new NoSuchElementException("Listing not found"));
+        List<ListingAvailableDates> availableDatesRangesOfListing = listingAvailableDatesRepository.findAllByListingId(listingId);
+
+        if (listingAvailableDatesRepository.existsByListingId(listingId)){
+            LocalDate bookingStartDate = canceledBooking.getStartDate();
+            LocalDate bookingEndDate = canceledBooking.getEndDate();
+
+            for (ListingAvailableDates availableDates : availableDatesRangesOfListing) {
+                if (bookingStartDate.isBefore(availableDates.getEndDate()) && bookingEndDate.isAfter(availableDates.getStartDate())) {
+
+                    //om canceled booking matchar available dates
+                    if (bookingStartDate.isEqual(availableDates.getStartDate()) && bookingEndDate.isEqual(availableDates.getEndDate())) {
+                        listingAvailableDatesRepository.delete(availableDates);
+                    }
+
+                    //if canceled booking är i mitten
+                    else if (bookingStartDate.isAfter(availableDates.getStartDate()) && bookingEndDate.isBefore(availableDates.getEndDate())) {
+                        ListingAvailableDates rangeBeforeCancellation = new ListingAvailableDates();
+                        rangeBeforeCancellation.setListing(listing);
+                        rangeBeforeCancellation.setStartDate(availableDates.getStartDate());
+                        rangeBeforeCancellation.setEndDate(bookingStartDate.minusDays(1));
+
+                        ListingAvailableDates rangeAfterCancellation = new ListingAvailableDates();
+                        rangeAfterCancellation.setListing(listing);
+                        rangeAfterCancellation.setStartDate(bookingEndDate.plusDays(1));
+                        rangeAfterCancellation.setEndDate(availableDates.getEndDate());
+
+                        List<ListingAvailableDates> rangesToSave = new ArrayList<>();
+                        rangesToSave.add(rangeBeforeCancellation);
+                        rangesToSave.add(rangeAfterCancellation);
+
+                        listingAvailableDatesRepository.delete(availableDates);
+                        listingAvailableDatesRepository.saveAll(rangesToSave);
+                    }
+
+                    //om cancelled booking är i början av available dates
+                    else if (bookingStartDate.isEqual(availableDates.getStartDate()) && bookingEndDate.isBefore(availableDates.getEndDate())) {
+                        ListingAvailableDates rangeRemainingAfterCancellation = new ListingAvailableDates();
+                        rangeRemainingAfterCancellation.setListing(listing);
+                        rangeRemainingAfterCancellation.setStartDate(bookingEndDate.plusDays(1));
+                        rangeRemainingAfterCancellation.setEndDate(availableDates.getEndDate());
+
+                        listingAvailableDatesRepository.save(rangeRemainingAfterCancellation);
+                        listingAvailableDatesRepository.delete(availableDates);
+                    }
+
+                    //om canceled bookings är på slutet av available dates
+                    else if (bookingStartDate.isAfter(availableDates.getStartDate()) && bookingEndDate.isEqual(availableDates.getEndDate())) {
+                        ListingAvailableDates rangeRemainingBeforeCancellation = new ListingAvailableDates();
+                        rangeRemainingBeforeCancellation.setListing(listing);
+                        rangeRemainingBeforeCancellation.setStartDate(availableDates.getStartDate());
+                        rangeRemainingBeforeCancellation.setEndDate(bookingStartDate.minusDays(1));
+
+                        listingAvailableDatesRepository.save(rangeRemainingBeforeCancellation);
+                        listingAvailableDatesRepository.delete(availableDates);
+                    }
+                }
+            }
+        }
+
+    }
+
+
 
 
     //metod overloading

@@ -207,11 +207,13 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
 
+
     public BookingResponse cancelBookingByUser(Long bookingId){
 
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
        booking.setStatus(CANCELLED_BY_USER);
+
        bookingRepository.save(booking);
        return convertBookingEntityToBookingResponse(booking);
     }
