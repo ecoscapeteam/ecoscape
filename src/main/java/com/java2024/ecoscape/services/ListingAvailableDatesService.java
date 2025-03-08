@@ -205,7 +205,7 @@ public class ListingAvailableDatesService {
         Listing listing = listingRepository.findById(listingId).orElseThrow(() -> new NoSuchElementException("Listing not found"));
         List<ListingAvailableDates> availableDatesRangesOfListing = listingAvailableDatesRepository.findAllByListingId(listingId);
 
-        if (listingAvailableDatesRepository.existsByListingId(listingId)){
+        if (listingAvailableDatesRepository.existsByListingId(listingId)) {
             LocalDate bookingStartDate = canceledBooking.getStartDate();
             LocalDate bookingEndDate = canceledBooking.getEndDate();
 
@@ -260,8 +260,21 @@ public class ListingAvailableDatesService {
                     }
                 }
             }
-        }
 
+            List<ListingAvailableDates> updatedAvailableDatesRanges = listingAvailableDatesRepository.findAllByListingId(listingId);
+            for (int i = 0; i < updatedAvailableDatesRanges.size() - 1; i++) {
+                ListingAvailableDates current = updatedAvailableDatesRanges.get(i);
+                ListingAvailableDates next = updatedAvailableDatesRanges.get(i + 1);
+
+                // If the end date of the current range is the day before the start date of the next range, merge them
+                if (current.getEndDate().plusDays(1).isEqual(next.getStartDate())) {
+                    current.setEndDate(next.getEndDate());
+                    listingAvailableDatesRepository.delete(next);
+                    listingAvailableDatesRepository.save(current);
+                }
+
+            }
+        }
     }
 
 
