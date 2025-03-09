@@ -1,7 +1,7 @@
 package com.java2024.ecoscape.controllers;
 
-import com.java2024.ecoscape.dto.UserRequest;
 import com.java2024.ecoscape.dto.HostRequestResponse;
+import com.java2024.ecoscape.dto.UserRequest;
 import com.java2024.ecoscape.dto.UserResponse;
 import com.java2024.ecoscape.dto.UserUpdateDTO;
 import com.java2024.ecoscape.models.User;
@@ -31,7 +31,7 @@ public class UserController {
     }
 
     @GetMapping
-    //@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     //change to only admin once we publish
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         List<UserResponse> users = userService.findAllUsers();

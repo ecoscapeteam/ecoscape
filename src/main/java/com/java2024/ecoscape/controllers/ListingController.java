@@ -2,7 +2,6 @@ package com.java2024.ecoscape.controllers;
 
 import com.java2024.ecoscape.dto.ListingRequest;
 import com.java2024.ecoscape.dto.ListingResponse;
-import com.java2024.ecoscape.models.Listing;
 import com.java2024.ecoscape.services.ListingService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -20,6 +19,7 @@ public class ListingController {
     }
 
     @PostMapping("/{userId}")
+    //@PreAuthorize("hasAnyRole('HOST', 'ADMIN')")
     public ResponseEntity<ListingResponse> createListing(@Valid @RequestBody ListingRequest listingRequest, @PathVariable Long userId) {
         ListingResponse listingResponse = listingService.createListing(userId, listingRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(listingResponse);

@@ -82,20 +82,29 @@ public class UserService {
     }
 
     public List<UserResponse> findAllUsers() {
+        /*Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
+            throw new UnauthorizedException("User is not authenticated");
+        }
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));*/
+
         List<User> users = userRepository.findAll();
 
         return users.stream()
-                .map(user -> new UserResponse(
-                        user.getId(),
-                        user.getUsername(),
-                        user.getFirstName(),
-                        user.getLastName(),
-                        user.getBio(),
-                        user.getUserStatus(),
-                        user.getPhotoUrl(),
-                        user.getBirthDate(),
-                        user.getContactPhoneNumber(),
-                        user.getContactEmail()))
+                .map(allusers -> new UserResponse(
+                        allusers.getId(),
+                        allusers.getUsername(),
+                        allusers.getFirstName(),
+                        allusers.getLastName(),
+                        allusers.getBio(),
+                        allusers.getUserStatus(),
+                        allusers.getPhotoUrl(),
+                        allusers.getBirthDate(),
+                        allusers.getContactPhoneNumber(),
+                        allusers.getContactEmail()))
                 .collect(Collectors.toList());
     }
 
