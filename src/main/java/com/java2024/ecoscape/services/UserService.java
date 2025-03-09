@@ -2,11 +2,16 @@ package com.java2024.ecoscape.services;
 
 import com.java2024.ecoscape.dto.UserRequest;
 import com.java2024.ecoscape.dto.UserResponse;
+import com.java2024.ecoscape.exceptions.UnauthorizedException;
 import com.java2024.ecoscape.models.Role;
 import com.java2024.ecoscape.models.User;
 import com.java2024.ecoscape.models.UserStatus;
 import com.java2024.ecoscape.repositories.ListingRepository;
 import com.java2024.ecoscape.repositories.UserRepository;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -174,11 +179,23 @@ public class UserService {
     }
 
     public void deleteUser(Long id) {
-        User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("User not found"));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
+            throw new UnauthorizedException("User is not authenticated");
+        }
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        boolean isAdmin = user.getRoles().stream().anyMatch(role -> role == Role.ADMIN);
+
+        if(!isAdmin && !user.getId().equals(id)) {
+            throw new IllegalArgumentException("You can only delete your own account.");
+        }
 
         if (listingRepository.existsByUserId(id)) {
-            throw new IllegalArgumentException("You cannot delete your account with an existing listing, delete the listing first.");
+            throw new IllegalArgumentException("You cannot delete this account with an existing listing, delete the listing first.");
         }
 
         userRepository.deleteById(id);
