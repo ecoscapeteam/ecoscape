@@ -37,14 +37,13 @@ public class BookingService {
     private final UserRepository userRepository;
     private final ListingRepository listingRepository;
     private final ListingAvailableDatesService listingAvailableDatesService;
-    private final ListingService listingService;
 
-    public BookingService(BookingRepository bookingRepository, UserRepository userRepository, ListingRepository listingRepository, ListingService listingService, ListingAvailableDatesService listingAvailableDatesService,
+
+    public BookingService(BookingRepository bookingRepository, UserRepository userRepository, ListingRepository listingRepository, ListingAvailableDatesService listingAvailableDatesService,
                           EmailService emailService) {
         this.bookingRepository = bookingRepository;
         this.userRepository = userRepository;
         this.listingRepository = listingRepository;
-        this.listingService = listingService;
         this.listingAvailableDatesService = listingAvailableDatesService;
         this.emailService = emailService;
     }
@@ -231,7 +230,10 @@ public class BookingService {
         }
 
        booking.setStatus(CANCELLED_BY_USER);
+        listingAvailableDatesService.unblockAvailableDatesAfterCancellation(booking.getListing().getId(), booking);
        bookingRepository.save(booking);
+        // إرسال تأكيد الإلغاء بالبريد الإلكتروني
+        sendCancellationEmail(booking);
         // تحويل الكيان إلى استجابة
         BookingResponse bookingResponse = convertBookingEntityToBookingResponse(booking);
 
@@ -251,6 +253,7 @@ public class BookingService {
 
 
         booking.setStatus(CANCELLED_BY_HOST);
+        listingAvailableDatesService.unblockAvailableDatesAfterCancellation(booking.getListing().getId(), booking);
         bookingRepository.save(booking);
         // إرسال تأكيد الإلغاء بالبريد الإلكتروني
         sendCancellationEmail(booking);
@@ -264,16 +267,17 @@ public class BookingService {
         return bookingResponse;
     }
 
-    private void sendCancellationEmail(Booking booking) {
+    private void sendCancellationEmail(Booking booking  ) {
+        String to = booking.getUsersContactEmail();
         String subject = "Confirm cancellation of booking";
         String text = "Hello!\n" + booking.getFirstName() + ",\n\n" +
                 "We would like to inform you that the booking you made with us has been cancelled.\n"
                 + "We apologize for any inconvenience this may cause.\n\n"
                 + "If you need any assistance, please don't hesitate to contact us.\n\n"
-                + "Best regards,\nThe Support Team.";
+                + "Best regards,\nThe Ecoscape Team.";
 
         // Sending the email using the EmailService
-        emailService.sendEmail(booking.getUsersContactEmail(), subject, text);
+        emailService.sendEmail(to, subject, text);
     }
 
 
