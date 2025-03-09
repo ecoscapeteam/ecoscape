@@ -4,6 +4,7 @@ import com.java2024.ecoscape.dto.BookingRequest;
 import com.java2024.ecoscape.dto.BookingResponse;
 import com.java2024.ecoscape.models.Booking;
 import com.java2024.ecoscape.models.Listing;
+import com.java2024.ecoscape.models.Status;
 import com.java2024.ecoscape.models.User;
 import com.java2024.ecoscape.repositories.BookingRepository;
 import com.java2024.ecoscape.repositories.ListingRepository;
@@ -25,8 +26,10 @@ import java.util.stream.Collectors;
 import static com.java2024.ecoscape.models.Status.*;
 
 @Service
+
 public class BookingService {
 
+    private final EmailService emailService;
     @Value("${service.fee:0.1}")
     private Double serviceFee;
 
@@ -34,15 +37,15 @@ public class BookingService {
     private final UserRepository userRepository;
     private final ListingRepository listingRepository;
     private final ListingAvailableDatesService listingAvailableDatesService;
-    private final ListingService listingService;
 
-    public BookingService(BookingRepository bookingRepository, UserRepository userRepository, ListingRepository listingRepository, ListingService listingService, ListingAvailableDatesService listingAvailableDatesService
-    ) {
+
+    public BookingService(BookingRepository bookingRepository, UserRepository userRepository, ListingRepository listingRepository, ListingAvailableDatesService listingAvailableDatesService,
+                          EmailService emailService) {
         this.bookingRepository = bookingRepository;
         this.userRepository = userRepository;
         this.listingRepository = listingRepository;
-        this.listingService = listingService;
         this.listingAvailableDatesService = listingAvailableDatesService;
+        this.emailService = emailService;
     }
 
     public BookingResponse convertBookingEntityToBookingResponse(Booking booking ) {
@@ -111,7 +114,7 @@ public class BookingService {
                 .add(serviceFeeBD)
                 .setScale(2, RoundingMode.HALF_UP);
     }
-
+@Transactional
     public BookingResponse createBooking(BookingRequest bookingRequest, Long userId, Long listingId) {
         // Find user and listing
         User user = userRepository.findById(userId)
@@ -207,40 +210,82 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
 
-
-    public BookingResponse cancelBookingByUser(Long bookingId){
-
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
-       booking.setStatus(CANCELLED_BY_USER);
-
-       listingAvailableDatesService.unblockAvailableDatesAfterCancellation(booking.getListing().getId(), booking);
-
-       bookingRepository.save(booking);
-       return convertBookingEntityToBookingResponse(booking);
-    }
-
-    public BookingResponse cancelBookingByHost(Long bookingId) {
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
-        booking.setStatus(CANCELLED_BY_HOST);
-
-        listingAvailableDatesService.unblockAvailableDatesAfterCancellation(booking.getListing().getId(), booking);
-
-        bookingRepository.save(booking);
+    public BookingResponse getBookingById(Long id) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Booking not found with id: " + id));
+        // تحويل Booking إلى BookingResponse
         return convertBookingEntityToBookingResponse(booking);
     }
 
 
 
+    public BookingResponse cancelBookingByUser(Long bookingId){
 
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        // التحقق مما إذا كان الحجز قد تم إلغاؤه مسبقًا
+        if (booking.getStatus() == Status.CANCELLED_BY_USER || booking.getStatus() == Status.CANCELLED_BY_HOST) {
+            throw new RuntimeException("This booking has already been cancelled.");
+        }
+
+       booking.setStatus(CANCELLED_BY_USER);
+        listingAvailableDatesService.unblockAvailableDatesAfterCancellation(booking.getListing().getId(), booking);
+       bookingRepository.save(booking);
+        // إرسال تأكيد الإلغاء بالبريد الإلكتروني
+        sendCancellationEmail(booking);
+        // تحويل الكيان إلى استجابة
+        BookingResponse bookingResponse = convertBookingEntityToBookingResponse(booking);
+
+        // إضافة الرسالة إلى الاستجابة
+        bookingResponse.setMessage("The booking number " + booking.getId() + " has been cancelled. A confirmation email has been sent.");
+
+        return bookingResponse;
+    }
+
+    public BookingResponse cancelBookingByHost(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+        // التحقق مما إذا كان الحجز قد تم إلغاؤه مسبقًا
+        if (booking.getStatus() == Status.CANCELLED_BY_USER || booking.getStatus() == Status.CANCELLED_BY_HOST) {
+            throw new RuntimeException("This booking has already been cancelled.");
+        }
+
+
+        booking.setStatus(CANCELLED_BY_HOST);
+        listingAvailableDatesService.unblockAvailableDatesAfterCancellation(booking.getListing().getId(), booking);
+        bookingRepository.save(booking);
+        // إرسال تأكيد الإلغاء بالبريد الإلكتروني
+        sendCancellationEmail(booking);
+
+        // تحويل الكيان إلى استجابة
+        BookingResponse bookingResponse = convertBookingEntityToBookingResponse(booking);
+
+        // إضافة الرسالة إلى الاستجابة
+       bookingResponse.setMessage("The booking number " + booking.getId() + " has been cancelled. A confirmation email has been sent.");
+
+        return bookingResponse;
+    }
+
+    private void sendCancellationEmail(Booking booking  ) {
+        String to = booking.getUsersContactEmail();
+        String subject = "Confirm cancellation of booking";
+        String text = "Hello!\n" + booking.getFirstName() + ",\n\n" +
+                "We would like to inform you that the booking you made with us has been cancelled.\n"
+                + "We apologize for any inconvenience this may cause.\n\n"
+                + "If you need any assistance, please don't hesitate to contact us.\n\n"
+                + "Best regards,\nThe Ecoscape Team.";
+
+        // Sending the email using the EmailService
+        emailService.sendEmail(to, subject, text);
+    }
 
 
     private BookingRequest convertBookingEntityToBookingRequest(Booking booking) {
         BookingRequest bookingRequest = new BookingRequest();
 
-        bookingRequest.setFirstName(booking.getUser().getFirstName());
-        bookingRequest.setLastName(booking.getUser().getLastName());
+        bookingRequest.setFirstName(booking.getFirstName());
+        bookingRequest.setLastName(booking.getLastName());
 
         bookingRequest.setUsersContactEmail(booking.getUsersContactEmail());
         bookingRequest.setUsersContactPhoneNumber(booking.getUsersContactPhoneNumber());
@@ -249,8 +294,8 @@ public class BookingService {
         bookingRequest.setGuests(booking.getGuests());
         return bookingRequest;
     }
-
-    /*public BookingResponse updateBooking(BookingRequest bookingRequest, Long bookingId, Listing listing, User user) {
+@Transactional
+    public BookingResponse updateBooking(BookingRequest bookingRequest, Long bookingId, Listing listing, User user) {
         // Find Booking
         Booking existingBooking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NoSuchElementException("Booking not found"));
@@ -326,7 +371,7 @@ public class BookingService {
 
 
     }
-*/
+
 
     public ResponseEntity<String> deleteBookingById(Long bookingId) {
         return bookingRepository.findById(bookingId)

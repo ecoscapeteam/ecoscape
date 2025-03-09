@@ -15,7 +15,10 @@ public class MailConfig {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);
+
         mailSender.setUsername("ecoscapeteamorg@gmail.com"); //  بريد الإلكتروني هنا
+
+     
         mailSender.setPassword("qkwh snic mmek wgfu"); // استخدم كلمة مرور التطبيقات
 
         Properties props = mailSender.getJavaMailProperties();
