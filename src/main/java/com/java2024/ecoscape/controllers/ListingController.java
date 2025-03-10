@@ -3,13 +3,13 @@ package com.java2024.ecoscape.controllers;
 import com.java2024.ecoscape.dto.ListingRequest;
 import com.java2024.ecoscape.dto.ListingResponse;
 import com.java2024.ecoscape.models.Category;
-import com.java2024.ecoscape.models.Listing;
 import com.java2024.ecoscape.repositories.ListingRepository;
 import com.java2024.ecoscape.services.ListingService;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -29,6 +29,7 @@ public class ListingController {
     }
 
     @PostMapping("/{userId}")
+    @PreAuthorize("hasAnyRole('HOST', 'ADMIN')")
     public ResponseEntity<ListingResponse> createListing(@Valid @RequestBody ListingRequest listingRequest, @PathVariable Long userId) {
         ListingResponse listingResponse = listingService.createListing(userId, listingRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(listingResponse);
@@ -51,9 +52,7 @@ public class ListingController {
     public ResponseEntity<String> deleteListingById(@PathVariable Long listingId) {
         listingService.deleteListingById(listingId);
         return ResponseEntity.ok("Listing successfully deleted!");
-
     }
-
 
     @GetMapping("/search")
     public ResponseEntity <List<ListingResponse>> searchListings (@RequestParam(name = "checkInDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate checkInDate,
@@ -65,6 +64,4 @@ public class ListingController {
         return ResponseEntity.ok(listingService.searchAvailableListings(checkInDate, checkOutDate, name, location, capacity, category));
 
     }
-
-
 }
