@@ -366,17 +366,8 @@ public class BookingService {
             existingBooking.setUsersContactEmail(bookingRequest.getUsersContactEmail());
         }
 
-        if (bookingRequest.getStartDate() != null) {
-            existingBooking.setStartDate(bookingRequest.getStartDate());
-        }
 
-        if (bookingRequest.getEndDate() != null) {
-            existingBooking.setEndDate(bookingRequest.getEndDate());
-        }
 
-        if (bookingRequest.getStatus() != null) {
-            existingBooking.setStatus(bookingRequest.getStatus());
-        }
 
         if (bookingRequest.getGuests() != null) {
             existingBooking.setGuests(bookingRequest.getGuests());
@@ -390,8 +381,8 @@ public class BookingService {
 
 }
 
- */
 
+*/
 
     public ResponseEntity<String> deleteBookingById(Long bookingId) {
         return bookingRepository.findById(bookingId)

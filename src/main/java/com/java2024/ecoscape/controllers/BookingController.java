@@ -107,7 +107,7 @@ public ResponseEntity<?> cancelByHost(@PathVariable Long id) {
 }
 
 
-    @PutMapping("/{bookingId}")
+  /*  @PutMapping("/{bookingId}")
     public ResponseEntity<BookingResponse> updateBooking(@PathVariable Long bookingId,
                                                          @RequestBody BookingRequest bookingRequest) {
 
@@ -130,7 +130,7 @@ public ResponseEntity<?> cancelByHost(@PathVariable Long id) {
 
     }
 
-
+*/
 
     @DeleteMapping("/{bookingId}")
     public ResponseEntity<String> deleteBooking(@PathVariable Long bookingId) {
