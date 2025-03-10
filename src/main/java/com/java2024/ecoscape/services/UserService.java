@@ -192,6 +192,10 @@ public class UserService {
             throw new IllegalArgumentException("You can only delete your own account.");
         }
 
+        if (!userRepository.existsById(id)) {
+            throw new IllegalArgumentException("User not found.");
+        }
+
         if (listingRepository.existsByUserId(id)) {
             throw new IllegalArgumentException("You cannot delete this account with an existing listing, delete the listing first.");
         }
