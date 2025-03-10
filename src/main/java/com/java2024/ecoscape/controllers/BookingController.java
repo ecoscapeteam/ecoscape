@@ -11,7 +11,6 @@ import com.java2024.ecoscape.services.BookingService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,17 +45,20 @@ public class BookingController {
             BindingResult bindingResult) {
 
         // إذا كانت هناك أخطاء في التحقق من الصحة
+        // If there are validation errors
         if (bindingResult.hasErrors()) {
-            // جمع الأخطاء
+            // جمع الأخطاء collect errors
             String errorMessage = bindingResult.getAllErrors().stream()
                     .map(error -> error.getDefaultMessage())
                     .collect(Collectors.joining(", "));
 
             // إرجاع رسالة الأخطاء كاستجابة
+            // Return error response
             return ResponseEntity.badRequest().body(errorMessage);
         }
 
         // إذا لم تكن هناك أخطاء، قم بإنشاء الحجز
+        // If no errors, create the booking
         BookingResponse createdBooking = bookingService.createBooking(bookingRequest, userId, listingId);
 
         // إرجاع الحجز الذي تم إنشاؤه
@@ -65,7 +67,6 @@ public class BookingController {
 
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<BookingRequest>> getAllBooking() {
         List<BookingRequest> bookings = bookingService.getAllbookings(); // call booking service method
         return new ResponseEntity<>(bookings, HttpStatus.OK); // return bookingDTO list with ok
@@ -77,33 +78,34 @@ public class BookingController {
         return ResponseEntity.ok(booking);
     }
 
-    @PatchMapping("/{id}/cancel/user")
-    public ResponseEntity<?> cancelByUser(@PathVariable Long id) {
-        try {
-            // Calling the service method to cancel the booking by the user
-            BookingResponse response = bookingService.cancelBookingByUser(id);
-            // Returning the updated booking response
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body(e.getMessage()); // Returning 404 if booking not found
-        }
-    }
 
-    @PatchMapping("/{id}/cancel/host")
-    @PreAuthorize("hasAnyRole('HOST', 'ADMIN')")
-    public ResponseEntity<?> cancelByHost(@PathVariable Long id) {
-        try {
-            // Calling the service method to cancel the booking by the user
-            BookingResponse response = bookingService.cancelBookingByHost(id);
-            // Returning the updated booking response
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body(e.getMessage()); // Returning 404 if booking not found
-        }
+
+@PatchMapping("/{id}/cancel/user")
+public ResponseEntity<?> cancelByUser(@PathVariable Long id) {
+    try {
+        // Calling the service method to cancel the booking by the user
+        BookingResponse response = bookingService.cancelBookingByUser(id);
+        // Returning the updated booking response
+        return ResponseEntity.ok(response);
+    } catch (RuntimeException e) {
+        return ResponseEntity.status(404).body(e.getMessage()); // Returning 404 if booking not found
     }
+}
+
+@PatchMapping("/{id}/cancel/host")
+public ResponseEntity<?> cancelByHost(@PathVariable Long id) {
+    try {
+        // Calling the service method to cancel the booking by the user
+        BookingResponse response = bookingService.cancelBookingByHost(id);
+        // Returning the updated booking response
+        return ResponseEntity.ok(response);
+    } catch (RuntimeException e) {
+        return ResponseEntity.status(404).body(e.getMessage()); // Returning 404 if booking not found
+    }
+}
+
 
     @PutMapping("/{bookingId}")
-    //@PreAuthorize("hasAnyRole('HOST', 'ADMIN')")
     public ResponseEntity<BookingResponse> updateBooking(@PathVariable Long bookingId,
                                                          @RequestBody BookingRequest bookingRequest) {
 
@@ -123,10 +125,12 @@ public class BookingController {
         BookingResponse updatedBooking = bookingService.updateBooking(bookingRequest, bookingId, listing, user);
 
         return ResponseEntity.status(HttpStatus.OK).body(updatedBooking);
+
     }
 
+
+
     @DeleteMapping("/{bookingId}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteBooking(@PathVariable Long bookingId) {
         return bookingRepository.findById(bookingId)
                 .map(booking -> {
@@ -135,4 +139,5 @@ public class BookingController {
                 })
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Booking not found")); // Response with 404 if booking is not found
     }
+
 }
