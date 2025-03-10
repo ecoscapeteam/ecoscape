@@ -35,7 +35,6 @@ public class ListingController {
         return ResponseEntity.status(HttpStatus.CREATED).body(listingResponse);
     }
 
-
     @GetMapping("/{id}")
     public ResponseEntity<ListingResponse> getListingById(@PathVariable Long id) {
         ListingResponse listingResponse = listingService.getListingById(id);

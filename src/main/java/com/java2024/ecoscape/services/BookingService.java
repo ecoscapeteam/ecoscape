@@ -184,8 +184,6 @@ public class BookingService {
             throw new IllegalArgumentException(String.join("\n", errors));
         }
 
-
-
         Booking booking = convertBookingRequestToBookingEntity(bookingRequest, listing);
         booking.setUser(user);
         booking.setListing(listing);

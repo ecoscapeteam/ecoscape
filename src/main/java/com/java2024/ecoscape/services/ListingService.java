@@ -5,10 +5,8 @@ import com.java2024.ecoscape.dto.ListingResponse;
 import com.java2024.ecoscape.dto.ListingRulesDTO;
 import com.java2024.ecoscape.models.*;
 import com.java2024.ecoscape.repositories.*;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -344,8 +342,5 @@ public class ListingService {
             throw new IllegalArgumentException("ID required upon check-in must be a boolean value (true/false).");
         }
     }
-
-
-
 }
 
