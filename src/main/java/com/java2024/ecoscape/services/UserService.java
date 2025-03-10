@@ -2,36 +2,36 @@ package com.java2024.ecoscape.services;
 
 import com.java2024.ecoscape.dto.UserRequest;
 import com.java2024.ecoscape.dto.UserResponse;
-import com.java2024.ecoscape.exceptions.UnauthorizedException;
 import com.java2024.ecoscape.models.Role;
 import com.java2024.ecoscape.models.User;
 import com.java2024.ecoscape.models.UserStatus;
 import com.java2024.ecoscape.repositories.ListingRepository;
 import com.java2024.ecoscape.repositories.UserRepository;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Component
+@Service
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final ListingRepository listingRepository;
+    private final AuthenticationManager authenticationManager;
+    private final AuthenticationService authenticationService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, ListingRepository listingRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, ListingRepository listingRepository, AuthenticationManager authenticationManager, AuthenticationService authenticationService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.listingRepository = listingRepository;
+        this.authenticationManager = authenticationManager;
+        this.authenticationService = authenticationService;
     }
-
 
     public void registerUser(User user) {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
@@ -164,8 +164,10 @@ public class UserService {
     }
 
     public User updateUser(Long id, UserRequest userRequest) {
-        User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("User not found"));
+        UserDetails userDetails = authenticationService.authenticateMethods();
+
+        User existingUser = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         existingUser.setFirstName(userRequest.getFirstName());
         existingUser.setLastName(userRequest.getLastName());
@@ -179,12 +181,8 @@ public class UserService {
     }
 
     public void deleteUser(Long id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
-            throw new UnauthorizedException("User is not authenticated");
-        }
+        UserDetails userDetails = authenticationService.authenticateMethods();
 
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         User user = userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 

@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 import static com.java2024.ecoscape.models.Status.*;
 
 @Service
-
 public class BookingService {
 
     private final EmailService emailService;
@@ -37,15 +36,15 @@ public class BookingService {
     private final UserRepository userRepository;
     private final ListingRepository listingRepository;
     private final ListingAvailableDatesService listingAvailableDatesService;
+    private final AuthenticationService authenticationService;
 
-
-    public BookingService(BookingRepository bookingRepository, UserRepository userRepository, ListingRepository listingRepository, ListingAvailableDatesService listingAvailableDatesService,
-                          EmailService emailService) {
+    public BookingService(EmailService emailService, BookingRepository bookingRepository, UserRepository userRepository, ListingRepository listingRepository, ListingAvailableDatesService listingAvailableDatesService, AuthenticationService authenticationService) {
+        this.emailService = emailService;
         this.bookingRepository = bookingRepository;
         this.userRepository = userRepository;
         this.listingRepository = listingRepository;
         this.listingAvailableDatesService = listingAvailableDatesService;
-        this.emailService = emailService;
+        this.authenticationService = authenticationService;
     }
 
     public BookingResponse convertBookingEntityToBookingResponse(Booking booking ) {
@@ -114,7 +113,8 @@ public class BookingService {
                 .add(serviceFeeBD)
                 .setScale(2, RoundingMode.HALF_UP);
     }
-@Transactional
+
+    @Transactional
     public BookingResponse createBooking(BookingRequest bookingRequest, Long userId, Long listingId) {
         // Find user and listing
         User user = userRepository.findById(userId)
@@ -183,8 +183,6 @@ public class BookingService {
         if (!errors.isEmpty()) {
             throw new IllegalArgumentException(String.join("\n", errors));
         }
-
-
 
         Booking booking = convertBookingRequestToBookingEntity(bookingRequest, listing);
         booking.setUser(user);
@@ -314,8 +312,14 @@ public class BookingService {
         bookingRequest.setGuests(booking.getGuests());
         return bookingRequest;
     }
-/*@Transactional
+
+    @Transactional
     public BookingResponse updateBooking(BookingRequest bookingRequest, Long bookingId, Listing listing, User user) {
+        /*UserDetails userDetails = authenticationService.authenticateMethods();
+
+        user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));*/
+
         // Find Booking
         Booking existingBooking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NoSuchElementException("Booking not found"));
@@ -327,7 +331,6 @@ public class BookingService {
         // control can not have guests more than capacity in listing
         if (bookingRequest.getGuests() > listing.getCapacity()) {
             errors.add("The number of guests exceeds the capacity for this listing.");
-
         }
 
         // control can not be end date before start date
@@ -379,7 +382,7 @@ public class BookingService {
         Booking udatedBooking = bookingRepository.save(existingBooking);
         return convertBookingEntityToBookingResponse(udatedBooking);
 
-}
+    }
 
 
 */
