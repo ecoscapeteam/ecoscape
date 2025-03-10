@@ -198,7 +198,27 @@ public class BookingService {
         // save booking to db
         Booking savedBooking = bookingRepository.save(booking);
 
-        return convertBookingEntityToBookingResponse(savedBooking);
+    // تحويل الكيان إلى استجابة
+    BookingResponse bookingResponse = convertBookingEntityToBookingResponse(booking);
+
+    // إضافة الرسالة إلى الاستجابة
+    bookingResponse.setMessage("The booking number " + booking.getId() + " has been confirmed. A confirmation email has been sent.");
+    // Send confirmation email
+    sendBookingConfirmationByEmail(bookingResponse);
+    return bookingResponse;
+}
+    private void sendBookingConfirmationByEmail(BookingResponse bookingResponse) {
+        String to = bookingResponse.getUsersContactEmail();
+        String subject = "Booking Confirmation - EcoScape";
+        String text = "Hello " + bookingResponse.getFirstName() + "!\n\n" +
+                "We are pleased to inform you that your booking with EcoScape has been successfully confirmed. Below are the details of your booking:\n" +
+                "Booking ID: " + bookingResponse.getBookingId() + "\n" +
+                "Listing ID: " + bookingResponse.getListingId() + "\n" +
+                "Thank you for choosing EcoScape. We are excited to have you stay with us and look forward to making your experience memorable.\n\n" +
+                "If you have any questions or need further assistance, please don’t hesitate to contact us.\n\n" +
+                "Best regards,\nThe EcoScape Team";
+
+        emailService.sendEmail(to, subject, text);
     }
 
 
@@ -214,6 +234,7 @@ public class BookingService {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Booking not found with id: " + id));
         // تحويل Booking إلى BookingResponse
+
         return convertBookingEntityToBookingResponse(booking);
     }
 
@@ -270,11 +291,10 @@ public class BookingService {
     private void sendCancellationEmail(Booking booking  ) {
         String to = booking.getUsersContactEmail();
         String subject = "Confirm cancellation of booking";
-        String text = "Hello!\n" + booking.getFirstName() + ",\n\n" +
-                "We would like to inform you that the booking you made with us has been cancelled.\n"
-                + "We apologize for any inconvenience this may cause.\n\n"
-                + "If you need any assistance, please don't hesitate to contact us.\n\n"
-                + "Best regards,\nThe Ecoscape Team.";
+        String text = "Hello" + booking.getFirstName() + "!\n\n" +
+                "We would like to inform you that the booking number "+ booking.getId() + " in "+ booking.getListing().getId()
+        + " you made with us has been cancelled.\n"+ "We apologize for any inconvenience this may cause.\n\n"
+                + "If you need any assistance, please don't hesitate to contact us.\n\n"+ "Best regards,\nThe Ecoscape Team.";
 
         // Sending the email using the EmailService
         emailService.sendEmail(to, subject, text);
