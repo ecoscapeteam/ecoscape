@@ -42,10 +42,13 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        //.requestMatchers("/host/**").hasAnyRole("HOST", "ADMIN")
                         .requestMatchers("/users/**").permitAll()
-                        .requestMatchers("/listings/**").permitAll()
+                        .requestMatchers("/api/listings/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/api/availableDates/**").permitAll()
+                        .requestMatchers("/api/bookings/**").permitAll()
+                        .requestMatchers("/api/rules/**").permitAll()
+                        .requestMatchers("/api/images/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

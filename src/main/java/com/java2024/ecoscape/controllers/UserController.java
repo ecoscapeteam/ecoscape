@@ -10,6 +10,7 @@ import com.java2024.ecoscape.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,8 +32,7 @@ public class UserController {
     }
 
     @GetMapping
-    //@PreAuthorize("hasRole('ADMIN')")
-    //change to only admin once we publish
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         List<UserResponse> users = userService.findAllUsers();
 
@@ -40,14 +40,13 @@ public class UserController {
     }
 
     @GetMapping("/pending")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<User>> getPendingUsers() {
         List<User> users = userService.findUserByStatus(UserStatus.PENDING);
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{id}")
-    //@PreAuthorize("hasRole('ADMIN')")
-    //change to only admin once we publish
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
         User user = userService.findUserById(id);
 
@@ -68,6 +67,7 @@ public class UserController {
     }
 
     @PutMapping("/reject/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<HostRequestResponse> rejectHost(@PathVariable Long id) {
         User user = userService.rejectHostRequest(id);
 
@@ -87,6 +87,7 @@ public class UserController {
     }
 
     @PutMapping("/approve/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<HostRequestResponse> approveHost(@PathVariable Long id) {
         User user = userService.approveHostRequest(id);
 
