@@ -160,12 +160,12 @@ public class ListingAvailableDatesService {
                     ListingAvailableDates rangeBeforeNewBooking = new ListingAvailableDates();
                     rangeBeforeNewBooking.setListing(listing);
                     rangeBeforeNewBooking.setStartDate(availableDates.getStartDate());
-                    rangeBeforeNewBooking.setEndDate(bookingStartDate.minusDays(0));
+                    rangeBeforeNewBooking.setEndDate(bookingStartDate);
 
 
                     ListingAvailableDates rangeAfterBooking = new ListingAvailableDates();
                     rangeAfterBooking.setListing(listing);
-                    rangeAfterBooking.setStartDate(bookingEndDate.plusDays(0));
+                    rangeAfterBooking.setStartDate(bookingEndDate);
                     rangeAfterBooking.setEndDate(availableDates.getEndDate());
 
                     List<ListingAvailableDates> rangesToSave = new ArrayList<>();
@@ -181,7 +181,7 @@ public class ListingAvailableDatesService {
                 else if (bookingStartDate.isEqual(availableDates.getStartDate()) && bookingEndDate.isBefore(availableDates.getEndDate())) {
                     ListingAvailableDates rangeRemainingAfter = new ListingAvailableDates();
                     rangeRemainingAfter.setListing(listing);
-                    rangeRemainingAfter.setStartDate(bookingEndDate.plusDays(0));
+                    rangeRemainingAfter.setStartDate(bookingEndDate);
                     rangeRemainingAfter.setEndDate(availableDates.getEndDate());
                     listingAvailableDatesRepository.save(rangeRemainingAfter);
                     listingAvailableDatesRepository.delete(availableDates);
@@ -191,7 +191,7 @@ public class ListingAvailableDatesService {
                     ListingAvailableDates rangeRemainingBefore = new ListingAvailableDates();
                     rangeRemainingBefore.setListing(listing);
                     rangeRemainingBefore.setStartDate(availableDates.getStartDate());
-                    rangeRemainingBefore.setEndDate(bookingStartDate.minusDays(0));
+                    rangeRemainingBefore.setEndDate(bookingStartDate);
                     listingAvailableDatesRepository.save(rangeRemainingBefore);
                     listingAvailableDatesRepository.delete(availableDates);
 
@@ -202,77 +202,71 @@ public class ListingAvailableDatesService {
 
     @Transactional
     public void unblockAvailableDatesAfterCancellation(Long listingId, Booking canceledBooking) {
-        Listing listing = listingRepository.findById(listingId).orElseThrow(() -> new NoSuchElementException("Listing not found"));
+        Listing listing = listingRepository.findById(listingId)
+                .orElseThrow(() -> new NoSuchElementException("Listing not found"));
+
         List<ListingAvailableDates> availableDatesRangesOfListing = listingAvailableDatesRepository.findAllByListingId(listingId);
 
-        if (listingAvailableDatesRepository.existsByListingId(listingId)) {
-            LocalDate bookingStartDate = canceledBooking.getStartDate();
-            LocalDate bookingEndDate = canceledBooking.getEndDate();
+        if (availableDatesRangesOfListing.isEmpty()) {
+            throw new NoSuchElementException("No available dates found for the given listing.");
+        }
 
-            for (ListingAvailableDates availableDates : availableDatesRangesOfListing) {
-                if (bookingStartDate.isBefore(availableDates.getEndDate()) && bookingEndDate.isAfter(availableDates.getStartDate())) {
+        LocalDate bookingStartDate = canceledBooking.getStartDate();
+        LocalDate bookingEndDate = canceledBooking.getEndDate();
 
-                    //om canceled booking matchar available dates
-                    if (bookingStartDate.isEqual(availableDates.getStartDate()) && bookingEndDate.isEqual(availableDates.getEndDate())) {
-                        listingAvailableDatesRepository.delete(availableDates);
-                    }
+//gå genom alla available ranges och hitta det som matchar canceled booking
+        for (ListingAvailableDates availableDates : availableDatesRangesOfListing) {
 
-                    //if canceled booking är i mitten
-                    else if (bookingStartDate.isAfter(availableDates.getStartDate()) && bookingEndDate.isBefore(availableDates.getEndDate())) {
-                        ListingAvailableDates rangeBeforeCancellation = new ListingAvailableDates();
-                        rangeBeforeCancellation.setListing(listing);
-                        rangeBeforeCancellation.setStartDate(availableDates.getStartDate());
-                        rangeBeforeCancellation.setEndDate(bookingStartDate.minusDays(1));
+            if (bookingStartDate.isBefore(availableDates.getEndDate()) && bookingEndDate.isAfter(availableDates.getStartDate())) {
 
-                        ListingAvailableDates rangeAfterCancellation = new ListingAvailableDates();
-                        rangeAfterCancellation.setListing(listing);
-                        rangeAfterCancellation.setStartDate(bookingEndDate.plusDays(1));
-                        rangeAfterCancellation.setEndDate(availableDates.getEndDate());
+                if (bookingStartDate.isEqual(availableDates.getStartDate()) && bookingEndDate.isEqual(availableDates.getEndDate())) {
+                    listingAvailableDatesRepository.delete(availableDates);
+                }
+                else if (bookingStartDate.isAfter(availableDates.getStartDate()) && bookingEndDate.isBefore(availableDates.getEndDate())) {
+                    ListingAvailableDates rangeBeforeCancellation = new ListingAvailableDates();
+                    rangeBeforeCancellation.setListing(listing);
+                    rangeBeforeCancellation.setStartDate(availableDates.getStartDate());
+                    rangeBeforeCancellation.setEndDate(bookingStartDate);
 
-                        List<ListingAvailableDates> rangesToSave = new ArrayList<>();
-                        rangesToSave.add(rangeBeforeCancellation);
-                        rangesToSave.add(rangeAfterCancellation);
+                    ListingAvailableDates rangeAfterCancellation = new ListingAvailableDates();
+                    rangeAfterCancellation.setListing(listing);
+                    rangeAfterCancellation.setStartDate(bookingEndDate);
+                    rangeAfterCancellation.setEndDate(availableDates.getEndDate());
 
-                        listingAvailableDatesRepository.delete(availableDates);
-                        listingAvailableDatesRepository.saveAll(rangesToSave);
-                    }
+                    listingAvailableDatesRepository.delete(availableDates);
+                    listingAvailableDatesRepository.saveAll(List.of(rangeBeforeCancellation, rangeAfterCancellation));
+                }
+                else if (bookingStartDate.isEqual(availableDates.getStartDate()) && bookingEndDate.isBefore(availableDates.getEndDate())) {
+                    ListingAvailableDates rangeRemainingAfterCancellation = new ListingAvailableDates();
+                    rangeRemainingAfterCancellation.setListing(listing);
+                    rangeRemainingAfterCancellation.setStartDate(bookingEndDate);
+                    rangeRemainingAfterCancellation.setEndDate(availableDates.getEndDate());
 
-                    //om cancelled booking är i början av available dates
-                    else if (bookingStartDate.isEqual(availableDates.getStartDate()) && bookingEndDate.isBefore(availableDates.getEndDate())) {
-                        ListingAvailableDates rangeRemainingAfterCancellation = new ListingAvailableDates();
-                        rangeRemainingAfterCancellation.setListing(listing);
-                        rangeRemainingAfterCancellation.setStartDate(bookingEndDate.plusDays(1));
-                        rangeRemainingAfterCancellation.setEndDate(availableDates.getEndDate());
+                    listingAvailableDatesRepository.save(rangeRemainingAfterCancellation);
+                    listingAvailableDatesRepository.delete(availableDates);
+                }
+                else if (bookingStartDate.isAfter(availableDates.getStartDate()) && bookingEndDate.isEqual(availableDates.getEndDate())) {
+                    ListingAvailableDates rangeRemainingBeforeCancellation = new ListingAvailableDates();
+                    rangeRemainingBeforeCancellation.setListing(listing);
+                    rangeRemainingBeforeCancellation.setStartDate(availableDates.getStartDate());
+                    rangeRemainingBeforeCancellation.setEndDate(bookingStartDate);
 
-                        listingAvailableDatesRepository.save(rangeRemainingAfterCancellation);
-                        listingAvailableDatesRepository.delete(availableDates);
-                    }
-
-                    //om canceled bookings är på slutet av available dates
-                    else if (bookingStartDate.isAfter(availableDates.getStartDate()) && bookingEndDate.isEqual(availableDates.getEndDate())) {
-                        ListingAvailableDates rangeRemainingBeforeCancellation = new ListingAvailableDates();
-                        rangeRemainingBeforeCancellation.setListing(listing);
-                        rangeRemainingBeforeCancellation.setStartDate(availableDates.getStartDate());
-                        rangeRemainingBeforeCancellation.setEndDate(bookingStartDate.minusDays(1));
-
-                        listingAvailableDatesRepository.save(rangeRemainingBeforeCancellation);
-                        listingAvailableDatesRepository.delete(availableDates);
-                    }
+                    listingAvailableDatesRepository.save(rangeRemainingBeforeCancellation);
+                    listingAvailableDatesRepository.delete(availableDates);
                 }
             }
+        }
 
-            List<ListingAvailableDates> updatedAvailableDatesRanges = listingAvailableDatesRepository.findAllByListingId(listingId);
-            for (int i = 0; i < updatedAvailableDatesRanges.size() - 1; i++) {
-                ListingAvailableDates current = updatedAvailableDatesRanges.get(i);
-                ListingAvailableDates next = updatedAvailableDatesRanges.get(i + 1);
+        // Mergea med närstående available dates, ifall det eller de finns
+        List<ListingAvailableDates> updatedAvailableDatesRanges = listingAvailableDatesRepository.findAllByListingId(listingId);
+        for (int i = 0; i < updatedAvailableDatesRanges.size() - 1; i++) {
+            ListingAvailableDates current = updatedAvailableDatesRanges.get(i);
+            ListingAvailableDates next = updatedAvailableDatesRanges.get(i + 1);
 
-                // If the end date of the current range is the day before the start date of the next range, merge them
-                if (current.getEndDate().plusDays(1).isEqual(next.getStartDate())) {
-                    current.setEndDate(next.getEndDate());
-                    listingAvailableDatesRepository.delete(next);
-                    listingAvailableDatesRepository.save(current);
-                }
-
+            if (current.getEndDate().isEqual(next.getStartDate())) {
+                current.setEndDate(next.getEndDate());
+                listingAvailableDatesRepository.delete(next);
+                listingAvailableDatesRepository.save(current);
             }
         }
     }

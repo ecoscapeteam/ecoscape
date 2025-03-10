@@ -294,7 +294,7 @@ public class BookingService {
         bookingRequest.setGuests(booking.getGuests());
         return bookingRequest;
     }
-@Transactional
+/*@Transactional
     public BookingResponse updateBooking(BookingRequest bookingRequest, Long bookingId, Listing listing, User user) {
         // Find Booking
         Booking existingBooking = bookingRepository.findById(bookingId)
@@ -368,9 +368,9 @@ public class BookingService {
         Booking udatedBooking = bookingRepository.save(existingBooking);
         return convertBookingEntityToBookingResponse(udatedBooking);
 
+}
 
-
-    }
+ */
 
 
     public ResponseEntity<String> deleteBookingById(Long bookingId) {

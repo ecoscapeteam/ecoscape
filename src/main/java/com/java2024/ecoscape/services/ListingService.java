@@ -3,19 +3,19 @@ package com.java2024.ecoscape.services;
 import com.java2024.ecoscape.dto.ListingRequest;
 import com.java2024.ecoscape.dto.ListingResponse;
 import com.java2024.ecoscape.dto.ListingRulesDTO;
-import com.java2024.ecoscape.models.Listing;
-import com.java2024.ecoscape.models.Rules;
-import com.java2024.ecoscape.models.Status;
-import com.java2024.ecoscape.models.User;
+import com.java2024.ecoscape.models.*;
 import com.java2024.ecoscape.repositories.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 public class ListingService {
@@ -141,6 +141,41 @@ public class ListingService {
         listingRepository.delete(listing);
     }
 
+
+    public List<ListingResponse> searchAvailableListings(LocalDate checkInDate, LocalDate checkOutDate, String name, String location, Integer capacity, Category category) {
+        List<ListingResponse> searchResult = new ArrayList<>();
+        // 1. hitta alla listings
+        List<Listing> listings = listingRepository.findAll();
+        // 2. filtrera efter namn
+        if(name != null && !name.isEmpty()) {
+            listings = listings.stream().filter(l -> l.getName().toLowerCase().contains(name.trim().toLowerCase())).collect(Collectors.toList());
+        }
+        // 3. filtrera efter location
+        if(location != null && !location.isEmpty()) {
+            listings = listings.stream().filter(l -> l.getLocation().toLowerCase().contains(location.trim().toLowerCase())).collect(Collectors.toList());
+        }
+        // 4. filtrera efter capacity
+        if(capacity != null) {
+            listings = listings.stream().filter(l -> l.getCapacity() >= capacity).collect(Collectors.toList());
+        }
+        // 5. filtrera efter kategori
+        if(category != null) {
+            listings = listings.stream().filter(l -> l.getCategories().contains(category)).collect(Collectors.toList());
+        }
+        // 6. filtrera efter datum
+        if(checkInDate != null && checkOutDate != null) {
+            for(Listing listing : listings) {
+                boolean isAvailableInDates = listingAvailableDatesRepository.existsByListingIdAndOverlappingDates(listing.getId(), checkInDate, checkOutDate);
+                if(isAvailableInDates) {
+                    searchResult.add(convertListingEntityToListingResponse(listing));
+                }
+            }
+        } else {
+            return convertListingEntityToListingResponse(listings);
+        }
+
+        return searchResult;
+    }
 
 
     public ListingResponse convertListingEntityToListingResponse(Listing listing) {
