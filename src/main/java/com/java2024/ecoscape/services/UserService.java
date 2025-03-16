@@ -65,37 +65,25 @@ public class UserService {
         return userRepository.findByUsername(username).isPresent();
     }
 
-    public void hostRequest (Long userId) {
-        User existingUser = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User not found"));
+    public void hostRequest () {
+        User authenticateUser = authenticationService.authenticateMethods();
 
-        if (existingUser.getFirstName() == null || existingUser.getFirstName().isEmpty()
-                || existingUser.getLastName() == null || existingUser.getLastName().isEmpty()
-                || existingUser.getContactPhoneNumber() == null || existingUser.getContactPhoneNumber().isEmpty()
-                || existingUser.getPhotoUrl() == null || existingUser.getPhotoUrl().isEmpty()
-                || existingUser.getContactEmail() == null || existingUser.getContactEmail().isEmpty()) {
+
+        if (authenticateUser.getFirstName() == null || authenticateUser.getFirstName().isEmpty()
+                || authenticateUser.getLastName() == null || authenticateUser.getLastName().isEmpty()
+                || authenticateUser.getContactPhoneNumber() == null || authenticateUser.getContactPhoneNumber().isEmpty()
+                || authenticateUser.getPhotoUrl() == null || authenticateUser.getPhotoUrl().isEmpty()
+                || authenticateUser.getContactEmail() == null || authenticateUser.getContactEmail().isEmpty()
+                || authenticateUser.getBirthDate() == null) {
             throw new IllegalArgumentException("You need to have a filled out user profile in order to put in a request for a host role.");
         }
 
-        if (existingUser.getBirthDate() == null) {
-            throw new IllegalArgumentException("You need to have a filled out user profile in order to put in a request for a host role.");
-        }
+        authenticateUser.setUserStatus(UserStatus.PENDING);
 
-        existingUser.setUserStatus(UserStatus.PENDING);
-
-        userRepository.save(existingUser);
+        userRepository.save(authenticateUser);
     }
 
     public List<UserResponse> findAllUsers() {
-        /*Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
-            throw new UnauthorizedException("User is not authenticated");
-        }
-
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));*/
-
         List<User> users = userRepository.findAll();
 
         return users.stream()

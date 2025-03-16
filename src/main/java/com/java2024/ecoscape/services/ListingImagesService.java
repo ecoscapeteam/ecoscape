@@ -6,13 +6,13 @@ import com.java2024.ecoscape.models.Listing;
 import com.java2024.ecoscape.models.ListingImages;
 import com.java2024.ecoscape.repositories.ListingImagesRepository;
 import com.java2024.ecoscape.repositories.ListingRepository;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-@Component
+@Service
 public class ListingImagesService {
     private final ListingRepository listingRepository;
     private final ListingImagesRepository listingImagesRepository;

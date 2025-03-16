@@ -18,8 +18,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-import static org.springframework.http.HttpStatus.CREATED;
-
 
 @RestController
 @RequestMapping("/api/bookings")
@@ -47,17 +45,20 @@ public class BookingController {
             BindingResult bindingResult) {
 
         // إذا كانت هناك أخطاء في التحقق من الصحة
+        // If there are validation errors
         if (bindingResult.hasErrors()) {
-            // جمع الأخطاء
+            // جمع الأخطاء collect errors
             String errorMessage = bindingResult.getAllErrors().stream()
                     .map(error -> error.getDefaultMessage())
                     .collect(Collectors.joining(", "));
 
             // إرجاع رسالة الأخطاء كاستجابة
+            // Return error response
             return ResponseEntity.badRequest().body(errorMessage);
         }
 
         // إذا لم تكن هناك أخطاء، قم بإنشاء الحجز
+        // If no errors, create the booking
         BookingResponse createdBooking = bookingService.createBooking(bookingRequest, userId, listingId);
 
         // إرجاع الحجز الذي تم إنشاؤه
@@ -103,7 +104,7 @@ public ResponseEntity<?> cancelByHost(@PathVariable Long id) {
     }
 }
 
-/*
+
     @PutMapping("/{bookingId}")
     public ResponseEntity<BookingResponse> updateBooking(@PathVariable Long bookingId,
                                                          @RequestBody BookingRequest bookingRequest) {
@@ -127,7 +128,7 @@ public ResponseEntity<?> cancelByHost(@PathVariable Long id) {
 
     }
 
- */
+
 
     @DeleteMapping("/{bookingId}")
     public ResponseEntity<String> deleteBooking(@PathVariable Long bookingId) {

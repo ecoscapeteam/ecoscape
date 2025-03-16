@@ -1,13 +1,14 @@
 package com.java2024.ecoscape.controllers;
 
-import com.java2024.ecoscape.dto.ListingAvailableDatesResponse;
 import com.java2024.ecoscape.dto.ListingAvailableDatesRequest;
+import com.java2024.ecoscape.dto.ListingAvailableDatesResponse;
 import com.java2024.ecoscape.models.ListingAvailableDates;
 import com.java2024.ecoscape.repositories.ListingAvailableDatesRepository;
 import com.java2024.ecoscape.services.ListingAvailableDatesService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -27,12 +28,14 @@ public class ListingAvailableDatesController {
     }
 
     @PostMapping("/{listingId}")
+    @PreAuthorize("hasAnyRole('HOST', 'ADMIN')")
     public ResponseEntity<ListingAvailableDatesResponse> createAvailableDates(@Valid @RequestBody ListingAvailableDatesRequest listingAvailableDatesRequest, @PathVariable Long listingId){
         ListingAvailableDatesResponse listingAvailableDatesResponse = listingAvailableDatesService.setAvailableDates(listingId, listingAvailableDatesRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(listingAvailableDatesResponse);
     }
 
     @GetMapping("/{listingAvailableDatedId}/getSingle")
+    @PreAuthorize("hasAnyRole('HOST', 'ADMIN')")
     public ResponseEntity<ListingAvailableDatesResponse> getSingleAvailableDates(@PathVariable Long listingAvailableDatedId){
         ListingAvailableDatesResponse listingAvailableDatesResponse = listingAvailableDatesService.getSingleAvailableDatesByHost(listingAvailableDatedId);
         return ResponseEntity.ok(listingAvailableDatesResponse);
@@ -45,6 +48,7 @@ public class ListingAvailableDatesController {
     }
 
     @PutMapping("/{availableDatesId}")
+    @PreAuthorize("hasAnyRole('HOST', 'ADMIN')")
     public ResponseEntity<ListingAvailableDatesResponse> updateSingleAvailableDatesById(@PathVariable Long availableDatesId,
                                                                                         @RequestParam("startDate") LocalDate startDate,
                                                                                         @RequestParam("endDate") LocalDate endDate){
@@ -53,6 +57,7 @@ public class ListingAvailableDatesController {
     }
 
     @DeleteMapping("/{availableDatesId}/deleteSingle")
+    @PreAuthorize("hasAnyRole('HOST', 'ADMIN')")
     public ResponseEntity<String> deleteSingleAvailableDates(@PathVariable Long availableDatesId) {
         ListingAvailableDates listingAvailableDates = listingAvailableDatesRepository.findById(availableDatesId).orElseThrow(() -> new NoSuchElementException("Available dates by host not found"));
         listingAvailableDatesService.deleteSingleAvailableDatesByHost(availableDatesId);
@@ -60,6 +65,7 @@ public class ListingAvailableDatesController {
     }
 
     @DeleteMapping("/{listingId}/deleteAll")
+    @PreAuthorize("hasAnyRole('HOST', 'ADMIN')")
     public ResponseEntity<String> deleteAllAvailableDatesOfAListing(@PathVariable Long listingId){
         String resultMessage = listingAvailableDatesService.deleteAllAvailableDatesByHostOfAListing(listingId);
         return ResponseEntity.ok(resultMessage);

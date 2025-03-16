@@ -9,6 +9,7 @@ import com.java2024.ecoscape.services.ListingImagesService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class ListingImagesController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('HOST', 'ADMIN')")
     public ResponseEntity<?> createListingImage(@Valid @RequestBody ListingImagesRequest request) {
         if (listingImagesService.existsByImageUrl(request.getImageUrl())) {
             return ResponseEntity
@@ -68,6 +70,7 @@ public class ListingImagesController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('HOST', 'ADMIN')")
     public ResponseEntity<?> updateListingImage(@PathVariable Long id, @Valid @RequestBody ListingImagesRequest listingImagesRequest) {
         if (!listingImagesRepository.existsById(id)) {
             return ResponseEntity
@@ -92,6 +95,7 @@ public class ListingImagesController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('HOST', 'ADMIN')")
     public ResponseEntity<String> deleteListingImage(@PathVariable Long id) {
         listingImagesService.deleteListingImage(id);
 
@@ -99,6 +103,7 @@ public class ListingImagesController {
     }
 
     @DeleteMapping("/listing/{listingId}")
+    @PreAuthorize("hasAnyRole('HOST', 'ADMIN')")
     public ResponseEntity<String> deleteAllListingImagesById(@PathVariable Long listingId) {
         listingImagesService.deleteAllListingImages(listingId);
 

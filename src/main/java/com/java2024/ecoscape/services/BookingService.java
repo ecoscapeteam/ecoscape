@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 import static com.java2024.ecoscape.models.Status.*;
 
 @Service
-
 public class BookingService {
 
     private final EmailService emailService;
@@ -37,15 +36,15 @@ public class BookingService {
     private final UserRepository userRepository;
     private final ListingRepository listingRepository;
     private final ListingAvailableDatesService listingAvailableDatesService;
+    private final AuthenticationService authenticationService;
 
-
-    public BookingService(BookingRepository bookingRepository, UserRepository userRepository, ListingRepository listingRepository, ListingAvailableDatesService listingAvailableDatesService,
-                          EmailService emailService) {
+    public BookingService(EmailService emailService, BookingRepository bookingRepository, UserRepository userRepository, ListingRepository listingRepository, ListingAvailableDatesService listingAvailableDatesService, AuthenticationService authenticationService) {
+        this.emailService = emailService;
         this.bookingRepository = bookingRepository;
         this.userRepository = userRepository;
         this.listingRepository = listingRepository;
         this.listingAvailableDatesService = listingAvailableDatesService;
-        this.emailService = emailService;
+        this.authenticationService = authenticationService;
     }
 
     public BookingResponse convertBookingEntityToBookingResponse(Booking booking ) {
@@ -114,7 +113,8 @@ public class BookingService {
                 .add(serviceFeeBD)
                 .setScale(2, RoundingMode.HALF_UP);
     }
-@Transactional
+
+    @Transactional
     public BookingResponse createBooking(BookingRequest bookingRequest, Long userId, Long listingId) {
         // Find user and listing
         User user = userRepository.findById(userId)
@@ -184,8 +184,6 @@ public class BookingService {
             throw new IllegalArgumentException(String.join("\n", errors));
         }
 
-
-
         Booking booking = convertBookingRequestToBookingEntity(bookingRequest, listing);
         booking.setUser(user);
         booking.setListing(listing);
@@ -198,7 +196,27 @@ public class BookingService {
         // save booking to db
         Booking savedBooking = bookingRepository.save(booking);
 
-        return convertBookingEntityToBookingResponse(savedBooking);
+    // تحويل الكيان إلى استجابة
+    BookingResponse bookingResponse = convertBookingEntityToBookingResponse(booking);
+
+    // إضافة الرسالة إلى الاستجابة
+    bookingResponse.setMessage("The booking number " + booking.getId() + " has been confirmed. A confirmation email has been sent.");
+    // Send confirmation email
+    sendBookingConfirmationByEmail(bookingResponse);
+    return bookingResponse;
+}
+    private void sendBookingConfirmationByEmail(BookingResponse bookingResponse) {
+        String to = bookingResponse.getUsersContactEmail();
+        String subject = "Booking Confirmation - EcoScape";
+        String text = "Hello " + bookingResponse.getFirstName() + "!\n\n" +
+                "We are pleased to inform you that your booking with EcoScape has been successfully confirmed. Below are the details of your booking:\n" +
+                "Booking ID: " + bookingResponse.getBookingId() + "\n" +
+                "Listing ID: " + bookingResponse.getListingId() + "\n" +
+                "Thank you for choosing EcoScape. We are excited to have you stay with us and look forward to making your experience memorable.\n\n" +
+                "If you have any questions or need further assistance, please don’t hesitate to contact us.\n\n" +
+                "Best regards,\nThe EcoScape Team";
+
+        emailService.sendEmail(to, subject, text);
     }
 
 
@@ -214,6 +232,7 @@ public class BookingService {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Booking not found with id: " + id));
         // تحويل Booking إلى BookingResponse
+
         return convertBookingEntityToBookingResponse(booking);
     }
 
@@ -270,11 +289,10 @@ public class BookingService {
     private void sendCancellationEmail(Booking booking  ) {
         String to = booking.getUsersContactEmail();
         String subject = "Confirm cancellation of booking";
-        String text = "Hello!\n" + booking.getFirstName() + ",\n\n" +
-                "We would like to inform you that the booking you made with us has been cancelled.\n"
-                + "We apologize for any inconvenience this may cause.\n\n"
-                + "If you need any assistance, please don't hesitate to contact us.\n\n"
-                + "Best regards,\nThe Ecoscape Team.";
+        String text = "Hello" + booking.getFirstName() + "!\n\n" +
+                "We would like to inform you that the booking number "+ booking.getId() + " in "+ booking.getListing().getId()
+        + " you made with us has been cancelled.\n"+ "We apologize for any inconvenience this may cause.\n\n"
+                + "If you need any assistance, please don't hesitate to contact us.\n\n"+ "Best regards,\nThe Ecoscape Team.";
 
         // Sending the email using the EmailService
         emailService.sendEmail(to, subject, text);
@@ -294,8 +312,14 @@ public class BookingService {
         bookingRequest.setGuests(booking.getGuests());
         return bookingRequest;
     }
-@Transactional
+
+    @Transactional
     public BookingResponse updateBooking(BookingRequest bookingRequest, Long bookingId, Listing listing, User user) {
+        /*UserDetails userDetails = authenticationService.authenticateMethods();
+
+        user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));*/
+
         // Find Booking
         Booking existingBooking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NoSuchElementException("Booking not found"));
@@ -307,7 +331,6 @@ public class BookingService {
         // control can not have guests more than capacity in listing
         if (bookingRequest.getGuests() > listing.getCapacity()) {
             errors.add("The number of guests exceeds the capacity for this listing.");
-
         }
 
         // control can not be end date before start date
@@ -368,9 +391,8 @@ public class BookingService {
         Booking udatedBooking = bookingRepository.save(existingBooking);
         return convertBookingEntityToBookingResponse(udatedBooking);
 
-
-
     }
+
 
 
     public ResponseEntity<String> deleteBookingById(Long bookingId) {
