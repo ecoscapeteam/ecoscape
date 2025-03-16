@@ -30,16 +30,11 @@ public class User {
     private String password;
 
     @Column(name = "first_name")
-    @Pattern(regexp = "^[A-Za-z]+$", message = "Only letters are allowed.")
-    @Size(max = 50, message = "Your first name cannot be longer than 50 characters.")
     private String firstName;
 
     @Column(name = "last_name")
-    @Pattern(regexp = "^[A-Za-z]+$", message = "Only letters are allowed.")
-    @Size(max = 50, message = "Your last name cannot be longer than 50 characters.")
     private String lastName;
 
-    @Size(max = 250)
     private String bio;
 
     @Column(name = "photo_url")

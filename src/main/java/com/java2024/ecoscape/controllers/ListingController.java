@@ -2,29 +2,44 @@ package com.java2024.ecoscape.controllers;
 
 import com.java2024.ecoscape.dto.ListingRequest;
 import com.java2024.ecoscape.dto.ListingResponse;
+import com.java2024.ecoscape.models.Category;
+import com.java2024.ecoscape.repositories.ListingRepository;
 import com.java2024.ecoscape.services.ListingService;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/listings")
 public class ListingController {
 
     private final ListingService listingService;
+    private final ListingRepository listingRepository;
 
-    public ListingController(ListingService listingService) {
+
+    public ListingController(ListingService listingService, ListingRepository listingRepository) {
         this.listingService = listingService;
+        this.listingRepository = listingRepository;
     }
 
     @PostMapping("/{userId}")
-    //@PreAuthorize("hasAnyRole('HOST', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('HOST', 'ADMIN')")
     public ResponseEntity<ListingResponse> createListing(@Valid @RequestBody ListingRequest listingRequest, @PathVariable Long userId) {
         ListingResponse listingResponse = listingService.createListing(userId, listingRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(listingResponse);
     }
 
+    @GetMapping
+    public ResponseEntity <List<ListingResponse>> getAllListing(){
+        List<ListingResponse> listingResponseList = listingService.getAllExistingListings();
+        return ResponseEntity.ok(listingResponseList);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<ListingResponse> getListingById(@PathVariable Long id) {
@@ -42,23 +57,16 @@ public class ListingController {
     public ResponseEntity<String> deleteListingById(@PathVariable Long listingId) {
         listingService.deleteListingById(listingId);
         return ResponseEntity.ok("Listing successfully deleted!");
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity <List<ListingResponse>> searchListings (@RequestParam(name = "checkInDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate checkInDate,
+                                                                  @RequestParam(name = "checkOutDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate checkOutDate,
+                                                                  @RequestParam(name = "name", required = false) String name,
+                                                                  @RequestParam(name = "location", required = false) String location,
+                                                                  @RequestParam(name = "capacity", required = false) Integer capacity,
+                                                                  @RequestParam(name = "category", required = false) Category category) {
+        return ResponseEntity.ok(listingService.searchAvailableListings(checkInDate, checkOutDate, name, location, capacity, category));
 
     }
-/*
-    @GetMapping("/search")
-    public ResponseEntity <List<ListingResponse>> searchListings (@RequestParam(name = "name", required = false) String name,
-                                                                  @RequestParam(name = "capacity", required = false) Integer capacity,
-                                                                  @RequestParam(name = "checkInDate", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate checkInDate,
-                                                                  @RequestParam(name = "checkOutDate", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate checkOutDate
-                                                                  ){
-
-
-
-
-
-        return ResponseEntity.ok(listings);
-
-    } */
-
-
 }

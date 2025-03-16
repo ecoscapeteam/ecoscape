@@ -69,6 +69,12 @@ public class ListingImagesController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateListingImage(@PathVariable Long id, @Valid @RequestBody ListingImagesRequest listingImagesRequest) {
+        if (!listingImagesRepository.existsById(id)) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("That image doesn't exist.");
+        }
+
         if (listingImagesService.existsByImageUrl(listingImagesRequest.getImageUrl())) {
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)

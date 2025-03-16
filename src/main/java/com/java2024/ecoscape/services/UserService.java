@@ -7,26 +7,31 @@ import com.java2024.ecoscape.models.User;
 import com.java2024.ecoscape.models.UserStatus;
 import com.java2024.ecoscape.repositories.ListingRepository;
 import com.java2024.ecoscape.repositories.UserRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Component
+@Service
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final ListingRepository listingRepository;
+    private final AuthenticationManager authenticationManager;
+    private final AuthenticationService authenticationService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, ListingRepository listingRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, ListingRepository listingRepository, AuthenticationManager authenticationManager, AuthenticationService authenticationService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.listingRepository = listingRepository;
+        this.authenticationManager = authenticationManager;
+        this.authenticationService = authenticationService;
     }
-
 
     public void registerUser(User user) {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
@@ -158,27 +163,32 @@ public class UserService {
         return userRepository.save(existingUser);
     }
 
-    public User updateUser(Long id, UserRequest userRequest) {
-        User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("User not found"));
+    @Transactional
+    public User updateUser(UserRequest userRequest) {
+        User authenticateUser = authenticationService.authenticateMethods();
 
-        existingUser.setFirstName(userRequest.getFirstName());
-        existingUser.setLastName(userRequest.getLastName());
-        existingUser.setBio(userRequest.getBio());
-        existingUser.setPhotoUrl(userRequest.getPhotoUrl());
-        existingUser.setBirthDate(userRequest.getBirthDate());
-        existingUser.setContactPhoneNumber(userRequest.getContactPhoneNumber());
-        existingUser.setContactEmail(userRequest.getContactEmail());
+        authenticateUser.setFirstName(userRequest.getFirstName());
+        authenticateUser.setLastName(userRequest.getLastName());
+        authenticateUser.setBio(userRequest.getBio());
+        authenticateUser.setPhotoUrl(userRequest.getPhotoUrl());
+        authenticateUser.setBirthDate(userRequest.getBirthDate());
+        authenticateUser.setContactPhoneNumber(userRequest.getContactPhoneNumber());
+        authenticateUser.setContactEmail(userRequest.getContactEmail());
 
-        return userRepository.save(existingUser);
+        return userRepository.save(authenticateUser);
     }
 
     public void deleteUser(Long id) {
-        User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("User not found"));
+        User authenticateUser = authenticationService.authenticateMethods();
+
+        boolean isAdmin = authenticateUser.getRoles().stream().anyMatch(role -> role == Role.ADMIN);
+
+        if(!isAdmin && !authenticateUser.getId().equals(id)) {
+            throw new IllegalArgumentException("You can only delete your own account.");
+        }
 
         if (listingRepository.existsByUserId(id)) {
-            throw new IllegalArgumentException("You cannot delete your account with an existing listing, delete the listing first.");
+            throw new IllegalArgumentException("You cannot delete this account with an existing listing, delete the listing first.");
         }
 
         userRepository.deleteById(id);

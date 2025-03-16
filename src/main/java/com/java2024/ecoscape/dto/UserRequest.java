@@ -1,12 +1,21 @@
 package com.java2024.ecoscape.dto;
 
 import com.java2024.ecoscape.models.UserStatus;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
 public class UserRequest {
+    @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ'\\s-]+$", message = "Invalid characters in first name")
+    @Size(max = 50, message = "Your last name cannot be longer than 50 characters.")
     private String firstName;
+
+    @Pattern(regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ'\\s-]+$", message = "Invalid characters in last name")
+    @Size(max = 50, message = "Your last name cannot be longer than 50 characters.")
     private String lastName;
+
+    @Size(max = 250)
     private String bio;
     private String photoUrl;
     private UserStatus status;
