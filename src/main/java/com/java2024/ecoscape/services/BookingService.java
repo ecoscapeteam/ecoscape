@@ -115,10 +115,10 @@ public class BookingService {
     }
 
     @Transactional
-    public BookingResponse createBooking(BookingRequest bookingRequest, Long userId, Long listingId) {
+    public BookingResponse createBooking(BookingRequest bookingRequest, Long listingId) {
         // Find user and listing
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User not found"));
+        User authenticateUser = authenticationService.authenticateMethods();
+
         Listing listing = listingRepository.findById(listingId)
                 .orElseThrow(() -> new NoSuchElementException("Listing not found"));
         // list to collect errors so they all appear at one
@@ -185,7 +185,7 @@ public class BookingService {
         }
 
         Booking booking = convertBookingRequestToBookingEntity(bookingRequest, listing);
-        booking.setUser(user);
+        booking.setUser(authenticateUser);
         booking.setListing(listing);
         booking.setStatus(CONFIRMED);
         booking.setFirstName(bookingRequest.getFirstName());

@@ -40,7 +40,6 @@ public class BookingController {
     @PostMapping
     public ResponseEntity<?> createBooking(
             @RequestBody @Valid BookingRequest bookingRequest,
-            @RequestParam Long userId,
             @RequestParam Long listingId,
             BindingResult bindingResult) {
 
@@ -59,7 +58,7 @@ public class BookingController {
 
         // إذا لم تكن هناك أخطاء، قم بإنشاء الحجز
         // If no errors, create the booking
-        BookingResponse createdBooking = bookingService.createBooking(bookingRequest, userId, listingId);
+        BookingResponse createdBooking = bookingService.createBooking(bookingRequest, listingId);
 
         // إرجاع الحجز الذي تم إنشاؤه
         return ResponseEntity.status(HttpStatus.CREATED).body(createdBooking);
