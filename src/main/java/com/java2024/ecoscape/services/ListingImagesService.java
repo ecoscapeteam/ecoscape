@@ -59,6 +59,9 @@ public class ListingImagesService {
     }
 
     public List<ListingImagesGetResponse> getAllListingImagesByListingId(Long listingId) {
+        listingImagesRepository.findById(listingId)
+                .orElseThrow(() -> new NoSuchElementException("Listing not found"));
+
         List<ListingImages> listingImages = listingImagesRepository.findByListingId(listingId);
 
         return listingImages.stream()
