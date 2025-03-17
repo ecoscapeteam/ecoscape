@@ -68,7 +68,6 @@ public class UserService {
     public void hostRequest () {
         User authenticateUser = authenticationService.authenticateMethods();
 
-
         if (authenticateUser.getFirstName() == null || authenticateUser.getFirstName().isEmpty()
                 || authenticateUser.getLastName() == null || authenticateUser.getLastName().isEmpty()
                 || authenticateUser.getContactPhoneNumber() == null || authenticateUser.getContactPhoneNumber().isEmpty()

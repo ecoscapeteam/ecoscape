@@ -58,6 +58,17 @@ public class ListingImagesService {
                 .collect(Collectors.toList());
     }
 
+    public List<ListingImagesGetResponse> getAllListingImagesByListingId(Long listingId) {
+        List<ListingImages> listingImages = listingImagesRepository.findByListingId(listingId);
+
+        return listingImages.stream()
+                .map(images -> new ListingImagesGetResponse(
+                        images.getListing().getId(),
+                        images.getImageUrl()
+                ))
+                .collect(Collectors.toList());
+    }
+
     public ListingImages updateListingImage(Long id, ListingImagesRequest listingImagesRequest) {
         ListingImages existingListingImage = listingImagesRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Listing image not found"));
@@ -78,6 +89,5 @@ public class ListingImagesService {
         List<ListingImages> existingImages = listingImagesRepository.findByListingId(listingId);
 
         listingImagesRepository.deleteAll(existingImages);
-
     }
 }

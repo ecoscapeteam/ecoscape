@@ -25,8 +25,9 @@ public class ListingService {
     private final ListingAvailableDatesService listingAvailableDatesService;
     private final ListingAvailableDatesRepository listingAvailableDatesRepository;
     private final BookingRepository bookingRepository;
+    private final AuthenticationService authenticationService;
 
-    public ListingService(ListingRepository listingRepository, UserRepository userRepository, RulesRepository rulesRepository, RulesService rulesService, ListingAvailableDatesService listingAvailableDatesService, ListingAvailableDatesRepository listingAvailableDatesRepository, BookingRepository bookingRepository) {
+    public ListingService(ListingRepository listingRepository, RulesRepository rulesRepository, UserRepository userRepository, RulesService rulesService, ListingAvailableDatesService listingAvailableDatesService, ListingAvailableDatesRepository listingAvailableDatesRepository, BookingRepository bookingRepository, AuthenticationService authenticationService) {
         this.listingRepository = listingRepository;
         this.rulesRepository = rulesRepository;
         this.userRepository = userRepository;
@@ -34,13 +35,15 @@ public class ListingService {
         this.listingAvailableDatesService = listingAvailableDatesService;
         this.listingAvailableDatesRepository = listingAvailableDatesRepository;
         this.bookingRepository = bookingRepository;
+        this.authenticationService = authenticationService;
     }
+
 
     //metod för att skaffa listing
     @Transactional
-    public ListingResponse createListing(Long userId, ListingRequest listingRequest) {
+    public ListingResponse createListing(ListingRequest listingRequest) {
 //hittar userb
-        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("User not found"));
+        User authenticateUser = authenticationService.authenticateMethods();
 //validerar requesten för att skaffa en listing
         validateListing(listingRequest);
 //tar rules från listing från listing request och konvertar det till rules entity och sparar till rulesrepo
@@ -49,7 +52,7 @@ public class ListingService {
 //konvertar hela listing requesten och konverterar det till listing entity
         Listing listing = convertListingRequestToListingEntity(listingRequest);
         //ger listingen en user attribut
-        listing.setUser(user);
+        listing.setUser(authenticateUser);
         //get listingen rules atribut
         listing.setRules(rules);
 //sprar listingen till repo

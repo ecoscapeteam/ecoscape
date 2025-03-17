@@ -57,7 +57,7 @@ public class ListingImagesController {
         return ResponseEntity.ok(images);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ListingImagesGetResponse> getImageById(@PathVariable Long id) {
         ListingImages listingImages = listingImagesService.findImageById(id);
 
@@ -67,6 +67,13 @@ public class ListingImagesController {
         );
 
         return ResponseEntity.ok(listingImagesGetResponse);
+    }
+
+    @GetMapping("/all/{listingId}")
+    public ResponseEntity<List<ListingImagesGetResponse>> getListingImageById(@PathVariable Long listingId) {
+         List<ListingImagesGetResponse> listingImages = listingImagesService.getAllListingImagesByListingId(listingId);
+
+         return ResponseEntity.ok(listingImages);
     }
 
     @PutMapping("/{id}")
