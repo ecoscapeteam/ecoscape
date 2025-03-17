@@ -121,6 +121,11 @@ public class BookingService {
 
         Listing listing = listingRepository.findById(listingId)
                 .orElseThrow(() -> new NoSuchElementException("Listing not found"));
+
+        if(authenticateUser.getId().equals(listing.getUser().getId())) {
+            throw new IllegalArgumentException("You can't book your own listing!");
+        }
+
         // list to collect errors so they all appear at one
         List<String>errors = new ArrayList<>();
         //availability check
