@@ -20,7 +20,12 @@ public class UserRequest {
     private String photoUrl;
     private UserStatus status;
     private LocalDate birthDate;
+
+    @Pattern(regexp = "^\\+\\d{1,3}\\d{9}$", message = "That's not a valid phone number.")
     private String contactPhoneNumber;
+
+    @Pattern(regexp = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$",
+            message = "That's not a valid email.")
     private String contactEmail;
 
     public UserRequest(String firstName, String lastName, String bio, String photoUrl, UserStatus status, LocalDate birthDate, String contactPhoneNumber, String contactEmail) {
