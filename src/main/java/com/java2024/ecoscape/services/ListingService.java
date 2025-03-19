@@ -133,7 +133,7 @@ public class ListingService {
     public void deleteListingById(Long id){
         User authenticateUser = authenticationService.authenticateMethods();
 
-        Listing listing = listingRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Listig not found"));
+        Listing listing = listingRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Listing not found"));
         //kallar JPA metod, kollar att inte hosten kan ta bort listingen ifall det finns aktuella eller framtida bokningar som är inte avbokade
         if(bookingRepository.existsByListingIdAndEndDateAfterAndStatus(id, LocalDate.now(), Status.CONFIRMED)){
             throw new IllegalArgumentException("You cannot delete the listing with actual or future booking!");

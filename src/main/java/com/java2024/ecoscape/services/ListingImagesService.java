@@ -4,6 +4,7 @@ import com.java2024.ecoscape.dto.ListingImagesGetResponse;
 import com.java2024.ecoscape.dto.ListingImagesRequest;
 import com.java2024.ecoscape.models.Listing;
 import com.java2024.ecoscape.models.ListingImages;
+import com.java2024.ecoscape.models.User;
 import com.java2024.ecoscape.repositories.ListingImagesRepository;
 import com.java2024.ecoscape.repositories.ListingRepository;
 import org.springframework.stereotype.Service;
@@ -16,12 +17,14 @@ import java.util.stream.Collectors;
 public class ListingImagesService {
     private final ListingRepository listingRepository;
     private final ListingImagesRepository listingImagesRepository;
+    private final AuthenticationService authenticationService;
 
-
-    public ListingImagesService(ListingRepository listingRepository, ListingImagesRepository listingImagesRepository) {
+    public ListingImagesService(ListingRepository listingRepository, ListingImagesRepository listingImagesRepository, AuthenticationService authenticationService) {
         this.listingRepository = listingRepository;
         this.listingImagesRepository = listingImagesRepository;
+        this.authenticationService = authenticationService;
     }
+
 
     public boolean existsByImageUrl(String imageUrl) {
         return listingImagesRepository.findByImageUrl(imageUrl).isPresent();
@@ -32,8 +35,14 @@ public class ListingImagesService {
     }
 
     public ListingImages createListingImages(ListingImagesRequest listingImagesRequest) {
+        User authenticateUser = authenticationService.authenticateMethods();
+
         Listing listing = listingRepository.findById(listingImagesRequest.getListing().getId())
                 .orElseThrow(() -> new NoSuchElementException("Listing was not found."));
+
+        if(!authenticateUser.getId().equals(listing.getUser().getId())) {
+            throw new IllegalArgumentException("You can only add images to your own listings.");
+        }
 
         ListingImages listingImages = new ListingImages();
         listingImages.setListing(listing);
@@ -48,6 +57,8 @@ public class ListingImagesService {
     }
 
     public List<ListingImagesGetResponse> findAllListingImages() {
+        User authenticateUser = authenticationService.authenticateMethods();
+
         List<ListingImages> listingImages = listingImagesRepository.findAll();
 
         return listingImages.stream()
@@ -73,8 +84,16 @@ public class ListingImagesService {
     }
 
     public ListingImages updateListingImage(Long id, ListingImagesRequest listingImagesRequest) {
+        User authenticateUser = authenticationService.authenticateMethods();
+
         ListingImages existingListingImage = listingImagesRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Listing image not found"));
+
+        Listing listing = existingListingImage.getListing();
+
+        if (!authenticateUser.getId().equals(listing.getUser().getId())) {
+            throw new IllegalArgumentException("You can only update images for your own listings.");
+        }
 
         existingListingImage.setImageUrl(listingImagesRequest.getImageUrl());
 
@@ -82,13 +101,30 @@ public class ListingImagesService {
     }
 
     public void deleteListingImage(Long id) {
-        ListingImages existingImage = listingImagesRepository.findById(id)
+        User authenticateUser = authenticationService.authenticateMethods();
+
+        ListingImages existingListingImage = listingImagesRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Listing image not found"));
+
+        Listing listing = existingListingImage.getListing();
+
+        if (!authenticateUser.getId().equals(listing.getUser().getId())) {
+            throw new IllegalArgumentException("You can only update images for your own listings.");
+        }
 
         listingImagesRepository.deleteById(id);
     }
 
     public void deleteAllListingImages(Long listingId) {
+        User authenticateUser = authenticationService.authenticateMethods();
+
+        Listing listing = listingRepository.findById(listingId)
+                .orElseThrow(() -> new NoSuchElementException("Listing not found"));
+
+        if (!authenticateUser.getId().equals(listing.getUser().getId())) {
+            throw new IllegalArgumentException("You can only delete images from your own listings.");
+        }
+
         List<ListingImages> existingImages = listingImagesRepository.findByListingId(listingId);
 
         listingImagesRepository.deleteAll(existingImages);

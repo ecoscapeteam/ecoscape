@@ -254,7 +254,7 @@ public class BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
 
-        if(authenticateUser.getId().equals(booking.getUser().getId())) {
+        if(!authenticateUser.getId().equals(booking.getUser().getId())) {
             throw new IllegalArgumentException("You can only cancel your own bookings!");
         }
 

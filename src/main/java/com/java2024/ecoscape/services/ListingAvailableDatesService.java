@@ -5,6 +5,7 @@ import com.java2024.ecoscape.dto.ListingAvailableDatesResponse;
 import com.java2024.ecoscape.models.Booking;
 import com.java2024.ecoscape.models.Listing;
 import com.java2024.ecoscape.models.ListingAvailableDates;
+import com.java2024.ecoscape.models.User;
 import com.java2024.ecoscape.repositories.ListingAvailableDatesRepository;
 import com.java2024.ecoscape.repositories.ListingRepository;
 
@@ -22,17 +23,23 @@ import java.util.Optional;
 public class ListingAvailableDatesService {
     private final ListingAvailableDatesRepository listingAvailableDatesRepository;
     private final ListingRepository listingRepository;
+    private final AuthenticationService authenticationService;
 
-    public ListingAvailableDatesService(ListingAvailableDatesRepository listingAvailableDatesRepository, ListingRepository listingRepository) {
+    public ListingAvailableDatesService(ListingAvailableDatesRepository listingAvailableDatesRepository, ListingRepository listingRepository, AuthenticationService authenticationService) {
         this.listingAvailableDatesRepository = listingAvailableDatesRepository;
         this.listingRepository = listingRepository;
+        this.authenticationService = authenticationService;
     }
-
-
 
     @Transactional
     public ListingAvailableDatesResponse setAvailableDates(Long listingId, ListingAvailableDatesRequest listingAvailableDatesRequest){
+        User authenticateUser = authenticationService.authenticateMethods();
+
         Listing listing = listingRepository.findById(listingId).orElseThrow(() -> new NoSuchElementException("Listing not found"));
+
+        if(!authenticateUser.getId().equals(listing.getUser().getId())) {
+            throw new IllegalArgumentException("You can only create available dates for your own listings!");
+        }
 
         LocalDate oneYearFromNow = LocalDate.now().plusYears(1);
         ListingAvailableDates listingAvailableDates = convertListingAvailableDatesRequestToAvailableDatesEntity(listingAvailableDatesRequest);
@@ -75,6 +82,8 @@ public class ListingAvailableDatesService {
     }
 
     public ListingAvailableDatesResponse updateSingleAvailableDates(Long listingAvailableDatesId, LocalDate newStartDate, LocalDate newEndDate){
+        User authenticateUser = authenticationService.authenticateMethods();
+
         ListingAvailableDates listingAvailableDates = listingAvailableDatesRepository
                 .findById(listingAvailableDatesId).orElseThrow(() -> new NoSuchElementException("No such available dates "));
         listingAvailableDates.setStartDate(newStartDate);
@@ -109,6 +118,8 @@ public class ListingAvailableDatesService {
     }
 
     public void deleteSingleAvailableDatesByHost(Long availableDatesId){
+        User authenticateUser = authenticationService.authenticateMethods();
+
         ListingAvailableDates listingAvailableDates = listingAvailableDatesRepository.findById(availableDatesId).orElseThrow(() -> new NoSuchElementException("No such available dates "));
         listingAvailableDatesRepository.delete(listingAvailableDates);
     }
@@ -116,6 +127,8 @@ public class ListingAvailableDatesService {
     //behöver Transactional annotation för metoden ska funka, funkade inte utan den
     @Transactional
     public String deleteAllAvailableDatesByHostOfAListing(Long listingId) {
+        User authenticateUser = authenticationService.authenticateMethods();
+
         listingRepository.findById(listingId)
                 .orElseThrow(() -> new NoSuchElementException("Listing not found"));
 
@@ -128,6 +141,8 @@ public class ListingAvailableDatesService {
     }
 
     public boolean checkAvailability(Long listingId, LocalDate startDate, LocalDate endDate) {
+        User authenticateUser = authenticationService.authenticateMethods();
+
         listingRepository.findById(listingId).orElseThrow(() -> new NoSuchElementException("Listing not found"));
         boolean isAvailable = listingAvailableDatesRepository.existsByListingIdAndStartDateBeforeAndEndDateAfter(
                 listingId, endDate, startDate);
@@ -137,6 +152,8 @@ public class ListingAvailableDatesService {
 
     @Transactional
     public void blockAvailableDatesAfterBooking(Long listingId, Booking newBooking) {
+        User authenticateUser = authenticationService.authenticateMethods();
+
         Listing listing = listingRepository.findById(listingId).orElseThrow(() -> new NoSuchElementException("Listing not found"));
         List<ListingAvailableDates> availableDatesRangesOfListing = listingAvailableDatesRepository.findAllByListingId(listingId);
 
@@ -202,6 +219,8 @@ public class ListingAvailableDatesService {
 
     @Transactional
     public void unblockAvailableDatesAfterCancellation(Long listingId, Booking canceledBooking) {
+        User authenticateUser = authenticationService.authenticateMethods();
+
         Listing listing = listingRepository.findById(listingId)
                 .orElseThrow(() -> new NoSuchElementException("Listing not found"));
 
@@ -276,6 +295,7 @@ public class ListingAvailableDatesService {
 
     //metod overloading
     public List<ListingAvailableDatesResponse> convertListingAvailableDatesEntityToListingAvailableDatesResponse(List<ListingAvailableDates> listingAvailableDatesList){
+
         List<ListingAvailableDatesResponse> listingAvailableDatesResponseList = new ArrayList<>();
         for(ListingAvailableDates listingAvailableDates : listingAvailableDatesList) {
             listingAvailableDatesResponseList.add(convertListingAvailableDatesEntityToListingAvailableDatesResponse(listingAvailableDates));
