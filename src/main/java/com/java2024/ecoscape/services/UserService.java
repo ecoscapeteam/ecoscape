@@ -7,8 +7,8 @@ import com.java2024.ecoscape.models.User;
 import com.java2024.ecoscape.models.UserStatus;
 import com.java2024.ecoscape.repositories.ListingRepository;
 import com.java2024.ecoscape.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -65,36 +65,25 @@ public class UserService {
         return userRepository.findByUsername(username).isPresent();
     }
 
-    public void hostRequest (Long userId) {
-        User existingUser = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User not found"));
+    public void hostRequest () {
+        User authenticateUser = authenticationService.authenticateMethods();
 
-        if (existingUser.getFirstName() == null || existingUser.getFirstName().isEmpty()
-                || existingUser.getLastName() == null || existingUser.getLastName().isEmpty()
-                || existingUser.getContactPhoneNumber() == null || existingUser.getContactPhoneNumber().isEmpty()
-                || existingUser.getPhotoUrl() == null || existingUser.getPhotoUrl().isEmpty()
-                || existingUser.getContactEmail() == null || existingUser.getContactEmail().isEmpty()) {
+        if (authenticateUser.getFirstName() == null || authenticateUser.getFirstName().isEmpty()
+                || authenticateUser.getLastName() == null || authenticateUser.getLastName().isEmpty()
+                || authenticateUser.getContactPhoneNumber() == null || authenticateUser.getContactPhoneNumber().isEmpty()
+                || authenticateUser.getPhotoUrl() == null || authenticateUser.getPhotoUrl().isEmpty()
+                || authenticateUser.getContactEmail() == null || authenticateUser.getContactEmail().isEmpty()
+                || authenticateUser.getBirthDate() == null) {
             throw new IllegalArgumentException("You need to have a filled out user profile in order to put in a request for a host role.");
         }
 
-        if (existingUser.getBirthDate() == null) {
-            throw new IllegalArgumentException("You need to have a filled out user profile in order to put in a request for a host role.");
-        }
+        authenticateUser.setUserStatus(UserStatus.PENDING);
 
-        existingUser.setUserStatus(UserStatus.PENDING);
-
-        userRepository.save(existingUser);
+        userRepository.save(authenticateUser);
     }
 
     public List<UserResponse> findAllUsers() {
-        /*Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
-            throw new UnauthorizedException("User is not authenticated");
-        }
-
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));*/
+        User authenticateUser = authenticationService.authenticateMethods();
 
         List<User> users = userRepository.findAll();
 
@@ -114,11 +103,15 @@ public class UserService {
     }
 
     public User findUserById(Long id) {
+        User authenticateUser = authenticationService.authenticateMethods();
+
         return userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
     }
 
     public User rejectHostRequest(Long id) {
+        User authenticateUser = authenticationService.authenticateMethods();
+
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
 
@@ -140,6 +133,8 @@ public class UserService {
     }
 
     public User approveHostRequest(Long id) {
+        User authenticateUser = authenticationService.authenticateMethods();
+
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
 
@@ -163,37 +158,28 @@ public class UserService {
         return userRepository.save(existingUser);
     }
 
-    public User updateUser(Long id, UserRequest userRequest) {
-        UserDetails userDetails = authenticationService.authenticateMethods();
+    @Transactional
+    public User updateUser(UserRequest userRequest) {
+        User authenticateUser = authenticationService.authenticateMethods();
 
-        User existingUser = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        authenticateUser.setFirstName(userRequest.getFirstName());
+        authenticateUser.setLastName(userRequest.getLastName());
+        authenticateUser.setBio(userRequest.getBio());
+        authenticateUser.setPhotoUrl(userRequest.getPhotoUrl());
+        authenticateUser.setBirthDate(userRequest.getBirthDate());
+        authenticateUser.setContactPhoneNumber(userRequest.getContactPhoneNumber());
+        authenticateUser.setContactEmail(userRequest.getContactEmail());
 
-        existingUser.setFirstName(userRequest.getFirstName());
-        existingUser.setLastName(userRequest.getLastName());
-        existingUser.setBio(userRequest.getBio());
-        existingUser.setPhotoUrl(userRequest.getPhotoUrl());
-        existingUser.setBirthDate(userRequest.getBirthDate());
-        existingUser.setContactPhoneNumber(userRequest.getContactPhoneNumber());
-        existingUser.setContactEmail(userRequest.getContactEmail());
-
-        return userRepository.save(existingUser);
+        return userRepository.save(authenticateUser);
     }
 
     public void deleteUser(Long id) {
-        UserDetails userDetails = authenticationService.authenticateMethods();
+        User authenticateUser = authenticationService.authenticateMethods();
 
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        boolean isAdmin = authenticateUser.getRoles().stream().anyMatch(role -> role == Role.ADMIN);
 
-        boolean isAdmin = user.getRoles().stream().anyMatch(role -> role == Role.ADMIN);
-
-        if(!isAdmin && !user.getId().equals(id)) {
+        if(!isAdmin && !authenticateUser.getId().equals(id)) {
             throw new IllegalArgumentException("You can only delete your own account.");
-        }
-
-        if (!userRepository.existsById(id)) {
-            throw new IllegalArgumentException("User not found.");
         }
 
         if (listingRepository.existsByUserId(id)) {

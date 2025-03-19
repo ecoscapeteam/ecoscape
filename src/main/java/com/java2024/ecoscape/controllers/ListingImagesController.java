@@ -57,7 +57,7 @@ public class ListingImagesController {
         return ResponseEntity.ok(images);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ListingImagesGetResponse> getImageById(@PathVariable Long id) {
         ListingImages listingImages = listingImagesService.findImageById(id);
 
@@ -69,9 +69,22 @@ public class ListingImagesController {
         return ResponseEntity.ok(listingImagesGetResponse);
     }
 
+    @GetMapping("/all/{listingId}")
+    public ResponseEntity<List<ListingImagesGetResponse>> getListingImageById(@PathVariable Long listingId) {
+         List<ListingImagesGetResponse> listingImages = listingImagesService.getAllListingImagesByListingId(listingId);
+
+         return ResponseEntity.ok(listingImages);
+    }
+
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('HOST', 'ADMIN')")
     public ResponseEntity<?> updateListingImage(@PathVariable Long id, @Valid @RequestBody ListingImagesRequest listingImagesRequest) {
+        if (!listingImagesRepository.existsById(id)) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("That image doesn't exist.");
+        }
+
         if (listingImagesService.existsByImageUrl(listingImagesRequest.getImageUrl())) {
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)

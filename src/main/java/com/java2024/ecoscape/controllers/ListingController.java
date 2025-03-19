@@ -28,11 +28,17 @@ public class ListingController {
         this.listingRepository = listingRepository;
     }
 
-    @PostMapping("/{userId}")
+    @PostMapping("/create")
     @PreAuthorize("hasAnyRole('HOST', 'ADMIN')")
-    public ResponseEntity<ListingResponse> createListing(@Valid @RequestBody ListingRequest listingRequest, @PathVariable Long userId) {
-        ListingResponse listingResponse = listingService.createListing(userId, listingRequest);
+    public ResponseEntity<ListingResponse> createListing(@Valid @RequestBody ListingRequest listingRequest) {
+        ListingResponse listingResponse = listingService.createListing(listingRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(listingResponse);
+    }
+
+    @GetMapping
+    public ResponseEntity <List<ListingResponse>> getAllListing(){
+        List<ListingResponse> listingResponseList = listingService.getAllExistingListings();
+        return ResponseEntity.ok(listingResponseList);
     }
 
     @GetMapping("/{id}")
