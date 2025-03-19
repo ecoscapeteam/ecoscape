@@ -83,6 +83,8 @@ public class UserService {
     }
 
     public List<UserResponse> findAllUsers() {
+        User authenticateUser = authenticationService.authenticateMethods();
+
         List<User> users = userRepository.findAll();
 
         return users.stream()
@@ -101,11 +103,15 @@ public class UserService {
     }
 
     public User findUserById(Long id) {
+        User authenticateUser = authenticationService.authenticateMethods();
+
         return userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
     }
 
     public User rejectHostRequest(Long id) {
+        User authenticateUser = authenticationService.authenticateMethods();
+
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
 
@@ -127,6 +133,8 @@ public class UserService {
     }
 
     public User approveHostRequest(Long id) {
+        User authenticateUser = authenticationService.authenticateMethods();
+
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
 

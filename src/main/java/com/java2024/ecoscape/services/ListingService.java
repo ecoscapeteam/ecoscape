@@ -64,6 +64,8 @@ public class ListingService {
 
     //metod för att uppdatera en listing
     public ListingResponse partialUpdateListingById(Long listingId, ListingRequest listingRequest){
+        User authenticateUser = authenticationService.authenticateMethods();
+
         //hittar listingen
         Listing existingListing = listingRepository.findById(listingId).orElseThrow(() -> new NoSuchElementException("Listing not found"));
         //om det finns ett namn i requesten  get listing entitetet nya namnet
@@ -129,6 +131,8 @@ public class ListingService {
     //metod for att ta bort en listing
     @Transactional
     public void deleteListingById(Long id){
+        User authenticateUser = authenticationService.authenticateMethods();
+
         Listing listing = listingRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Listig not found"));
         //kallar JPA metod, kollar att inte hosten kan ta bort listingen ifall det finns aktuella eller framtida bokningar som är inte avbokade
         if(bookingRepository.existsByListingIdAndEndDateAfterAndStatus(id, LocalDate.now(), Status.CONFIRMED)){
@@ -179,6 +183,7 @@ public class ListingService {
     }
 
     public List<ListingResponse> getAllExistingListings() {
+        User authenticateUser = authenticationService.authenticateMethods();
         List<Listing> allExistingListings = listingRepository.findAll();
         return convertListingEntityToListingResponse(allExistingListings);
     }

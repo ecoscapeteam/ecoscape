@@ -227,6 +227,8 @@ public class BookingService {
 
     // method to get all booking
     public List<BookingRequest> getAllbookings() {
+        User authenticateUser = authenticationService.authenticateMethods();
+
         List<Booking> bookings = bookingRepository.findAll(); // Fetch all bookings from the repository
         return bookings.stream()
                 .map(this::convertBookingEntityToBookingRequest) // Convert each Booking entity to BookingRequest DTO
@@ -234,6 +236,8 @@ public class BookingService {
     }
 
     public BookingResponse getBookingById(Long id) {
+        User authenticateUser = authenticationService.authenticateMethods();
+
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Booking not found with id: " + id));
         // تحويل Booking إلى BookingResponse
@@ -245,8 +249,14 @@ public class BookingService {
 
     public BookingResponse cancelBookingByUser(Long bookingId){
 
+        User authenticateUser = authenticationService.authenticateMethods();
+
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        if(authenticateUser.getId().equals(booking.getUser().getId())) {
+            throw new IllegalArgumentException("You can only cancel your own bookings!");
+        }
 
         // التحقق مما إذا كان الحجز قد تم إلغاؤه مسبقًا
         if (booking.getStatus() == Status.CANCELLED_BY_USER || booking.getStatus() == Status.CANCELLED_BY_HOST) {
@@ -268,6 +278,8 @@ public class BookingService {
     }
 
     public BookingResponse cancelBookingByHost(Long bookingId) {
+        User authenticateUser = authenticationService.authenticateMethods();
+
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
         // التحقق مما إذا كان الحجز قد تم إلغاؤه مسبقًا
@@ -320,10 +332,7 @@ public class BookingService {
 
     @Transactional
     public BookingResponse updateBooking(BookingRequest bookingRequest, Long bookingId, Listing listing, User user) {
-        /*UserDetails userDetails = authenticationService.authenticateMethods();
-
-        user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));*/
+        User authenticateUser = authenticationService.authenticateMethods();
 
         // Find Booking
         Booking existingBooking = bookingRepository.findById(bookingId)
