@@ -334,7 +334,7 @@ public class BookingService {
         return bookingRequest;
     }
 
-  @Transactional
+    @Transactional
     public BookingResponse updateBooking(BookingRequest bookingRequest, Long bookingId, Listing listing, User user) {
         User authenticateUser = authenticationService.authenticateMethods();
 
@@ -361,6 +361,55 @@ public class BookingService {
             throw new IllegalArgumentException(String.join("\n", errors));
 
         }
+
+
+
+        try {
+            // Försök att uppdatera första namnet
+            existingBooking.setFirstName(bookingRequest.getFirstName());
+            System.out.println("First name updated to: " + existingBooking.getFirstName());
+            bookingRepository.save(existingBooking);
+        } catch (Exception e) {
+            System.out.println("Error updating first name: " + e.getMessage());
+            throw e; // Rulla tillbaka om något går fel
+        }
+
+
+        if (bookingRequest.getLastName() != null) {
+            existingBooking.setLastName(bookingRequest.getLastName());
+        }
+
+        if (bookingRequest.getUsersContactPhoneNumber() != null) {
+            existingBooking.setUsersContactPhoneNumber(bookingRequest.getUsersContactPhoneNumber());
+        }
+
+        if (bookingRequest.getUsersContactEmail() != null) {
+            existingBooking.setUsersContactEmail(bookingRequest.getUsersContactEmail());
+        }
+
+        if (bookingRequest.getStartDate() != null) {
+            existingBooking.setStartDate(bookingRequest.getStartDate());
+        }
+
+        if (bookingRequest.getEndDate() != null) {
+            existingBooking.setEndDate(bookingRequest.getEndDate());
+        }
+
+        if (bookingRequest.getStatus() != null) {
+            existingBooking.setStatus(bookingRequest.getStatus());
+        }
+
+        if (bookingRequest.getGuests() != null) {
+            existingBooking.setGuests(bookingRequest.getGuests());
+        }
+
+
+
+
+        Booking udatedBooking = bookingRepository.save(existingBooking);
+        return convertBookingEntityToBookingResponse(udatedBooking);
+
+    }
 
 
     public ResponseEntity<String> deleteBookingById(Long bookingId) {
