@@ -200,20 +200,22 @@ public class BookingService {
     BookingResponse bookingResponse = convertBookingEntityToBookingResponse(booking);
 
     // إضافة الرسالة إلى الاستجابة
-    bookingResponse.setMessage("The booking number " + booking.getId() + " has been confirmed. A confirmation email has been sent.");
+    bookingResponse.setMessage("The booking number " + booking.getId() + "\n has been confirmed. A confirmation email has been sent.");
     // Send confirmation email
     sendBookingConfirmationByEmail(bookingResponse);
     return bookingResponse;
+
 }
     private void sendBookingConfirmationByEmail(BookingResponse bookingResponse) {
         String to = bookingResponse.getUsersContactEmail();
         String subject = "Booking Confirmation - EcoScape";
         String text = "Hello " + bookingResponse.getFirstName() + "!\n\n" +
                 "We are pleased to inform you that your booking with EcoScape has been successfully confirmed. Below are the details of your booking:\n" +
-                "Booking ID: " + bookingResponse.getBookingId() + "\n" +
-                "Listing ID: " + bookingResponse.getListingId() + "\n" +
-                "Thank you for choosing EcoScape. We are excited to have you stay with us and look forward to making your experience memorable.\n\n" +
-                "If you have any questions or need further assistance, please don’t hesitate to contact us.\n\n" +
+               // "Booking ID: " + bookingResponse.getBookingId() + "\n" +
+                //"Listing ID: " + bookingResponse.getListingId() + "\n" +
+                //"Thank you for choosing EcoScape. We are excited to have you stay with us and look forward to making your experience memorable.\n\n" +
+                bookingResponse.toString() + "\n" +
+                "If you have any questions, feel free to contact us.\n"+
                 "Best regards,\nThe EcoScape Team";
 
         emailService.sendEmail(to, subject, text);
@@ -313,12 +315,12 @@ public class BookingService {
         return bookingRequest;
     }
 
-    @Transactional
+   /* @Transactional
     public BookingResponse updateBooking(BookingRequest bookingRequest, Long bookingId, Listing listing, User user) {
-        /*UserDetails userDetails = authenticationService.authenticateMethods();
+        UserDetails userDetails = authenticationService.authenticateMethods();
 
         user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));*/
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         // Find Booking
         Booking existingBooking = bookingRepository.findById(bookingId)
@@ -383,9 +385,8 @@ public class BookingService {
         return convertBookingEntityToBookingResponse(udatedBooking);
 
     }
-
-
 */
+
 
     public ResponseEntity<String> deleteBookingById(Long bookingId) {
         return bookingRepository.findById(bookingId)

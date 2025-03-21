@@ -11,6 +11,7 @@ import com.java2024.ecoscape.services.BookingService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,6 +39,7 @@ public class BookingController {
     }
 
     @PostMapping
+    //@PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> createBooking(
             @RequestBody @Valid BookingRequest bookingRequest,
             @RequestParam Long userId,
@@ -53,7 +55,7 @@ public class BookingController {
                     .collect(Collectors.joining(", "));
 
             // إرجاع رسالة الأخطاء كاستجابة
-            // Return error response
+            // Return error responseeyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ5YXNtaW4xMjJAZ21haWwuY29tIiwiaWF0IjoxNzQyMDQyOTI1LCJleHAiOjE3NDIwNzg5MjV9.MQE253EycVQ9FTtEqTwPcJeUiTvyQxTyD5YPetFXHbc
             return ResponseEntity.badRequest().body(errorMessage);
         }
 
@@ -67,12 +69,14 @@ public class BookingController {
 
 
     @GetMapping
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<List<BookingRequest>> getAllBooking() {
         List<BookingRequest> bookings = bookingService.getAllbookings(); // call booking service method
         return new ResponseEntity<>(bookings, HttpStatus.OK); // return bookingDTO list with ok
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN') or hasRole(HOST)")
     public ResponseEntity<BookingResponse> getBookingById(@PathVariable Long id) {
         BookingResponse booking = bookingService.getBookingById(id);
         return ResponseEntity.ok(booking);
@@ -81,6 +85,7 @@ public class BookingController {
 
 
 @PatchMapping("/{id}/cancel/user")
+@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 public ResponseEntity<?> cancelByUser(@PathVariable Long id) {
     try {
         // Calling the service method to cancel the booking by the user
@@ -93,6 +98,7 @@ public ResponseEntity<?> cancelByUser(@PathVariable Long id) {
 }
 
 @PatchMapping("/{id}/cancel/host")
+@PreAuthorize("hasRole('HOST') or hasRole('ADMIN')")
 public ResponseEntity<?> cancelByHost(@PathVariable Long id) {
     try {
         // Calling the service method to cancel the booking by the user
@@ -131,6 +137,7 @@ public ResponseEntity<?> cancelByHost(@PathVariable Long id) {
 */
 
     @DeleteMapping("/{bookingId}")
+    @PreAuthorize("hasRole('ADMIN')") // Only Admin can delete bookings
     public ResponseEntity<String> deleteBooking(@PathVariable Long bookingId) {
         return bookingRepository.findById(bookingId)
                 .map(booking -> {
