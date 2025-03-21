@@ -247,6 +247,7 @@ public class BookingService {
 
 
 
+    @Transactional
     public BookingResponse cancelBookingByUser(Long bookingId){
 
         User authenticateUser = authenticationService.authenticateMethods();
@@ -264,7 +265,8 @@ public class BookingService {
         }
 
        booking.setStatus(CANCELLED_BY_USER);
-        listingAvailableDatesService.unblockAvailableDatesAfterCancellation(booking.getListing().getId(), booking);
+        listingAvailableDatesService.restoreAvailableDateRange(booking.getListing().getId(), booking.getStartDate(), booking.getEndDate());
+        listingAvailableDatesService.mergeListingAvailableDates(booking.getListing().getId());
        bookingRepository.save(booking);
         // إرسال تأكيد الإلغاء بالبريد الإلكتروني
         sendCancellationEmail(booking);
@@ -277,6 +279,7 @@ public class BookingService {
         return bookingResponse;
     }
 
+    @Transactional
     public BookingResponse cancelBookingByHost(Long bookingId) {
         User authenticateUser = authenticationService.authenticateMethods();
 
@@ -286,10 +289,9 @@ public class BookingService {
         if (booking.getStatus() == Status.CANCELLED_BY_USER || booking.getStatus() == Status.CANCELLED_BY_HOST) {
             throw new RuntimeException("This booking has already been cancelled.");
         }
-
-
         booking.setStatus(CANCELLED_BY_HOST);
-        listingAvailableDatesService.unblockAvailableDatesAfterCancellation(booking.getListing().getId(), booking);
+        listingAvailableDatesService.restoreAvailableDateRange(booking.getListing().getId(), booking.getStartDate(), booking.getEndDate());
+        listingAvailableDatesService.mergeListingAvailableDates(booking.getListing().getId());
         bookingRepository.save(booking);
         // إرسال تأكيد الإلغاء بالبريد الإلكتروني
         sendCancellationEmail(booking);
