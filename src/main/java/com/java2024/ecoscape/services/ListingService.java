@@ -25,8 +25,9 @@ public class ListingService {
     private final ListingAvailableDatesService listingAvailableDatesService;
     private final ListingAvailableDatesRepository listingAvailableDatesRepository;
     private final BookingRepository bookingRepository;
+    private final AuthenticationService authenticationService;
 
-    public ListingService(ListingRepository listingRepository, UserRepository userRepository, RulesRepository rulesRepository, RulesService rulesService, ListingAvailableDatesService listingAvailableDatesService, ListingAvailableDatesRepository listingAvailableDatesRepository, BookingRepository bookingRepository) {
+    public ListingService(ListingRepository listingRepository, RulesRepository rulesRepository, UserRepository userRepository, RulesService rulesService, ListingAvailableDatesService listingAvailableDatesService, ListingAvailableDatesRepository listingAvailableDatesRepository, BookingRepository bookingRepository, AuthenticationService authenticationService) {
         this.listingRepository = listingRepository;
         this.rulesRepository = rulesRepository;
         this.userRepository = userRepository;
@@ -34,13 +35,15 @@ public class ListingService {
         this.listingAvailableDatesService = listingAvailableDatesService;
         this.listingAvailableDatesRepository = listingAvailableDatesRepository;
         this.bookingRepository = bookingRepository;
+        this.authenticationService = authenticationService;
     }
+
 
     //metod för att skaffa listing
     @Transactional
-    public ListingResponse createListing(Long userId, ListingRequest listingRequest) {
+    public ListingResponse createListing(ListingRequest listingRequest) {
 //hittar userb
-        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("User not found"));
+        User authenticateUser = authenticationService.authenticateMethods();
 //validerar requesten för att skaffa en listing
         validateListing(listingRequest);
 //tar rules från listing från listing request och konvertar det till rules entity och sparar till rulesrepo
@@ -49,7 +52,7 @@ public class ListingService {
 //konvertar hela listing requesten och konverterar det till listing entity
         Listing listing = convertListingRequestToListingEntity(listingRequest);
         //ger listingen en user attribut
-        listing.setUser(user);
+        listing.setUser(authenticateUser);
         //get listingen rules atribut
         listing.setRules(rules);
 //sprar listingen till repo
@@ -61,6 +64,8 @@ public class ListingService {
 
     //metod för att uppdatera en listing
     public ListingResponse partialUpdateListingById(Long listingId, ListingRequest listingRequest){
+        User authenticateUser = authenticationService.authenticateMethods();
+
         //hittar listingen
         Listing existingListing = listingRepository.findById(listingId).orElseThrow(() -> new NoSuchElementException("Listing not found"));
         //om det finns ett namn i requesten  get listing entitetet nya namnet
@@ -126,7 +131,9 @@ public class ListingService {
     //metod for att ta bort en listing
     @Transactional
     public void deleteListingById(Long id){
-        Listing listing = listingRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Listig not found"));
+        User authenticateUser = authenticationService.authenticateMethods();
+
+        Listing listing = listingRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Listing not found"));
         //kallar JPA metod, kollar att inte hosten kan ta bort listingen ifall det finns aktuella eller framtida bokningar som är inte avbokade
         if(bookingRepository.existsByListingIdAndEndDateAfterAndStatus(id, LocalDate.now(), Status.CONFIRMED)){
             throw new IllegalArgumentException("You cannot delete the listing with actual or future booking!");
@@ -173,6 +180,12 @@ public class ListingService {
         }
 
         return searchResult;
+    }
+
+    public List<ListingResponse> getAllExistingListings() {
+        User authenticateUser = authenticationService.authenticateMethods();
+        List<Listing> allExistingListings = listingRepository.findAll();
+        return convertListingEntityToListingResponse(allExistingListings);
     }
 
 

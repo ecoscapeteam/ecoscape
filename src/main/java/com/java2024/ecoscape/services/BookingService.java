@@ -115,12 +115,17 @@ public class BookingService {
     }
 
     @Transactional
-    public BookingResponse createBooking(BookingRequest bookingRequest, Long userId, Long listingId) {
+    public BookingResponse createBooking(BookingRequest bookingRequest, Long listingId) {
         // Find user and listing
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("User not found"));
+        User authenticateUser = authenticationService.authenticateMethods();
+
         Listing listing = listingRepository.findById(listingId)
                 .orElseThrow(() -> new NoSuchElementException("Listing not found"));
+
+        if(authenticateUser.getId().equals(listing.getUser().getId())) {
+            throw new IllegalArgumentException("You can't book your own listing!");
+        }
+
         // list to collect errors so they all appear at one
         List<String>errors = new ArrayList<>();
         //availability check
@@ -185,7 +190,7 @@ public class BookingService {
         }
 
         Booking booking = convertBookingRequestToBookingEntity(bookingRequest, listing);
-        booking.setUser(user);
+        booking.setUser(authenticateUser);
         booking.setListing(listing);
         booking.setStatus(CONFIRMED);
         booking.setFirstName(bookingRequest.getFirstName());
@@ -224,6 +229,8 @@ public class BookingService {
 
     // method to get all booking
     public List<BookingRequest> getAllbookings() {
+        User authenticateUser = authenticationService.authenticateMethods();
+
         List<Booking> bookings = bookingRepository.findAll(); // Fetch all bookings from the repository
         return bookings.stream()
                 .map(this::convertBookingEntityToBookingRequest) // Convert each Booking entity to BookingRequest DTO
@@ -231,6 +238,8 @@ public class BookingService {
     }
 
     public BookingResponse getBookingById(Long id) {
+        User authenticateUser = authenticationService.authenticateMethods();
+
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Booking not found with id: " + id));
         // تحويل Booking إلى BookingResponse
@@ -240,10 +249,17 @@ public class BookingService {
 
 
 
+    @Transactional
     public BookingResponse cancelBookingByUser(Long bookingId){
+
+        User authenticateUser = authenticationService.authenticateMethods();
 
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        if(!authenticateUser.getId().equals(booking.getUser().getId())) {
+            throw new IllegalArgumentException("You can only cancel your own bookings!");
+        }
 
         // التحقق مما إذا كان الحجز قد تم إلغاؤه مسبقًا
         if (booking.getStatus() == Status.CANCELLED_BY_USER || booking.getStatus() == Status.CANCELLED_BY_HOST) {
@@ -251,7 +267,8 @@ public class BookingService {
         }
 
        booking.setStatus(CANCELLED_BY_USER);
-        listingAvailableDatesService.unblockAvailableDatesAfterCancellation(booking.getListing().getId(), booking);
+        listingAvailableDatesService.restoreAvailableDateRange(booking.getListing().getId(), booking.getStartDate(), booking.getEndDate());
+        listingAvailableDatesService.mergeListingAvailableDates(booking.getListing().getId());
        bookingRepository.save(booking);
         // إرسال تأكيد الإلغاء بالبريد الإلكتروني
         sendCancellationEmail(booking);
@@ -264,17 +281,19 @@ public class BookingService {
         return bookingResponse;
     }
 
+    @Transactional
     public BookingResponse cancelBookingByHost(Long bookingId) {
+        User authenticateUser = authenticationService.authenticateMethods();
+
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
         // التحقق مما إذا كان الحجز قد تم إلغاؤه مسبقًا
         if (booking.getStatus() == Status.CANCELLED_BY_USER || booking.getStatus() == Status.CANCELLED_BY_HOST) {
             throw new RuntimeException("This booking has already been cancelled.");
         }
-
-
         booking.setStatus(CANCELLED_BY_HOST);
-        listingAvailableDatesService.unblockAvailableDatesAfterCancellation(booking.getListing().getId(), booking);
+        listingAvailableDatesService.restoreAvailableDateRange(booking.getListing().getId(), booking.getStartDate(), booking.getEndDate());
+        listingAvailableDatesService.mergeListingAvailableDates(booking.getListing().getId());
         bookingRepository.save(booking);
         // إرسال تأكيد الإلغاء بالبريد الإلكتروني
         sendCancellationEmail(booking);
@@ -315,12 +334,9 @@ public class BookingService {
         return bookingRequest;
     }
 
-   /* @Transactional
+  @Transactional
     public BookingResponse updateBooking(BookingRequest bookingRequest, Long bookingId, Listing listing, User user) {
-        UserDetails userDetails = authenticationService.authenticateMethods();
-
-        user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User authenticateUser = authenticationService.authenticateMethods();
 
         // Find Booking
         Booking existingBooking = bookingRepository.findById(bookingId)
@@ -345,47 +361,6 @@ public class BookingService {
             throw new IllegalArgumentException(String.join("\n", errors));
 
         }
-
-
-
-        try {
-            // Försök att uppdatera första namnet
-            existingBooking.setFirstName(bookingRequest.getFirstName());
-            System.out.println("First name updated to: " + existingBooking.getFirstName());
-            bookingRepository.save(existingBooking);
-        } catch (Exception e) {
-            System.out.println("Error updating first name: " + e.getMessage());
-            throw e; // Rulla tillbaka om något går fel
-        }
-
-
-        if (bookingRequest.getLastName() != null) {
-            existingBooking.setLastName(bookingRequest.getLastName());
-        }
-
-        if (bookingRequest.getUsersContactPhoneNumber() != null) {
-            existingBooking.setUsersContactPhoneNumber(bookingRequest.getUsersContactPhoneNumber());
-        }
-
-        if (bookingRequest.getUsersContactEmail() != null) {
-            existingBooking.setUsersContactEmail(bookingRequest.getUsersContactEmail());
-        }
-
-
-
-
-        if (bookingRequest.getGuests() != null) {
-            existingBooking.setGuests(bookingRequest.getGuests());
-        }
-
-
-
-
-        Booking udatedBooking = bookingRepository.save(existingBooking);
-        return convertBookingEntityToBookingResponse(udatedBooking);
-
-    }
-*/
 
 
     public ResponseEntity<String> deleteBookingById(Long bookingId) {

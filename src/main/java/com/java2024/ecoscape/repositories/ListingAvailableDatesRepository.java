@@ -18,9 +18,8 @@ public interface ListingAvailableDatesRepository extends JpaRepository<ListingAv
 
     List<ListingAvailableDates> findAllByListingId (Long listing);
 
-    boolean existsByListingIdAndStartDateBeforeAndEndDateAfter(Long listingId, LocalDate checkInDate, LocalDate checkOutDate);
 
-    public Optional<ListingAvailableDates> findByListingIdAndStartDateAndEndDate(Long listingId, LocalDate startDate, LocalDate endDate);
+    Optional<ListingAvailableDates> findByListingIdAndStartDateAndEndDate(Long listingId, LocalDate startDate, LocalDate endDate);
 
 
     @Query("SELECT l.listing.id FROM ListingAvailableDates l WHERE l.id = :availableDatesId")

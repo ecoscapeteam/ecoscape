@@ -1,7 +1,5 @@
 package com.java2024.ecoscape.dto;
 
-import jakarta.validation.constraints.NotNull;
-
 import java.time.LocalDate;
 
 public class ListingAvailableDatesResponse {

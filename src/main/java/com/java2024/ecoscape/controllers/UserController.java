@@ -24,9 +24,9 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/request/{id}")
-    public ResponseEntity<?> requestHost(@PathVariable Long id) {
-        userService.hostRequest(id);
+    @PostMapping("/request")
+    public ResponseEntity<?> requestHost() {
+        userService.hostRequest();
 
         return ResponseEntity.ok("Your request to become a host has been successfully applied!");
     }
@@ -107,7 +107,8 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Long id, @Valid @RequestBody UserRequest userRequest) {
+    @PreAuthorize("hasAnyRole('USER', 'HOST', 'ADMIN')")
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody @Valid UserRequest userRequest) {
         if(userService.existsByContactEmailAndIdNot(userRequest.getContactEmail(), id)) {
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
@@ -120,7 +121,7 @@ public class UserController {
                     .body("That contact phone number already exists");
         }
 
-        User updatedUser = userService.updateUser(id, userRequest);
+        User updatedUser = userService.updateUser(userRequest);
 
         UserUpdateDTO userUpdateResponse = new UserUpdateDTO(
                 updatedUser.getFirstName(),
