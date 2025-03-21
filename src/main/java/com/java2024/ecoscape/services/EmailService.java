@@ -1,5 +1,6 @@
 package com.java2024.ecoscape.services;
 
+import com.java2024.ecoscape.dto.BookingResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -32,5 +33,7 @@ public class EmailService {
             // It uses the configured SMTP settings to send the email.
             javaMailSender.send(message);
         }
+
+
     }
 

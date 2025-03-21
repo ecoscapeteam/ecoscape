@@ -205,20 +205,22 @@ public class BookingService {
     BookingResponse bookingResponse = convertBookingEntityToBookingResponse(booking);
 
     // إضافة الرسالة إلى الاستجابة
-    bookingResponse.setMessage("The booking number " + booking.getId() + " has been confirmed. A confirmation email has been sent.");
+    bookingResponse.setMessage("The booking number " + booking.getId() + "\n has been confirmed. A confirmation email has been sent.");
     // Send confirmation email
     sendBookingConfirmationByEmail(bookingResponse);
     return bookingResponse;
+
 }
     private void sendBookingConfirmationByEmail(BookingResponse bookingResponse) {
         String to = bookingResponse.getUsersContactEmail();
         String subject = "Booking Confirmation - EcoScape";
         String text = "Hello " + bookingResponse.getFirstName() + "!\n\n" +
                 "We are pleased to inform you that your booking with EcoScape has been successfully confirmed. Below are the details of your booking:\n" +
-                "Booking ID: " + bookingResponse.getBookingId() + "\n" +
-                "Listing ID: " + bookingResponse.getListingId() + "\n" +
-                "Thank you for choosing EcoScape. We are excited to have you stay with us and look forward to making your experience memorable.\n\n" +
-                "If you have any questions or need further assistance, please don’t hesitate to contact us.\n\n" +
+               // "Booking ID: " + bookingResponse.getBookingId() + "\n" +
+                //"Listing ID: " + bookingResponse.getListingId() + "\n" +
+                //"Thank you for choosing EcoScape. We are excited to have you stay with us and look forward to making your experience memorable.\n\n" +
+                bookingResponse.toString() + "\n" +
+                "If you have any questions, feel free to contact us.\n"+
                 "Best regards,\nThe EcoScape Team";
 
         emailService.sendEmail(to, subject, text);
@@ -332,7 +334,7 @@ public class BookingService {
         return bookingRequest;
     }
 
-    @Transactional
+  @Transactional
     public BookingResponse updateBooking(BookingRequest bookingRequest, Long bookingId, Listing listing, User user) {
         User authenticateUser = authenticationService.authenticateMethods();
 
@@ -359,56 +361,6 @@ public class BookingService {
             throw new IllegalArgumentException(String.join("\n", errors));
 
         }
-
-
-
-        try {
-            // Försök att uppdatera första namnet
-            existingBooking.setFirstName(bookingRequest.getFirstName());
-            System.out.println("First name updated to: " + existingBooking.getFirstName());
-            bookingRepository.save(existingBooking);
-        } catch (Exception e) {
-            System.out.println("Error updating first name: " + e.getMessage());
-            throw e; // Rulla tillbaka om något går fel
-        }
-
-
-        if (bookingRequest.getLastName() != null) {
-            existingBooking.setLastName(bookingRequest.getLastName());
-        }
-
-        if (bookingRequest.getUsersContactPhoneNumber() != null) {
-            existingBooking.setUsersContactPhoneNumber(bookingRequest.getUsersContactPhoneNumber());
-        }
-
-        if (bookingRequest.getUsersContactEmail() != null) {
-            existingBooking.setUsersContactEmail(bookingRequest.getUsersContactEmail());
-        }
-
-        if (bookingRequest.getStartDate() != null) {
-            existingBooking.setStartDate(bookingRequest.getStartDate());
-        }
-
-        if (bookingRequest.getEndDate() != null) {
-            existingBooking.setEndDate(bookingRequest.getEndDate());
-        }
-
-        if (bookingRequest.getStatus() != null) {
-            existingBooking.setStatus(bookingRequest.getStatus());
-        }
-
-        if (bookingRequest.getGuests() != null) {
-            existingBooking.setGuests(bookingRequest.getGuests());
-        }
-
-
-
-
-        Booking udatedBooking = bookingRepository.save(existingBooking);
-        return convertBookingEntityToBookingResponse(udatedBooking);
-
-    }
-
 
 
     public ResponseEntity<String> deleteBookingById(Long bookingId) {

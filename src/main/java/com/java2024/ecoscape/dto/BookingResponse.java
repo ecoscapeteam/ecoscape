@@ -31,6 +31,26 @@ public class BookingResponse {
     private BigDecimal cleaningFee;
     private BigDecimal totalPrice;
     private String message;
+    @Override
+    public String toString() {
+        return "Booking Details:\n" +
+                "------------------------------\n" +
+                "Booking ID: " + bookingId + "\n" +
+                "Listing ID: " + listingId + "\n" +
+                "Guest Name: " + firstName + " " + lastName + "\n" +
+                "Contact Email: " + usersContactEmail + "\n" +
+                "Contact Phone: " + usersContactPhoneNumber + "\n" +
+                "Check-in Date: " + startDate + "\n" +
+                "Check-out Date: " + endDate + "\n" +
+                "Guests: " + guests + "\n" +
+                "Price per Night: " + pricePerNight + " SEK\n" +
+                "Website Fee: " + websiteFee + " SEK\n" +
+                "Cleaning Fee: " + cleaningFee + " SEK\n" +
+                "Total Price: " + totalPrice + " SEK\n" +
+                "Status: " + status + "\n" ;
+
+    }
+
 
     public BookingResponse() {
     }

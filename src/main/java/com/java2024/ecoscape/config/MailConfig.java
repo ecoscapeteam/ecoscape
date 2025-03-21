@@ -8,6 +8,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import java.util.Properties;
 
 @Configuration
+
 public class MailConfig {
 
     @Bean
@@ -18,7 +19,7 @@ public class MailConfig {
 
         mailSender.setUsername("ecoscapeteamorg@gmail.com"); //  بريد الإلكتروني هنا
 
-     
+
         mailSender.setPassword("qkwh snic mmek wgfu"); // استخدم كلمة مرور التطبيقات
 
         Properties props = mailSender.getJavaMailProperties();
@@ -28,5 +29,6 @@ public class MailConfig {
         props.put("mail.debug", "true"); // يساعد في التحقق من الأخطاء عند إرسال البريد
 
         return mailSender;
+
     }
 }
