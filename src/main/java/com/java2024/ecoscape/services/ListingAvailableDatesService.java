@@ -37,7 +37,7 @@ public class ListingAvailableDatesService {
 
         Listing listing = listingRepository.findById(listingId).orElseThrow(() -> new NoSuchElementException("Listing not found"));
 
-        if(!authenticateUser.getId().equals(listing.getUser().getId())) {
+       if(!authenticateUser.getId().equals(listing.getUser().getId())) {
             throw new IllegalArgumentException("You can only create available dates for your own listings!");
         }
 
@@ -144,7 +144,7 @@ public class ListingAvailableDatesService {
         User authenticateUser = authenticationService.authenticateMethods();
 
         listingRepository.findById(listingId).orElseThrow(() -> new NoSuchElementException("Listing not found"));
-        boolean isAvailable = listingAvailableDatesRepository.existsByListingIdAndStartDateBeforeAndEndDateAfter(
+        boolean isAvailable = listingAvailableDatesRepository.existsByListingIdAndOverlappingDates(
                 listingId, endDate, startDate);
         return isAvailable;
     }
@@ -216,80 +216,87 @@ public class ListingAvailableDatesService {
             }
         }
     }
+    @Transactional
+    public void restoreAvailableDateRange(Long listingId, LocalDate bookingStartDate, LocalDate bookingEndDate) {
+        //hitta listing
+        Listing listing = listingRepository.findById(listingId)
+                .orElseThrow(() -> new NoSuchElementException("Listing ej hittad"));
+
+        //kontrollera om range redan är tillgängligt
+        List<ListingAvailableDates> availableDatesRanges = listingAvailableDatesRepository.findAllByListingId(listingId);
+        boolean isRangeAlreadyAvailable = availableDatesRanges.stream().anyMatch(range ->
+                (bookingStartDate.isBefore(range.getEndDate()) && bookingEndDate.isAfter(range.getStartDate())));
+
+        //om range redan är tillgängligt gör inga ändringar
+        if (isRangeAlreadyAvailable) {
+            return;
+        }
+
+        //skapa det återställda range om ingen överlappning
+        ListingAvailableDates restoredRange = new ListingAvailableDates();
+        restoredRange.setListing(listing);
+        restoredRange.setStartDate(bookingStartDate);
+        restoredRange.setEndDate(bookingEndDate);
+
+        //spara det återställda tillgängliga datumintervallet
+        listingAvailableDatesRepository.save(restoredRange);
+    }
+
+
 
     @Transactional
-    public void unblockAvailableDatesAfterCancellation(Long listingId, Booking canceledBooking) {
-        User authenticateUser = authenticationService.authenticateMethods();
+    public void mergeListingAvailableDates(Long listingId) {
+        //hämta alla tillgängliga available date ranges för det listingen
+        List<ListingAvailableDates> allAvailableDatesRangesOfAListing = listingAvailableDatesRepository.findAllByListingId(listingId);
 
         Listing listing = listingRepository.findById(listingId)
                 .orElseThrow(() -> new NoSuchElementException("Listing not found"));
 
-        List<ListingAvailableDates> availableDatesRangesOfListing = listingAvailableDatesRepository.findAllByListingId(listingId);
-
-        if (availableDatesRangesOfListing.isEmpty()) {
-            throw new NoSuchElementException("No available dates found for the given listing.");
+        //om inga datumintervall hittas gör inget
+        if (allAvailableDatesRangesOfAListing == null || allAvailableDatesRangesOfAListing.isEmpty()) {
+            return;
         }
 
-        LocalDate bookingStartDate = canceledBooking.getStartDate();
-        LocalDate bookingEndDate = canceledBooking.getEndDate();
+        //skaffar en tomm lista för att lagra de mergeade intervallen
+        List<ListingAvailableDates> mergedListingAvailableDatesRanges = new ArrayList<>();
 
-//gå genom alla available ranges och hitta det som matchar canceled booking
-        for (ListingAvailableDates availableDates : availableDatesRangesOfListing) {
+        //sorterar datumintervallen efter startdatum, VIKTIGT annars merge kommer ske inkorekt
+        allAvailableDatesRangesOfAListing.sort((range1, range2) -> range1.getStartDate().compareTo(range2.getStartDate()));
 
-            if (bookingStartDate.isBefore(availableDates.getEndDate()) && bookingEndDate.isAfter(availableDates.getStartDate())) {
+        // loopa genom alla ranges och slå ihop de
+        for (ListingAvailableDates currentRange : allAvailableDatesRangesOfAListing) {
+            // Om mergedListingAvailableDatesRanges är tom lägg till det första intervallet direkt
+            if (mergedListingAvailableDatesRanges.isEmpty()) {
+                mergedListingAvailableDatesRanges.add(currentRange);
+            } else {
+                ListingAvailableDates lastRange = mergedListingAvailableDatesRanges.get(mergedListingAvailableDatesRanges.size() - 1);
 
-                if (bookingStartDate.isEqual(availableDates.getStartDate()) && bookingEndDate.isEqual(availableDates.getEndDate())) {
-                    listingAvailableDatesRepository.delete(availableDates);
-                }
-                else if (bookingStartDate.isAfter(availableDates.getStartDate()) && bookingEndDate.isBefore(availableDates.getEndDate())) {
-                    ListingAvailableDates rangeBeforeCancellation = new ListingAvailableDates();
-                    rangeBeforeCancellation.setListing(listing);
-                    rangeBeforeCancellation.setStartDate(availableDates.getStartDate());
-                    rangeBeforeCancellation.setEndDate(bookingStartDate);
-
-                    ListingAvailableDates rangeAfterCancellation = new ListingAvailableDates();
-                    rangeAfterCancellation.setListing(listing);
-                    rangeAfterCancellation.setStartDate(bookingEndDate);
-                    rangeAfterCancellation.setEndDate(availableDates.getEndDate());
-
-                    listingAvailableDatesRepository.delete(availableDates);
-                    listingAvailableDatesRepository.saveAll(List.of(rangeBeforeCancellation, rangeAfterCancellation));
-                }
-                else if (bookingStartDate.isEqual(availableDates.getStartDate()) && bookingEndDate.isBefore(availableDates.getEndDate())) {
-                    ListingAvailableDates rangeRemainingAfterCancellation = new ListingAvailableDates();
-                    rangeRemainingAfterCancellation.setListing(listing);
-                    rangeRemainingAfterCancellation.setStartDate(bookingEndDate);
-                    rangeRemainingAfterCancellation.setEndDate(availableDates.getEndDate());
-
-                    listingAvailableDatesRepository.save(rangeRemainingAfterCancellation);
-                    listingAvailableDatesRepository.delete(availableDates);
-                }
-                else if (bookingStartDate.isAfter(availableDates.getStartDate()) && bookingEndDate.isEqual(availableDates.getEndDate())) {
-                    ListingAvailableDates rangeRemainingBeforeCancellation = new ListingAvailableDates();
-                    rangeRemainingBeforeCancellation.setListing(listing);
-                    rangeRemainingBeforeCancellation.setStartDate(availableDates.getStartDate());
-                    rangeRemainingBeforeCancellation.setEndDate(bookingStartDate);
-
-                    listingAvailableDatesRepository.save(rangeRemainingBeforeCancellation);
-                    listingAvailableDatesRepository.delete(availableDates);
+                // Kontrollera om det nuvarande range överlappar eller är anslutet till det senaste range
+                if (!currentRange.getStartDate().isAfter(lastRange.getEndDate()) || currentRange.getStartDate().equals(lastRange.getEndDate())) {
+                    // Om de överlappar eller är anslutna (exakt slutdatum = startdatum)
+                    if (currentRange.getEndDate().isAfter(lastRange.getEndDate())) {
+                        lastRange.setEndDate(currentRange.getEndDate());
+                    }
+                } else {
+                    // Om de inte överlappar lägg till det aktuella range som ett nytt intervall
+                    mergedListingAvailableDatesRanges.add(currentRange);
                 }
             }
         }
 
-        // Mergea med närstående available dates, ifall det eller de finns
-        List<ListingAvailableDates> updatedAvailableDatesRanges = listingAvailableDatesRepository.findAllByListingId(listingId);
-        for (int i = 0; i < updatedAvailableDatesRanges.size() - 1; i++) {
-            ListingAvailableDates current = updatedAvailableDatesRanges.get(i);
-            ListingAvailableDates next = updatedAvailableDatesRanges.get(i + 1);
+        //tar bort gamla range från databasen för listingId
+        listingAvailableDatesRepository.deleteAllByListingId(listingId);
 
-            if (current.getEndDate().isEqual(next.getStartDate())) {
-                current.setEndDate(next.getEndDate());
-                listingAvailableDatesRepository.delete(next);
-                listingAvailableDatesRepository.save(current);
-            }
+        //skapar nya objekt för sammanslagna range och spara dem i databasen
+        for (ListingAvailableDates mergedRange : mergedListingAvailableDatesRanges) {
+            ListingAvailableDates newListingAvailableDates = new ListingAvailableDates();
+            newListingAvailableDates.setListing(listing);
+            newListingAvailableDates.setStartDate(mergedRange.getStartDate());
+            newListingAvailableDates.setEndDate(mergedRange.getEndDate());
+
+            listingAvailableDatesRepository.save(newListingAvailableDates);
         }
     }
-
 
 
 
