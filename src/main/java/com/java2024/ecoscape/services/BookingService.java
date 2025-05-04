@@ -2,10 +2,8 @@ package com.java2024.ecoscape.services;
 
 import com.java2024.ecoscape.dto.BookingRequest;
 import com.java2024.ecoscape.dto.BookingResponse;
-import com.java2024.ecoscape.models.Booking;
-import com.java2024.ecoscape.models.Listing;
-import com.java2024.ecoscape.models.Status;
-import com.java2024.ecoscape.models.User;
+import com.java2024.ecoscape.exceptions.UnauthorizedException;
+import com.java2024.ecoscape.models.*;
 import com.java2024.ecoscape.repositories.BookingRepository;
 import com.java2024.ecoscape.repositories.ListingRepository;
 import com.java2024.ecoscape.repositories.UserRepository;
@@ -46,7 +44,7 @@ public class BookingService {
         this.listingAvailableDatesService = listingAvailableDatesService;
         this.authenticationService = authenticationService;
     }
-
+   // från DB (entity ) till DTO och api
     public BookingResponse convertBookingEntityToBookingResponse(Booking booking ) {
         BookingResponse bookingResponse = new BookingResponse();
         bookingResponse.setBookingId(booking.getId());
@@ -74,6 +72,7 @@ public class BookingService {
 
         return bookingResponse;
     }
+    //ta emot data fron frontend api och spara i DB
     public Booking convertBookingRequestToBookingEntity(BookingRequest bookingRequest, Listing listing) {
         Booking booking = new Booking();
         booking.setFirstName(bookingRequest.getFirstName());
@@ -319,7 +318,7 @@ public class BookingService {
         emailService.sendEmail(to, subject, text);
     }
 
-
+  // DB (entity )till request DTO
     private BookingRequest convertBookingEntityToBookingRequest(Booking booking) {
         BookingRequest bookingRequest = new BookingRequest();
 
@@ -334,6 +333,7 @@ public class BookingService {
         return bookingRequest;
     }
 
+
     @Transactional
     public BookingResponse updateBooking(BookingRequest bookingRequest, Long bookingId, Listing listing, User user) {
         User authenticateUser = authenticationService.authenticateMethods();
@@ -341,6 +341,11 @@ public class BookingService {
         // Find Booking
         Booking existingBooking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NoSuchElementException("Booking not found"));
+
+        // Check if the authenticated user is an ADMIN or if the user is the host of the current listing
+        if (!(authenticateUser.getRoles().equals(Role.ADMIN) || authenticateUser.getId().equals(listing.getUser().getId()))) {
+            throw new UnauthorizedException("You dont have premission to update this booking.");
+        }
 
 
         // list to collect errors so they all appeared at one
@@ -403,13 +408,94 @@ public class BookingService {
             existingBooking.setGuests(bookingRequest.getGuests());
         }
 
+        // save update booking
+        Booking updatedBooking = bookingRepository.save(existingBooking);
 
+        // Send email to confirm the update
+        sendUpdateEmail(updatedBooking);
 
+        // Add a response massage
+        BookingResponse bookingResponse = convertBookingEntityToBookingResponse(updatedBooking);
+        bookingResponse.setMessage("The booking number " + updatedBooking.getId() + " has been updated. A confirmation email has been sent.");
 
-        Booking udatedBooking = bookingRepository.save(existingBooking);
-        return convertBookingEntityToBookingResponse(udatedBooking);
+        return bookingResponse;
 
     }
+
+    public BookingResponse updateBookingContactInfo(Long bookingId, BookingRequest bookingRequest) {
+        User authenticateUser = authenticationService.authenticateMethods();
+
+
+        // الحصول على الحجز من قاعدة البيانات
+        // Find the booking
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new NoSuchElementException("Booking not found"));
+
+        if (!authenticateUser.getId().equals(booking.getUser().getId())) {
+            throw new UnauthorizedException("You don't have permission to update this booking.");
+        }
+
+        // list to collect errors so they all appeared at one
+        List<String>errors = new ArrayList<>();
+
+
+        // تحديث الحقول فقط إذا كانت غير فارغة
+        // update fields
+        if (bookingRequest.getFirstName() != null) {
+            booking.setFirstName(bookingRequest.getFirstName());
+        }
+        if (bookingRequest.getLastName() != null) {
+            booking.setLastName(bookingRequest.getLastName());
+        }
+        if (bookingRequest.getUsersContactEmail() != null) {
+            booking.setUsersContactEmail(bookingRequest.getUsersContactEmail());
+        }
+        if (bookingRequest.getUsersContactPhoneNumber() != null) {
+            booking.setUsersContactPhoneNumber(bookingRequest.getUsersContactPhoneNumber());
+        }
+        // إرسال تأكيد الإلغاء بالبريد الإلكتروني
+        // Send email to confirm the update
+        sendUpdateEmail(booking);
+
+        // تحويل الكيان إلى استجابة
+        // convert to response
+        BookingResponse bookingResponse = convertBookingEntityToBookingResponse(booking);
+
+
+        // إضافة الرسالة إلى الاستجابة
+        bookingResponse.setMessage("The booking number " + booking.getId() + " has been update. A update email has been sent.");
+
+        return bookingResponse;
+    }
+    private void sendUpdateEmail(Booking booking) {
+        String to = booking.getUsersContactEmail();
+        String subject = "Your booking details have been updated";
+
+        StringBuilder text = new StringBuilder();
+        text.append("Hello ").append(booking.getFirstName()).append(",\n\n");
+        text.append("We would like to inform you that the booking number ")
+                .append(booking.getId())
+                .append(" for the listing ID ")
+                .append(booking.getListing().getId())
+                .append(" has been successfully updated.\n\n");
+
+        text.append("Here are your updated contact details:\n");
+        text.append("Full Name: ").append(booking.getFirstName()).append(" ").append(booking.getLastName()).append("\n");
+        text.append("Email: ").append(booking.getUsersContactEmail()).append("\n");
+        text.append("Phone: ").append(booking.getUsersContactPhoneNumber()).append("\n\n");
+
+        text.append("If you have any questions or need further assistance, please don't hesitate to contact us.\n\n");
+        text.append("Best regards,\nThe Ecoscape Team.");
+
+        // إرسال البريد الإلكتروني باستخدام الخدمة
+        // send mail by java mail
+        emailService.sendEmail(to, subject, text.toString());
+    }
+
+
+
+
+
 
 
     public ResponseEntity<String> deleteBookingById(Long bookingId) {
