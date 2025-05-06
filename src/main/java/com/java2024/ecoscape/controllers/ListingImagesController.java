@@ -72,7 +72,6 @@ public class ListingImagesController {
     @GetMapping("/all/{listingId}")
     public ResponseEntity<List<ListingImagesGetResponse>> getListingImageById(@PathVariable Long listingId) {
          List<ListingImagesGetResponse> listingImages = listingImagesService.getAllListingImagesByListingId(listingId);
-
          return ResponseEntity.ok(listingImages);
     }
 
