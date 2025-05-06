@@ -191,7 +191,7 @@ public class ListingService {
 
     public ListingResponse convertListingEntityToListingResponse(Listing listing) {
         ListingResponse listingResponse = new ListingResponse();
-        listingResponse.setId(listing.getUser().getId());
+        listingResponse.setId(listing.getId());
         listingResponse.setCleaningFee(listing.getCleaningFee());
         listingResponse.setSustainability(listing.getSustainabilities());
         listingResponse.setAmenities(listing.getAmenities());
