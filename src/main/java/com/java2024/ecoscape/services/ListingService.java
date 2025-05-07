@@ -183,7 +183,6 @@ public class ListingService {
     }
 
     public List<ListingResponse> getAllExistingListings() {
-        User authenticateUser = authenticationService.authenticateMethods();
         List<Listing> allExistingListings = listingRepository.findAll();
         return convertListingEntityToListingResponse(allExistingListings);
     }
