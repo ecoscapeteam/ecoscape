@@ -15,8 +15,8 @@ public class ListingImages {
     @JoinColumn(name = "listing_id", nullable = false)
     private Listing listing;
 
-    @Column(name = "image_url", nullable = false)
-    @Pattern(regexp = ".*\\.(jpg|jpeg|png)$", message = "Only jpg, jpeg and png images are allowed to be uploaded.")
+    @Column(name = "image_url", nullable = false, length = 2048)
+    //@Pattern(regexp = ".*\\.(jpg|jpeg|png)$", message = "Only jpg, jpeg and png images are allowed to be uploaded.") //kommenterade bort för att kunna skicka bild url från imagekit.io
     private String imageUrl;
 
 
