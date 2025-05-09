@@ -3,6 +3,7 @@ package com.java2024.ecoscape.dto;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.java2024.ecoscape.models.Booking;
+import com.java2024.ecoscape.models.Payment;
 import com.java2024.ecoscape.models.Status;
 
 import java.math.BigDecimal;
@@ -182,4 +183,6 @@ public class BookingResponse {
     public void setMessage(String message) {
         this.message = message;
     }
+
+
 }

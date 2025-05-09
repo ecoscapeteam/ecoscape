@@ -13,6 +13,19 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>ecoscape</name>
 	<description>Demo project for Spring Boot</description>
+
+	<repositories>
+		<repository>
+			<id>stripe</id>
+			<url>https://maven.stripe.com/repository/maven-public/</url>
+		</repository>
+	</repositories>
+
+
+
+
+
+
 	<url/>
 	<licenses>
 		<license/>
@@ -108,9 +121,17 @@
             <version>${kotlin.version}</version>
             <scope>test</scope>
         </dependency>
-    </dependencies>
 
-	<build>
+		<dependency>
+			<groupId>com.stripe</groupId>
+			<artifactId>stripe-java</artifactId>
+			<version>29.1.0</version> <!--STRIPS IDENTIFICATION  -->
+		</dependency>
+
+</dependencies>
+
+
+<build>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

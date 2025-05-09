@@ -226,6 +226,7 @@ public class BookingService {
     }
 
 
+
     // method to get all booking
     public List<BookingRequest> getAllbookings() {
         User authenticateUser = authenticationService.authenticateMethods();

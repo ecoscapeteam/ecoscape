@@ -38,23 +38,24 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS-konfiguration
-                .csrf(csrf -> csrf.disable()) // Inaktivera CSRF-skydd (eftersom du använder stateless session)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/admin/**").hasRole("ADMIN") // Endast ADMIN kan komma åt admin-endpoints
-                        .requestMatchers("/users/**").permitAll() // Alla användare kan komma åt /users
-                        .requestMatchers("/api/listings/**").permitAll() // Alla användare kan se listorna utan att vara inloggade
-                        .requestMatchers("/auth/**").permitAll() // Alla användare kan komma åt auth-endpoints (t.ex. login, register)
-                        .requestMatchers("/api/availableDates/**").permitAll() // Alla kan komma åt tillgängliga datum
-                        .requestMatchers("/api/bookings/**").permitAll() // Alla kan se bokningar
-                        .requestMatchers("/api/rules/**").permitAll() // Alla kan komma åt regler
-                        .requestMatchers("/api/images/**").permitAll() // Alla kan komma åt bilder
-                        .anyRequest().authenticated() // Alla andra endpoints kräver autentisering
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/users/**").permitAll()
+                        .requestMatchers("/api/listings/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/api/availableDates/**").permitAll()
+                        .requestMatchers("/api/bookings/**").permitAll()
+                        .requestMatchers("/api/rules/**").permitAll()
+                        .requestMatchers("/api/images/**").permitAll()
+                        .requestMatchers("/api/payments/**").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Använd stateless session för API:er
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // Lägg till JWT-filter för autentisering
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
