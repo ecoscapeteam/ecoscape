@@ -53,7 +53,6 @@ public class ListingImagesController {
     @GetMapping
     public ResponseEntity<List<ListingImagesGetResponse>> getAllListingImages() {
         List<ListingImagesGetResponse> images = listingImagesService.findAllListingImages();
-
         return ResponseEntity.ok(images);
     }
 
@@ -71,9 +70,10 @@ public class ListingImagesController {
 
     @GetMapping("/all/{listingId}")
     public ResponseEntity<List<ListingImagesGetResponse>> getListingImageById(@PathVariable Long listingId) {
-         List<ListingImagesGetResponse> listingImages = listingImagesService.getAllListingImagesByListingId(listingId);
-         return ResponseEntity.ok(listingImages);
+        List<ListingImagesGetResponse> listingImages = listingImagesService.getAllListingImagesByListingId(listingId);
+        return ResponseEntity.ok(listingImages);
     }
+
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('HOST', 'ADMIN')")

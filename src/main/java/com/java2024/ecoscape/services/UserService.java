@@ -2,6 +2,7 @@ package com.java2024.ecoscape.services;
 
 import com.java2024.ecoscape.dto.UserRequest;
 import com.java2024.ecoscape.dto.UserResponse;
+import com.java2024.ecoscape.models.Listing;
 import com.java2024.ecoscape.models.Role;
 import com.java2024.ecoscape.models.User;
 import com.java2024.ecoscape.models.UserStatus;
@@ -188,4 +189,15 @@ public class UserService {
 
         userRepository.deleteById(id);
     }
+
+
+    public User getUserByListingId(Long listingId) {
+        // Fetch listing by ID
+        Listing listing = listingRepository.findById(listingId)
+                .orElseThrow(() -> new RuntimeException("Listing not found"));
+
+        // Fetch the user associated with the listing
+        return listing.getUser();
+}
+
 }

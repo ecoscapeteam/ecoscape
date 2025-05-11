@@ -142,4 +142,22 @@ public class UserController {
 
         return ResponseEntity.ok("User successfully deleted!");
     }
+
+    @GetMapping("/user-by-listing/{listingId}")
+    public ResponseEntity<UserResponse> getUserByListingId(@PathVariable Long listingId) {
+            User user = userService.getUserByListingId(listingId);
+            UserResponse userResponse = new UserResponse(
+                    user.getId(),
+                    user.getUsername(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getBio(),
+                    user.getUserStatus(),
+                    user.getPhotoUrl(),
+                    user.getBirthDate(),
+                    user.getContactPhoneNumber(),
+                    user.getContactEmail()
+            );
+            return ResponseEntity.ok(userResponse);
+    }
 }
