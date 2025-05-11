@@ -342,7 +342,7 @@ public class ListingService {
             throw new IllegalArgumentException("Loud music allowed must be a boolean value (true/false).");
         }
 
-        if (listingRequest.getRules().getArePetsAllowed() != null && !(listingRequest.getRules().getArePetsAllowed() instanceof Boolean)) {
+        if (listingRequest.getRules().getPetsAllowed() != null && !(listingRequest.getRules().getPetsAllowed() instanceof Boolean)) {
             throw new IllegalArgumentException("Pets allowed must be a boolean value (true/false).");
         }
 

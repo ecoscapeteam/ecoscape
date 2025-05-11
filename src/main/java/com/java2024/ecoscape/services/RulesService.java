@@ -47,9 +47,10 @@ public class RulesService {
         if (listingRulesDTO.getLoudMusicAllowed() != null) {
             rules.setLoudMusicAllowed(listingRulesDTO.getLoudMusicAllowed());
         }
-        if (listingRulesDTO.getArePetsAllowed() != null) {
-            rules.setArePetsAllowed(listingRulesDTO.getArePetsAllowed());
+        if (listingRulesDTO.getPetsAllowed() != null) {
+            rules.setPetsAllowed(listingRulesDTO.getPetsAllowed());
         }
+
         if (listingRulesDTO.getSelfCheckingPossible() != null) {
             rules.setSelfCheckingPossible(listingRulesDTO.getSelfCheckingPossible());
         }
@@ -73,7 +74,7 @@ public class RulesService {
         rules.setSmokingAllowed(listingRulesDTO.getSmokingAllowed());
         rules.setPartyingAllowed(listingRulesDTO.getPartyingAllowed());
         rules.setLoudMusicAllowed(listingRulesDTO.getLoudMusicAllowed());
-        rules.setArePetsAllowed(listingRulesDTO.getArePetsAllowed());
+        rules.setPetsAllowed(listingRulesDTO.getPetsAllowed());
         rules.setIdRequiredUponCheckin(listingRulesDTO.getIdRequiredUponCheckIn());
         rules.setSelfCheckingPossible(listingRulesDTO.getSelfCheckingPossible());
         return rules;
@@ -81,7 +82,7 @@ public class RulesService {
 
     public ListingRulesDTO convertRulesEntityToListingRulesDTO(Rules rules) {
         ListingRulesDTO listingRulesDTO = new ListingRulesDTO();
-        listingRulesDTO.setArePetsAllowed(rules.getArePetsAllowed());
+        listingRulesDTO.setPetsAllowed(rules.getPetsAllowed());
         listingRulesDTO.setCheckInTime(rules.getCheckInTime());
         listingRulesDTO.setCheckOutTime(rules.getCheckOutTime());
         listingRulesDTO.setIdRequiredUponCheckIn(rules.getIdRequiredUponCheckin());

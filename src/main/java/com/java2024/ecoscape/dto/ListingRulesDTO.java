@@ -25,7 +25,7 @@ public class ListingRulesDTO {
 
     private Boolean isLoudMusicAllowed;
 
-    private Boolean arePetsAllowed;
+    private Boolean isPetsAllowed;
 
     private Boolean isSelfCheckingPossible;
 
@@ -101,14 +101,14 @@ public class ListingRulesDTO {
         isLoudMusicAllowed = loudMusicAllowed;
     }
 
-    @JsonProperty("arePetsAllowed")
-    public Boolean getArePetsAllowed() {
-        return arePetsAllowed;
+    @JsonProperty("isPetsAllowed")
+    public Boolean getPetsAllowed() {
+        return isPetsAllowed;
     }
 
-    @JsonProperty("arePetsAllowed")
-    public void setArePetsAllowed(Boolean arePetsAllowed) {
-        this.arePetsAllowed = arePetsAllowed;
+    @JsonProperty("isPetsAllowed")
+    public void setPetsAllowed(Boolean petsAllowed) {
+        isPetsAllowed = petsAllowed;
     }
 
     @JsonProperty("isSelfCheckingPossible")

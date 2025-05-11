@@ -63,8 +63,8 @@ public class Rules {
     private Boolean isLoudMusicAllowed;
 
     //optional field, kan vara null
-    @Column(nullable = true)
-    private Boolean ArePetsAllowed;
+    @Column(nullable = true, name = "is_pets_allowed")
+    private Boolean isPetsAllowed;
 
     //optional field, kan vara null
     @Column(nullable = true)
@@ -151,12 +151,12 @@ public class Rules {
         isLoudMusicAllowed = loudMusicAllowed;
     }
 
-    public Boolean getArePetsAllowed() {
-        return ArePetsAllowed;
+    public Boolean getPetsAllowed() {
+        return isPetsAllowed;
     }
 
-    public void setArePetsAllowed(Boolean arePetsAllowed) {
-        ArePetsAllowed = arePetsAllowed;
+    public void setPetsAllowed(Boolean petsAllowed) {
+        isPetsAllowed = petsAllowed;
     }
 
     public Boolean getSelfCheckingPossible() {
