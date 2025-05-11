@@ -42,7 +42,6 @@ public class Listing {
     @NotEmpty(message = "Listing description can not be empty")
     @Column(length = 2048) //lägger en annotation för att öka antar symboler i varje string, annars blir det 255 by default
     //Endast bbokstäver, siffror, mellanslag och vissa skiljetecken som kommatecken, punkter och frågetecken tillåts
-    @Column(length = 2048)
     @Pattern(regexp = "^[A-Za-z0-9\\s\\.,!?\'\"\\(\\)\\-\\&\\#\\*\\+\\=]*$",
             message = "Invalid description! Only letters, numbers, spaces, commas, periods, exclamation marks, question marks, and other specified characters are allowed.")
     private String description;
