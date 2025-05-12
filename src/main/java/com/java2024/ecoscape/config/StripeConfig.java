@@ -12,9 +12,9 @@ public class StripeConfig {
     public StripeConfig() {
         if (stripeSecretKey != null && !stripeSecretKey.isEmpty()) {
             Stripe.apiKey = stripeSecretKey;  // تعيين مفتاح الـ Stripe API
-            System.out.println("تم تعيين مفتاح الـ Stripe بنجاح.");
+            System.out.println("The Stripe key has been successfully set.");
         } else {
-            System.err.println("مفتاح الـ Stripe مفقود أو فارغ.");
+            System.err.println("The Stripe key is missing or empty.");
         }
     }
 }
