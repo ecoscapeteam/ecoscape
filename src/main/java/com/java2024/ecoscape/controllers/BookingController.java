@@ -2,6 +2,8 @@ package com.java2024.ecoscape.controllers;
 
 import com.java2024.ecoscape.dto.BookingRequest;
 import com.java2024.ecoscape.dto.BookingResponse;
+import com.java2024.ecoscape.models.Listing;
+import com.java2024.ecoscape.models.User;
 import com.java2024.ecoscape.repositories.BookingRepository;
 import com.java2024.ecoscape.repositories.ListingRepository;
 import com.java2024.ecoscape.repositories.UserRepository;
@@ -14,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 
@@ -80,34 +83,33 @@ public class BookingController {
 
 
 
-@PatchMapping("/{id}/cancel/user")
-@PreAuthorize("hasAnyRole('USER','ADMIN')")
-public ResponseEntity<?> cancelByUser(@PathVariable Long id) {
-    try {
-        // Calling the service method to cancel the booking by the user
-        BookingResponse response = bookingService.cancelBookingByUser(id);
-        // Returning the updated booking response
-        return ResponseEntity.ok(response);
-    } catch (RuntimeException e) {
-        return ResponseEntity.status(404).body(e.getMessage()); // Returning 404 if booking not found
+    @PatchMapping("/{id}/cancel/user")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    public ResponseEntity<?> cancelByUser(@PathVariable Long id) {
+        try {
+            // Calling the service method to cancel the booking by the user
+            BookingResponse response = bookingService.cancelBookingByUser(id);
+            // Returning the updated booking response
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(e.getMessage()); // Returning 404 if booking not found
+        }
     }
-}
 
-@PatchMapping("/{id}/cancel/host")
-@PreAuthorize("hasAnyRole('HOST', 'ADMIN')")
-public ResponseEntity<?> cancelByHost(@PathVariable Long id) {
-    try {
-        // Calling the service method to cancel the booking by the user
-        BookingResponse response = bookingService.cancelBookingByHost(id);
-        // Returning the updated booking response
-        return ResponseEntity.ok(response);
-    } catch (RuntimeException e) {
-        return ResponseEntity.status(404).body(e.getMessage()); // Returning 404 if booking not found
+    @PatchMapping("/{id}/cancel/host")
+    @PreAuthorize("hasAnyRole('HOST', 'ADMIN')")
+    public ResponseEntity<?> cancelByHost(@PathVariable Long id) {
+        try {
+            // Calling the service method to cancel the booking by the user
+            BookingResponse response = bookingService.cancelBookingByHost(id);
+            // Returning the updated booking response
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(e.getMessage()); // Returning 404 if booking not found
+        }
     }
-}
 
-
-  /*  @PutMapping("/{bookingId}")
+    @PutMapping("/{bookingId}")
     public ResponseEntity<BookingResponse> updateBooking(@PathVariable Long bookingId,
                                                          @RequestBody BookingRequest bookingRequest) {
 
@@ -129,8 +131,24 @@ public ResponseEntity<?> cancelByHost(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(updatedBooking);
 
     }
+    @PatchMapping("/{bookingId}/update-contact")
+    public ResponseEntity<BookingResponse> updateBookingContactInfo(
+            @PathVariable Long bookingId,
+            @RequestBody BookingRequest bookingRequest) {
 
-*/
+        if (bookingRequest == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        BookingResponse bookingResponse = bookingService.updateBookingContactInfo(
+                bookingId,
+                // Pass the booking object instead of individual fields
+                bookingRequest // تمرير كائن الحجز بدلاً من الحقول الفردية
+        );
+
+        return ResponseEntity.ok(bookingResponse);
+    }
+
 
     @DeleteMapping("/{bookingId}")
     @PreAuthorize("hasRole('ADMIN')") // Only Admin can delete bookings
