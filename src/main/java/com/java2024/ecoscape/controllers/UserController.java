@@ -24,7 +24,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/request")
+    @PostMapping("/request/{id}")
     public ResponseEntity<?> requestHost() {
         userService.hostRequest();
 

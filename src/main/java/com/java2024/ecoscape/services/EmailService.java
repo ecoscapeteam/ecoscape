@@ -24,7 +24,7 @@ public class EmailService {
    //This creates a new instance of SimpleMailMessage,
    // which is a Spring class used to represent a simple email message.
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom("ecoscapeteamorg@gmail.com");  // استخدم بريدك الإلكتروني هنا
+            message.setFrom("ecoscapeteamorg@gmail.com");  // استخدم بريد الإلكتروني هنا
             message.setTo(to);
             message.setSubject(subject);
             message.setText(text);

@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/bookings/**").permitAll()
                         .requestMatchers("/api/rules/**").permitAll()
                         .requestMatchers("/api/images/**").permitAll()
+                        .requestMatchers("/api/payments/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -58,6 +59,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

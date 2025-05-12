@@ -1,6 +1,7 @@
 package com.java2024.ecoscape.dto;
 
 import com.java2024.ecoscape.models.Status;
+import com.stripe.model.PaymentIntent;
 
 import java.time.LocalDate;
 
@@ -16,6 +17,8 @@ public class BookingRequest {
     private LocalDate endDate;
     private Integer guests;
     private Status status;
+   // private PaymentIntent paymentIntent;
+
 
 
 
@@ -102,4 +105,12 @@ public class BookingRequest {
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
+
+   /* public PaymentIntent getPaymentIntent() {
+        return paymentIntent;
+    }
+
+    public void setPaymentIntent(PaymentIntent paymentIntent) {
+        this.paymentIntent = paymentIntent;
+    }*/
 }
