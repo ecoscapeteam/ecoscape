@@ -76,6 +76,8 @@ public class Booking {
     @Column(name = ("total_price"))
     private BigDecimal totalPrice;
 
+    //private String paymentIntentId;
+
     public Booking() {
     }
 
@@ -183,5 +185,11 @@ public class Booking {
         this.usersContactPhoneNumber = usersContactPhoneNumber;
     }
 
+   /* public String getPaymentIntentId() {
+        return paymentIntentId;
+    }
 
+    public void setPaymentIntentId(String paymentIntentId) {
+        this.paymentIntentId = paymentIntentId;
+    }*/
 }

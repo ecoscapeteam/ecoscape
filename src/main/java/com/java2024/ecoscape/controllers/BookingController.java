@@ -83,32 +83,31 @@ public class BookingController {
 
 
 
-@PatchMapping("/{id}/cancel/user")
-@PreAuthorize("hasAnyRole('USER','ADMIN')")
-public ResponseEntity<?> cancelByUser(@PathVariable Long id) {
-    try {
-        // Calling the service method to cancel the booking by the user
-        BookingResponse response = bookingService.cancelBookingByUser(id);
-        // Returning the updated booking response
-        return ResponseEntity.ok(response);
-    } catch (RuntimeException e) {
-        return ResponseEntity.status(404).body(e.getMessage()); // Returning 404 if booking not found
+    @PatchMapping("/{id}/cancel/user")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    public ResponseEntity<?> cancelByUser(@PathVariable Long id) {
+        try {
+            // Calling the service method to cancel the booking by the user
+            BookingResponse response = bookingService.cancelBookingByUser(id);
+            // Returning the updated booking response
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(e.getMessage()); // Returning 404 if booking not found
+        }
     }
-}
 
-@PatchMapping("/{id}/cancel/host")
-@PreAuthorize("hasAnyRole('HOST', 'ADMIN')")
-public ResponseEntity<?> cancelByHost(@PathVariable Long id) {
-    try {
-        // Calling the service method to cancel the booking by the user
-        BookingResponse response = bookingService.cancelBookingByHost(id);
-        // Returning the updated booking response
-        return ResponseEntity.ok(response);
-    } catch (RuntimeException e) {
-        return ResponseEntity.status(404).body(e.getMessage()); // Returning 404 if booking not found
+    @PatchMapping("/{id}/cancel/host")
+    @PreAuthorize("hasAnyRole('HOST', 'ADMIN')")
+    public ResponseEntity<?> cancelByHost(@PathVariable Long id) {
+        try {
+            // Calling the service method to cancel the booking by the user
+            BookingResponse response = bookingService.cancelBookingByHost(id);
+            // Returning the updated booking response
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(e.getMessage()); // Returning 404 if booking not found
+        }
     }
-}
-
 
     @PutMapping("/{bookingId}")
     public ResponseEntity<BookingResponse> updateBooking(@PathVariable Long bookingId,

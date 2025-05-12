@@ -44,7 +44,7 @@ public class BookingService {
         this.listingAvailableDatesService = listingAvailableDatesService;
         this.authenticationService = authenticationService;
     }
-   // från DB (entity ) till DTO och api
+    // från DB (entity ) till DTO och api
     public BookingResponse convertBookingEntityToBookingResponse(Booking booking ) {
         BookingResponse bookingResponse = new BookingResponse();
         bookingResponse.setBookingId(booking.getId());
@@ -132,7 +132,7 @@ public class BookingService {
             errors.add("The listing is unavailable for the requested dates.");
         }
 
-       // control can not have guests more than capacity in listing
+        // control can not have guests more than capacity in listing
         if (bookingRequest.getGuests() > listing.getCapacity()) {
             errors.add("The number of guests exceeds the capacity for this listing.");
         }
@@ -200,22 +200,22 @@ public class BookingService {
         // save booking to db
         Booking savedBooking = bookingRepository.save(booking);
 
-    // تحويل الكيان إلى استجابة
-    BookingResponse bookingResponse = convertBookingEntityToBookingResponse(booking);
+        // تحويل الكيان إلى استجابة
+        BookingResponse bookingResponse = convertBookingEntityToBookingResponse(booking);
 
-    // إضافة الرسالة إلى الاستجابة
-    bookingResponse.setMessage("The booking number " + booking.getId() + "\n has been confirmed. A confirmation email has been sent.");
-    // Send confirmation email
-    sendBookingConfirmationByEmail(bookingResponse);
-    return bookingResponse;
+        // إضافة الرسالة إلى الاستجابة
+        bookingResponse.setMessage("The booking number " + booking.getId() + "\n has been confirmed. A confirmation email has been sent.");
+        // Send confirmation email
+        sendBookingConfirmationByEmail(bookingResponse);
+        return bookingResponse;
 
-}
+    }
     private void sendBookingConfirmationByEmail(BookingResponse bookingResponse) {
         String to = bookingResponse.getUsersContactEmail();
         String subject = "Booking Confirmation - EcoScape";
         String text = "Hello " + bookingResponse.getFirstName() + "!\n\n" +
                 "We are pleased to inform you that your booking with EcoScape has been successfully confirmed. Below are the details of your booking:\n" +
-               // "Booking ID: " + bookingResponse.getBookingId() + "\n" +
+                // "Booking ID: " + bookingResponse.getBookingId() + "\n" +
                 //"Listing ID: " + bookingResponse.getListingId() + "\n" +
                 //"Thank you for choosing EcoScape. We are excited to have you stay with us and look forward to making your experience memorable.\n\n" +
                 bookingResponse.toString() + "\n" +
@@ -266,10 +266,10 @@ public class BookingService {
             throw new RuntimeException("This booking has already been cancelled.");
         }
 
-       booking.setStatus(CANCELLED_BY_USER);
+        booking.setStatus(CANCELLED_BY_USER);
         listingAvailableDatesService.restoreAvailableDateRange(booking.getListing().getId(), booking.getStartDate(), booking.getEndDate());
         listingAvailableDatesService.mergeListingAvailableDates(booking.getListing().getId());
-       bookingRepository.save(booking);
+        bookingRepository.save(booking);
         // إرسال تأكيد الإلغاء بالبريد الإلكتروني
         sendCancellationEmail(booking);
         // تحويل الكيان إلى استجابة
@@ -302,7 +302,7 @@ public class BookingService {
         BookingResponse bookingResponse = convertBookingEntityToBookingResponse(booking);
 
         // إضافة الرسالة إلى الاستجابة
-       bookingResponse.setMessage("The booking number " + booking.getId() + " has been cancelled. A confirmation email has been sent.");
+        bookingResponse.setMessage("The booking number " + booking.getId() + " has been cancelled. A confirmation email has been sent.");
 
         return bookingResponse;
     }
@@ -312,14 +312,14 @@ public class BookingService {
         String subject = "Confirm cancellation of booking";
         String text = "Hello" + booking.getFirstName() + "!\n\n" +
                 "We would like to inform you that the booking number "+ booking.getId() + " in "+ booking.getListing().getId()
-        + " you made with us has been cancelled.\n"+ "We apologize for any inconvenience this may cause.\n\n"
+                + " you made with us has been cancelled.\n"+ "We apologize for any inconvenience this may cause.\n\n"
                 + "If you need any assistance, please don't hesitate to contact us.\n\n"+ "Best regards,\nThe Ecoscape Team.";
 
         // Sending the email using the EmailService
         emailService.sendEmail(to, subject, text);
     }
 
-  // DB (entity )till request DTO
+    // DB (entity )till request DTO
     private BookingRequest convertBookingEntityToBookingRequest(Booking booking) {
         BookingRequest bookingRequest = new BookingRequest();
 
@@ -508,4 +508,3 @@ public class BookingService {
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("Booking not found")); // Return error message with HTTP 404 status
     }
 }
-

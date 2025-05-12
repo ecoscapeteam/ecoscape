@@ -31,6 +31,8 @@ public class BookingResponse {
     private BigDecimal websiteFee;
     private BigDecimal cleaningFee;
     private BigDecimal totalPrice;
+
+   // private String paymentIntentId;
     private String message;
     @Override
     public String toString() {
@@ -184,5 +186,11 @@ public class BookingResponse {
         this.message = message;
     }
 
+   /* public String getPaymentIntentId() {
+        return paymentIntentId;
+    }
 
+    public void setPaymentIntentId(String paymentIntentId) {
+        this.paymentIntentId = paymentIntentId;
+    }*/
 }
