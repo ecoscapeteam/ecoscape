@@ -39,7 +39,7 @@ public class BookingController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('USER')")
+   @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> createBooking(
             @RequestBody @Valid BookingRequest bookingRequest,
             @RequestParam Long listingId,

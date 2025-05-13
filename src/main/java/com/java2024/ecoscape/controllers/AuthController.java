@@ -70,7 +70,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    ResponseEntity<?> login(@Valid @RequestBody AuthRequest authRequest, HttpServletRequest request) {
+    public ResponseEntity<?> login(@Valid @RequestBody AuthRequest authRequest, HttpServletRequest request) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -81,25 +81,34 @@ public class AuthController {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
+
+
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            User user = userService.findUserByUsername(userDetails.getUsername());
 
             String jwt = jwtUtil.generateToken(userDetails);
+
+
+
+            AuthResponse response = new AuthResponse(
+                    jwt,
+                    user.getUsername(),
+                    user.getId(),         // ✅ هذا ما كان ناقصًا
+                    user.getRoles()
+            );
+
             ResponseCookie jwtCookie = ResponseCookie.from("jwt", jwt)
                     .httpOnly(true)
-                    .secure(false) //CHANGE TO TRUE WHEN PUSHING TO PRODUCTION
+                    .secure(false)
                     .path("/")
                     .maxAge(10 * 60 * 60)
                     .sameSite("Strict")
                     .build();
 
-            AuthResponse response = new AuthResponse(
-                    "Login successful!",
-                    userDetails.getUsername(),
-                    userService.findUserByUsername(userDetails.getUsername()).getRoles()
-            );
 
             return ResponseEntity.ok()
-                    .header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body(response);
+                    .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                    .body(response);
 
         } catch (AuthenticationException e) {
             return ResponseEntity
@@ -107,6 +116,7 @@ public class AuthController {
                     .body("Incorrect username or password");
         }
     }
+
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response) {
@@ -140,6 +150,7 @@ public class AuthController {
         return ResponseEntity.ok(new AuthResponse(
                 "Authenticated",
                 user.getUsername(),
+                user.getId(),
                 user.getRoles()
         ));
     }
