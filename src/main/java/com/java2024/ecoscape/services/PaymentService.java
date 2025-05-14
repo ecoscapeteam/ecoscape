@@ -27,7 +27,6 @@ public class PaymentService {
     private final BookingRepository bookingRepository;
     private final BookingService bookingService;
 
-
     // قراءة مفتاح Stripe من ملف الخصائص
     // Read the Stripe secret key from application.properties
     @Value("${stripe.secret.key}")
@@ -102,6 +101,7 @@ public class PaymentService {
         payment.setBooking(booking);
         payment.setUser(authenticatedUser);
 
+
         // حفظ الدفع في قاعدة البيانات - Save to DB
         Payment savedPayment = paymentRepository.save(payment);
 
@@ -138,6 +138,4 @@ public class PaymentService {
 
         return response;
     }
-
-
 }
