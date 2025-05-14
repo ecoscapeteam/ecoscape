@@ -1,5 +1,6 @@
 package com.java2024.ecoscape.services;
 
+import com.java2024.ecoscape.dto.BookingResponse;
 import com.java2024.ecoscape.dto.PaymentRequest;
 import com.java2024.ecoscape.dto.PaymentResponse;
 import com.java2024.ecoscape.models.*;
@@ -24,6 +25,7 @@ public class PaymentService {
     private final AuthenticationService authenticationService;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
+    private final BookingService bookingService;
 
     // قراءة مفتاح Stripe من ملف الخصائص
     // Read the Stripe secret key from application.properties
@@ -33,11 +35,14 @@ public class PaymentService {
     public PaymentService(PaymentRepository paymentRepository,
                           AuthenticationService authenticationService,
                           UserRepository userRepository,
-                          BookingRepository bookingRepository) {
+                          BookingRepository bookingRepository,
+                          BookingService bookingService) {
         this.paymentRepository = paymentRepository;
         this.authenticationService = authenticationService;
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
+        this.bookingService = bookingService;
+
     }
 
     /**
@@ -96,11 +101,17 @@ public class PaymentService {
         payment.setBooking(booking);
         payment.setUser(authenticatedUser);
 
+
         // حفظ الدفع في قاعدة البيانات - Save to DB
         Payment savedPayment = paymentRepository.save(payment);
 
+        // send confirmation email after pay confirmation
+        bookingService.sendBookingConfirmationByEmail(
+                bookingService.convertBookingEntityToBookingResponse(booking)
+        );
         // تحويل الكائن إلى استجابة - Build response DTO
         PaymentResponse response = convertPaymentToResponse(savedPayment);
+
         response.setMessage("Payment has been processed successfully with ID: " + savedPayment.getId());
 
         return response;

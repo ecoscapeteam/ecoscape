@@ -206,11 +206,11 @@ public class BookingService {
         // إضافة الرسالة إلى الاستجابة
         bookingResponse.setMessage("The booking number " + booking.getId() + "\n has been confirmed. A confirmation email has been sent.");
         // Send confirmation email
-        sendBookingConfirmationByEmail(bookingResponse);
+       // sendBookingConfirmationByEmail(bookingResponse);
         return bookingResponse;
 
     }
-    private void sendBookingConfirmationByEmail(BookingResponse bookingResponse) {
+    public void sendBookingConfirmationByEmail(BookingResponse bookingResponse) {
         String to = bookingResponse.getUsersContactEmail();
         String subject = "Booking Confirmation - EcoScape";
         String text = "Hello " + bookingResponse.getFirstName() + "!\n\n" +

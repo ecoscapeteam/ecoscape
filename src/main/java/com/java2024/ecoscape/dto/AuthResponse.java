@@ -14,6 +14,7 @@ public class AuthResponse {
         this.jwtToken = jwtToken;
         this.username = username;
         this.userId = userId;   // ADD TO RESPONSE
+
         this.roles = roles;
     }
 
@@ -49,3 +50,7 @@ public class AuthResponse {
         this.userId = userId;
     }
 }
+
+
+
+
