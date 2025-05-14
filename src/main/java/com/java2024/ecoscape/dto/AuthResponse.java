@@ -13,7 +13,7 @@ public class AuthResponse {
     public AuthResponse(String jwtToken, String username, Long userId, Set<Role> roles) {
         this.jwtToken = jwtToken;
         this.username = username;
-        this.userId = userId;   // ADD TO RESPONSE
+        this.userId = userId; // add to response
         this.roles = roles;
     }
 
@@ -49,3 +49,4 @@ public class AuthResponse {
         this.userId = userId;
     }
 }
+
