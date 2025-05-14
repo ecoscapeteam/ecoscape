@@ -17,7 +17,7 @@ public class BookingRequest {
     private LocalDate endDate;
     private Integer guests;
     private Status status;
-   // private PaymentIntent paymentIntent;
+
 
 
 
@@ -106,11 +106,5 @@ public class BookingRequest {
         this.firstName = firstName;
     }
 
-   /* public PaymentIntent getPaymentIntent() {
-        return paymentIntent;
-    }
 
-    public void setPaymentIntent(PaymentIntent paymentIntent) {
-        this.paymentIntent = paymentIntent;
-    }*/
 }

@@ -32,14 +32,16 @@ public class PaymentResponse {
     private PaymentType paymentType;
     private PaymentStatus paymentStatus;
     private String paymentIntentId;
+
     private LocalDateTime createdAt;
     private String message;
-
+    private String clientSecret;
 
     private PaymentIntent paymentIntent;
     public PaymentResponse() {}
 
     // المُنشئ الذي يقبل الرسالة فقط
+    // contactur to send massages
     public PaymentResponse(String message) {
         this.message = message;
     }
@@ -155,6 +157,14 @@ public class PaymentResponse {
 
     public void setPaymentIntent(PaymentIntent paymentIntent) {
         this.paymentIntent = paymentIntent;
+    }
+
+    public String getClientSecret() {
+        return clientSecret;
+    }
+
+    public void setClientSecret(String clientSecret) {
+        this.clientSecret = clientSecret;
     }
 }
 

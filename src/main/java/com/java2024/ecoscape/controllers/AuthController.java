@@ -93,7 +93,7 @@ public class AuthController {
             AuthResponse response = new AuthResponse(
                     jwt,
                     user.getUsername(),
-                    user.getId(),         // ✅ هذا ما كان ناقصًا
+                    user.getId(),        // add user Id to response
                     user.getRoles()
             );
 
@@ -150,7 +150,7 @@ public class AuthController {
         return ResponseEntity.ok(new AuthResponse(
                 "Authenticated",
                 user.getUsername(),
-                user.getId(),
+                user.getId(),    // add user Id to checkAuth
                 user.getRoles()
         ));
     }

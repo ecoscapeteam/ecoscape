@@ -11,7 +11,7 @@ public class PaymentRequest {
     private Long bookingId;
     private Long userId;
     private Long amount; // amount to be paid
-    private  Long remainingAmount; // the remaining amount, if anu مبلغ باقي ان وجد
+    private  Long remainingAmount; // the remaining amount, if anu
     private String currency; // kr
     private PaymentType paymentType; // export paymenttyp enum
     private PaymentStatus paymentStatus; // export PaymentStatus enum
