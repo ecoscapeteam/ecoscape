@@ -106,6 +106,12 @@ public class UserService {
     public User findUserById(Long id) {
         User authenticateUser = authenticationService.authenticateMethods();
 
+        boolean isAdmin = authenticateUser.getRoles().stream().anyMatch(role -> role == Role.ADMIN);
+
+        if(!isAdmin && !authenticateUser.getId().equals(id)) {
+            throw new IllegalArgumentException("You can only get your own account.");
+        }
+
         return userRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("User not found"));
     }

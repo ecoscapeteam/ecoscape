@@ -7,7 +7,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class StripeConfig {
 
-    String stripeSecretKey = "sk_test_51RLSCYGPXE58N028wrhsU6XgXO5kA8GN8te5T27944UjZnNSagMf3NZ4GQmbewcN1gGoxGQykbbhoGvvb4Y4RYVa00653R0PCF";
+    @Value("${stripe.secret.key}")
+    private String stripeSecretKey;
 
     public StripeConfig() {
         if (stripeSecretKey != null && !stripeSecretKey.isEmpty()) {
