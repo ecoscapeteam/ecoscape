@@ -3,7 +3,6 @@ package com.java2024.ecoscape.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import org.hibernate.validator.constraints.Length;
 
 @Entity
 @Table(name = "rules")
@@ -74,16 +73,6 @@ public class Rules {
     private Boolean isIdRequiredUponCheckin;
 
     public Rules() {
-    }
-
-    public @Pattern(regexp = "^[A-Za-z0-9\\s\\.,!?'\"\\(\\)\\-\\&\\#\\*\\+\\=]*$",
-            message = "Invalid rule description! Only letters, numbers, spaces, commas, periods, exclamation marks, question marks, and other specified characters are allowed.") String getRulesText() {
-        return rulesText;
-    }
-
-    public void setRulesText(@Pattern(regexp = "^[A-Za-z0-9\\s\\.,!?'\"\\(\\)\\-\\&\\#\\*\\+\\=]*$",
-            message = "Invalid rule description! Only letters, numbers, spaces, commas, periods, exclamation marks, question marks, and other specified characters are allowed.") String rulesText) {
-        this.rulesText = rulesText;
     }
 
     public @Pattern(regexp = "^(0[0-9]|1[0-9]|2[0-3]):00$",
@@ -180,5 +169,13 @@ public class Rules {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getRulesText() {
+        return rulesText;
+    }
+
+    public void setRulesText(String rulesText) {
+        this.rulesText = rulesText;
     }
 }
