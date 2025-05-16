@@ -15,5 +15,4 @@ public enum Sustainability {
     HIGH_EFFICIENCY_BOILER,
     ENVIRONMENTAL_FRIENDLY_FURNITURE,
     BIODIVERSITY
-
     }

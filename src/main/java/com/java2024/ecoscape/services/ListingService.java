@@ -100,16 +100,16 @@ public class ListingService {
         if (listingRequest.getPricePerNight() != null){
             existingListing.setPricePerNight(listingRequest.getPricePerNight());
         }
-        //om det finns kategories i requesten och arrayen är inte tom ge listing entitetet nya amenities, att se till att inte arrayen är töm skyddar mot att av misstag skriva över befintliga amenities med en tom lista.
-        if (listingRequest.getCategories() != null && !listingRequest.getCategories().isEmpty()) {
+        //om det finns kategorier i requesten  get listing entitetet nya kategorier
+        if (listingRequest.getCategories() != null){
             existingListing.setCategories(listingRequest.getCategories());
         }
-        //om det finns ammenities i requesten och arrayen är inte tom ge listing entitetet nya amenities, att se till att inte arrayen är töm skyddar mot att av misstag skriva över befintliga amenities med en tom lista.
-        if (listingRequest.getAmenities() != null && !listingRequest.getAmenities().isEmpty()) {
+        //om det finns ammenities  i requesten  get listing entitetet nya amenities
+        if (listingRequest.getAmenities() != null){
             existingListing.setAmenities(listingRequest.getAmenities());
         }
-        //om det finns sustainabilities i requesten och arrayen är inte tom ge listing entitetet nya amenities, att se till att inte arrayen är töm skyddar mot att av misstag skriva över befintliga amenities med en tom lista.
-        if (listingRequest.getSustainabilities() != null && !listingRequest.getSustainabilities().isEmpty()) {
+        //om det finns sustainabilities i requesten  get listing entitetet nya sustainabilities
+        if (listingRequest.getSustainabilities() != null){
             existingListing.setSustainabilities(listingRequest.getSustainabilities());
         }
 
