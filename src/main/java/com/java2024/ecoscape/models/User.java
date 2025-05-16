@@ -35,6 +35,7 @@ public class User {
     @Column(name = "last_name")
     private String lastName;
 
+    @Column(length = 2048)
     private String bio;
 
     @Column(name = "photo_url")
