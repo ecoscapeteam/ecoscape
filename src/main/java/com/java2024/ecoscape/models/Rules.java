@@ -13,12 +13,11 @@ public class Rules {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //rulestext är optional
-    @Column(nullable = true)
+    //rulestext är optional, antal chars 2048
+    @Column(nullable = true, length = 2048)
     //ifall man skriver vill skriva text om regler så ska endast bokstäver, siffror, mellanslag och vissa skiljetecken som kommatecken, punkter och frågetecken tillåts
     @Pattern(regexp = "^[A-Za-z0-9\\s\\.,!?\'\"\\(\\)\\-\\&\\#\\*\\+\\=]*$",
             message = "Invalid rule description! Only letters, numbers, spaces, commas, periods, exclamation marks, question marks, and other specified characters are allowed.")
-    @Length(max = 2048, message = "Rules text can not exceed 2048 characters")
     private String rulesText;
 
     //Incheckning tiden ska skrivas in inom en viss format, t.ex 11:00, 12:00, 00:00
@@ -78,12 +77,12 @@ public class Rules {
     }
 
     public @Pattern(regexp = "^[A-Za-z0-9\\s\\.,!?'\"\\(\\)\\-\\&\\#\\*\\+\\=]*$",
-            message = "Invalid rule description! Only letters, numbers, spaces, commas, periods, exclamation marks, question marks, and other specified characters are allowed.") @Length(max = 250, message = "Rules text can not exceed 255 characters") String getRulesText() {
+            message = "Invalid rule description! Only letters, numbers, spaces, commas, periods, exclamation marks, question marks, and other specified characters are allowed.") String getRulesText() {
         return rulesText;
     }
 
     public void setRulesText(@Pattern(regexp = "^[A-Za-z0-9\\s\\.,!?'\"\\(\\)\\-\\&\\#\\*\\+\\=]*$",
-            message = "Invalid rule description! Only letters, numbers, spaces, commas, periods, exclamation marks, question marks, and other specified characters are allowed.") @Length(max = 250, message = "Rules text can not exceed 255 characters") String rulesText) {
+            message = "Invalid rule description! Only letters, numbers, spaces, commas, periods, exclamation marks, question marks, and other specified characters are allowed.") String rulesText) {
         this.rulesText = rulesText;
     }
 
