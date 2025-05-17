@@ -91,10 +91,17 @@ public class AuthController {
 
 
             AuthResponse response = new AuthResponse(
-                    jwt,
+                    "Login successful!",
+                    user.getId(),
                     user.getUsername(),
-                    user.getId(),        // add user Id to response
-                    user.getRoles()
+                    user.getRoles(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getBio(),
+                    user.getBirthDate(),
+                    user.getContactPhoneNumber(),
+                    user.getContactEmail(),
+                    user.getPhotoUrl()
             );
 
             ResponseCookie jwtCookie = ResponseCookie.from("jwt", jwt)
@@ -149,9 +156,16 @@ public class AuthController {
 
         return ResponseEntity.ok(new AuthResponse(
                 "Authenticated",
+                user.getId(),
                 user.getUsername(),
-                user.getId(),    // add user Id to checkAuth
-                user.getRoles()
+                user.getRoles(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getBio(),
+                user.getBirthDate(), // LocalDate
+                user.getContactPhoneNumber(),
+                user.getContactEmail(),
+                user.getPhotoUrl()
         ));
     }
 }

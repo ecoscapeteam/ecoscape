@@ -2,21 +2,39 @@ package com.java2024.ecoscape.dto;
 
 import com.java2024.ecoscape.models.Role;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 public class AuthResponse {
     private String jwtToken;
-    private String username;
     private Long userId;
+    private String username;
     private Set<Role> roles;
+    private String firstName;
+    private String lastName;
+    private String bio;
+    private LocalDate birthDate;
+    private String contactPhoneNumber;
+    private String contactEmail;
+    private String photoUrl;
 
-    public AuthResponse(String jwtToken, String username, Long userId, Set<Role> roles) {
+    public AuthResponse(String jwtToken, Long userId, String username, Set<Role> roles,
+                        String firstName, String lastName, String bio, LocalDate birthDate,
+                        String contactPhoneNumber, String contactEmail, String photoUrl) {
         this.jwtToken = jwtToken;
+        this.userId = userId;
         this.username = username;
-        this.userId = userId;   // ADD TO RESPONSE
-
         this.roles = roles;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.bio = bio;
+        this.birthDate = birthDate;
+        this.contactPhoneNumber = contactPhoneNumber;
+        this.contactEmail = contactEmail;
+        this.photoUrl = photoUrl;
     }
+
+    // Getters and setters for all fields
 
     public String getJwtToken() {
         return jwtToken;
@@ -34,6 +52,14 @@ public class AuthResponse {
         this.username = username;
     }
 
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
     public Set<Role> getRoles() {
         return roles;
     }
@@ -42,15 +68,59 @@ public class AuthResponse {
         this.roles = roles;
     }
 
-    public Long getUserId() {
-        return userId;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public String getContactPhoneNumber() {
+        return contactPhoneNumber;
+    }
+
+    public void setContactPhoneNumber(String contactPhoneNumber) {
+        this.contactPhoneNumber = contactPhoneNumber;
+    }
+
+    public String getContactEmail() {
+        return contactEmail;
+    }
+
+    public void setContactEmail(String contactEmail) {
+        this.contactEmail = contactEmail;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 }
-
-
-
-
