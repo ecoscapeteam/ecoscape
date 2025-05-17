@@ -15,7 +15,7 @@ public class UserRequest {
     @Size(max = 50, message = "Your last name cannot be longer than 50 characters.")
     private String lastName;
 
-    @Size(max = 250)
+    @Size(max = 600)
     private String bio;
     private String photoUrl;
     private UserStatus status;
