@@ -101,7 +101,8 @@ public class AuthController {
                     user.getBirthDate(),
                     user.getContactPhoneNumber(),
                     user.getContactEmail(),
-                    user.getPhotoUrl()
+                    user.getPhotoUrl(),
+                    user.getUserStatus()
             );
 
             ResponseCookie jwtCookie = ResponseCookie.from("jwt", jwt)
@@ -165,7 +166,8 @@ public class AuthController {
                 user.getBirthDate(), // LocalDate
                 user.getContactPhoneNumber(),
                 user.getContactEmail(),
-                user.getPhotoUrl()
+                user.getPhotoUrl(),
+                user.getUserStatus()
         ));
     }
 }

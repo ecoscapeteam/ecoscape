@@ -1,6 +1,7 @@
 package com.java2024.ecoscape.dto;
 
 import com.java2024.ecoscape.models.Role;
+import com.java2024.ecoscape.models.UserStatus;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -17,10 +18,9 @@ public class AuthResponse {
     private String contactPhoneNumber;
     private String contactEmail;
     private String photoUrl;
+    private UserStatus userStatus;
 
-    public AuthResponse(String jwtToken, Long userId, String username, Set<Role> roles,
-                        String firstName, String lastName, String bio, LocalDate birthDate,
-                        String contactPhoneNumber, String contactEmail, String photoUrl) {
+    public AuthResponse(String jwtToken, Long userId, String username, Set<Role> roles, String firstName, String lastName, String bio, LocalDate birthDate, String contactPhoneNumber, String contactEmail, String photoUrl, UserStatus userStatus) {
         this.jwtToken = jwtToken;
         this.userId = userId;
         this.username = username;
@@ -32,6 +32,7 @@ public class AuthResponse {
         this.contactPhoneNumber = contactPhoneNumber;
         this.contactEmail = contactEmail;
         this.photoUrl = photoUrl;
+        this.userStatus = userStatus;
     }
 
     // Getters and setters for all fields
@@ -122,5 +123,13 @@ public class AuthResponse {
 
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
+    }
+
+    public UserStatus getUserStatus() {
+        return userStatus;
+    }
+
+    public void setUserStatus(UserStatus userStatus) {
+        this.userStatus = userStatus;
     }
 }

@@ -72,7 +72,6 @@ public class UserService {
         if (authenticateUser.getFirstName() == null || authenticateUser.getFirstName().isEmpty()
                 || authenticateUser.getLastName() == null || authenticateUser.getLastName().isEmpty()
                 || authenticateUser.getContactPhoneNumber() == null || authenticateUser.getContactPhoneNumber().isEmpty()
-                || authenticateUser.getPhotoUrl() == null || authenticateUser.getPhotoUrl().isEmpty()
                 || authenticateUser.getContactEmail() == null || authenticateUser.getContactEmail().isEmpty()
                 || authenticateUser.getBirthDate() == null) {
             throw new IllegalArgumentException("You need to have a filled out user profile in order to put in a request for a host role.");
