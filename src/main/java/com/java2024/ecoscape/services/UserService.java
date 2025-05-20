@@ -55,12 +55,21 @@ public class UserService {
     }
 
     public boolean existsByContactEmailAndIdNot(String contactEmail, Long id) {
-        return userRepository.findByContactEmailAndIdNot(contactEmail, id).isPresent();
+        if (contactEmail == null) {
+            return false;
+        }
+        List<User> users = userRepository.findByContactEmailAndIdNot(contactEmail, id);
+        return !users.isEmpty();
     }
 
     public boolean existsByContactPhoneNumberAndIdNot(String contactPhoneNumber, Long id) {
-        return userRepository.findByContactPhoneNumberAndIdNot(contactPhoneNumber, id).isPresent();
+        if (contactPhoneNumber == null) {
+            return false;
+        }
+        List<User> users = userRepository.findByContactPhoneNumberAndIdNot(contactPhoneNumber, id);
+        return !users.isEmpty();
     }
+
 
     public boolean existsByUsername(String username) {
         return userRepository.findByUsername(username).isPresent();
