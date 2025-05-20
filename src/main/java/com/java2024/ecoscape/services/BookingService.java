@@ -50,6 +50,7 @@ public class BookingService {
         bookingResponse.setBookingId(booking.getId());
         bookingResponse.setUserId(booking.getUser().getId());
         bookingResponse.setListingId(booking.getListing().getId());
+        bookingResponse.setListingname(booking.getListing().getName());
         bookingResponse.setFirstName(booking.getFirstName());
         bookingResponse.setLastName(booking.getLastName());
         bookingResponse.setUsersContactPhoneNumber(booking.getUsersContactPhoneNumber());
@@ -245,6 +246,15 @@ public class BookingService {
         // تحويل Booking إلى BookingResponse
 
         return convertBookingEntityToBookingResponse(booking);
+    }
+
+    public List<BookingResponse> getBookingByUser() {
+        User authenticateUser = authenticationService.authenticateMethods();
+
+        List<Booking> bookings = bookingRepository.findByUser(authenticateUser);
+        return bookings.stream()
+                .map(this::convertBookingEntityToBookingResponse)
+                .collect(Collectors.toList());
     }
 
 

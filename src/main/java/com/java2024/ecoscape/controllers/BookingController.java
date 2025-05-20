@@ -81,6 +81,12 @@ public class BookingController {
         return ResponseEntity.ok(booking);
     }
 
+    @GetMapping("/my-bookings")
+    public ResponseEntity<List<BookingResponse>> getBookingByUser() {
+        List<BookingResponse> bookings = bookingService.getBookingByUser();
+        return new ResponseEntity<>(bookings, HttpStatus.OK);
+    }
+
 
 
     @PatchMapping("/{id}/cancel/user")

@@ -1,6 +1,7 @@
 package com.java2024.ecoscape.dto;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.java2024.ecoscape.models.Booking;
 import com.java2024.ecoscape.models.Payment;
@@ -19,6 +20,7 @@ public class BookingResponse {
     private Long bookingId;
     private Long userId;
     private Long listingId;
+    private String listingname;
     private String firstName;
     private String lastName;
     private String usersContactPhoneNumber;
@@ -32,7 +34,7 @@ public class BookingResponse {
     private BigDecimal cleaningFee;
     private BigDecimal totalPrice;
 
-
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String message;
     @Override
     public String toString() {
@@ -186,5 +188,11 @@ public class BookingResponse {
         this.message = message;
     }
 
+    public String getListingname() {
+        return listingname;
+    }
 
+    public void setListingname(String listingname) {
+        this.listingname = listingname;
+    }
 }
