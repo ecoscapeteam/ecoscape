@@ -52,8 +52,9 @@ public class User {
     @Column(name = "contact_phone_number")
     private String contactPhoneNumber;
 
-    @Pattern(regexp = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$",
-            message = "That's not a valid email.")
+    @Pattern(regexp = "(^$|^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$)",
+            message = "That's not a valid email."
+    )
     @Column(unique = true, name = "contact_email")
     private String contactEmail;
 
